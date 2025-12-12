@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keith Site</title>
+    <link href="https://files.catbox.moe/98qm8n.jpg" rel="icon">
+    <link href="https://files.catbox.moe/98qm8n.jpg" rel="apple-touch-icon">
+    <style>
+        :root {
+            --primary: #00df9a;
+            --secondary: #7c3aed;
+            --dark: #0a0a0a;
+            --darker: #111111;
+            --light: #f5f5f5;
+            --gray: #a1a1aa;
+            --border: rgba(255,255,255,0.1);
+            --card-bg: var(--darker);
+            --text-color: var(--light);
+        }
+
+        [data-theme="light"] {
+            --dark: #f5f5f5;
+            --darker: #e5e5e5;
+            --light: #0a0a0a;
+            --gray: #52525b;
+            --border: rgba(0,0,0,0.1);
+            --card-bg: var(--darker);
+            --text-color: var(--light);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--dark);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .loading-screen h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .loading-screen p {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        /* Header */
+        header {
+            background: var(--darker);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--darker);
+            padding: 1rem;
+            height: 100vh;
+            position: fixed;
+            top: 70px;
+            left: -260px;
+            overflow-y: auto;
+            transition: 0.3s;
+            border-right: 1px solid var(--border);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-title {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-title span {
+            color: var(--primary);
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(124,58,237,0.1);
+        }
+
+        .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .nav-heading {
+            color: var(--gray);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin: 1.5rem 0 0.75rem;
+            padding-left: 0.75rem;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            margin: 1.5rem 0;
+        }
+
+        .menu-section-title {
+            color: var(--gray);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            padding-left: 0.75rem;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: 0.2s;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-item:hover {
+            background: rgba(124,58,237,0.1);
+        }
+
+        .menu-item-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            border-radius: 50%;
+            background: rgba(124,58,237,0.1);
+            color: var(--primary);
+        }
+
+        .menu-item-text {
+            font-size: 0.95rem;
+        }
+
+        /* Main Content */
+        main {
+            padding: 5rem 2rem 2rem;
+            transition: 0.3s;
+        }
+
+        .sidebar.active + main {
+            margin-left: 260px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .card-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: rgba(124,58,237,0.1);
+            color: var(--primary);
+        }
+
+        /* API Image Section */
+        .api-image {
+            width: 100%;
+            border-radius: 0.75rem;
+            margin: 2rem 0;
+            border: 1px solid var(--border);
+            background: var(--darker);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .api-image img {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .api-description {
+            margin-top: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .api-description h3 {
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .api-description p {
+            margin-bottom: 1rem;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 1rem;
+        }
+
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--light);
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(30px);
+        }
+
+        .theme-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-color);
+        }
+
+        /* Floating APK Button */
+        .floating-apk-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,223,154,0.3);
+            cursor: pointer;
+            z-index: 99;
+            transition: all 0.3s ease;
+            border: none;
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+
+        .floating-apk-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,223,154,0.4);
+        }
+
+        .floating-apk-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* APK Install Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--darker);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid var(--primary);
+            box-shadow: 0 8px 32px rgba(0,223,154,0.2);
+        }
+
+        .modal-content h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .apk-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .apk-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 0.5rem;
+        }
+
+        .apk-info-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .apk-info-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 0.25rem;
+        }
+
+        .apk-info-value {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-btn {
+            padding: 0.7rem 1.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-btn.install {
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            flex: 2;
+        }
+
+        .modal-btn.install:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,223,154,0.3);
+        }
+
+        .modal-btn.later {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--light);
+            flex: 1;
+        }
+
+        .modal-btn.later:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--darker);
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        @media (min-width: 768px) {
+            .sidebar {
+                left: 0;
+            }
+            main {
+                margin-left: 260px;
+                padding: 6rem 3rem 3rem;
+            }
+            footer {
+                margin-left: 260px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            .modal-btn {
+                width: 100%;
+            }
+            .apk-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#6c5ce7" stroke-width="8"/>
+                <path d="M30,30 L70,30 L70,70 L30,70 Z" fill="none" stroke="#00cec9" stroke-width="8"/>
+                <text x="50" y="55" font-family="Arial" font-size="30" fill="#fffff" text-anchor="middle" font-weight="bold">C</text>
+            </svg>
+        </div>
+        <h2>Confronter Web</h2>
+        <p>Injecting loading💻...</p>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="toggle-btn" id="toggle-sidebar">
+            <i class="bi bi-list"></i>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label class="theme-label">
+                <i class="bi bi-moon"></i>
+                <label class="theme-toggle">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="theme-slider"></span>
+                </label>
+                <i class="bi bi-sun"></i>
+            </label>
+            <img src="https://files.catbox.moe/vb4ilb.jpg" alt="Profile" class="profile-img" style="margin-left: 1rem;">
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <h1 class="sidebar-title">Frank <span>Site</span></h1>
+        
+        <div class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-house"></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
+        
+        <div class="nav-item">
+            <a href="/about" class="nav-link">
+                <i class="bi bi-info-circle"></i>
+                <span>About</span>
+            </a>
+        </div>
+        
+        <!-- Command Categories Menu -->
+        <div class="menu-section">
+            <div class="menu-section-title">Command Categories</div>
+            <a href="/search" class="menu-item">
+                <div class="menu-item-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="menu-item-text">Search</div>
+        
+        <div class="nav-heading">Reach Confronter</div>
+        
+        <div class="nav-item">
+            <a href="/contact" class="nav-link">
+                <i class="bi bi-whatsapp"></i>
+                <span>WhatsApp</span>
+            </a>
+        </div>
+    
+
+    <!-- Main Content -->
+    <main>
+        <div class="card">
+            <h3 class="card-title">Time Now</h3>
+            <div class="card-content">
+                <div class="card-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <div>
+                    <div id="browser_info">00:00:00</div>
+                    <div id="browser_sholat">Time</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3 class="card-title">Battery Info</h3>
+            <div class="card-content">
+                <div class="card-icon">
+                    <i class="bi bi-battery-full"></i>
+                </div>
+                <div>
+                    <div id="battery-level">%</div>
+                    <div id="charging-status">charging🤭</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Image Section -->
+        <div class="api-image">
+            <img src="https://qu.ax/qnWAU.jpg" alt="Keith Site Services">
+            <div class="api-description">
+                <h3>About Confronter Site</h3>
+                <p>Keith Site provides powerful tools for developers with no login required and no usage limits. Our services include media downloading, AI processing, search capabilities, and much more - all available 24/7 with reliable uptime.</p>
+                <p>With over 150+ plugins and serving 10,000+ active users, we continuously improve our services to deliver the best experience. Everything is built with precision and care to meet your development needs.</p>
+                <p>Enjoy unlimited access to our growing collection of tools designed to make your development process faster and more efficient.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="copyright">
+            &copy; <span id="copyrightYearRange"></span> Keith Site | All Rights Reserved
+        </div>
+    </footer>
+
+    <!-- Floating APK Button -->
+    <button class="floating-apk-btn" id="floatingApkBtn" title="Install Keith Site App">
+        <i class="fas fa-download"></i>
+    </button>
+
+    <!-- APK Install Modal -->
+    <div class="modal" id="apkModal">
+        <div class="modal-content">
+            <div class="apk-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <h3>Install Keith Site App</h3>
+            <p>Get the full Keith Site experience on your Android device with our official app!</p>
+            
+            <div class="apk-info">
+                <div class="apk-info-item">
+                    <div class="apk-info-label">Version</div>
+                    <div class="apk-info-value">2.1.0</div>
+                </div>
+                <div class="apk-info-item">
+                    <div class="apk-info-label">Size</div>
+                    <div class="apk-info-value">5.2 MB</div>
+                </div>
+                <div class="apk-info-item">
+                    <div class="apk-info-label">Updated</div>
+                    <div class="apk-info-value">Sept 2025</div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <a href="https://keithsite.vercel.app/legit.apk" class="modal-btn install">
+                    <i class="fas fa-download" style="margin-right: 8px;"></i>
+                    Install APK
+                </a>
+                <button class="modal-btn later" id="closeApkModal">
+                    Maybe Later
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Loading Screen
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingProgress = document.getElementById('loadingProgress');
+            
+            // Simulate loading progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // Hide loading screen after a short delay
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                    }, 500);
+                }
+                loadingProgress.style.width = `${progress}%`;
+            }, 200);
+        });
+
+        // Toggle sidebar
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Set copyright year
+        document.getElementById('copyrightYearRange').textContent = 
+            `2024-${new Date().getFullYear()}`;
+
+        // Clock function
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            const hours = now.getHours();
+            
+            document.getElementById('browser_info').textContent = time;
+            
+            let greeting = "Hello";
+            if (hours < 12) greeting = "Good morning";
+            else if (hours < 18) greeting = "Good afternoon";
+            else greeting = "Good evening";
+            
+            document.getElementById('browser_sholat').textContent = greeting;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Battery status
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(battery => {
+                const updateBattery = () => {
+                    document.getElementById('battery-level').textContent = 
+                        `${Math.round(battery.level * 100)}%`;
+                    document.getElementById('charging-status').textContent = 
+                        battery.charging ? "⚡ Charging" : "Discharging";
+                };
+                battery.addEventListener('chargingchange', updateBattery);
+                battery.addEventListener('levelchange', updateBattery);
+                updateBattery();
+            });
+        } else {
+            document.getElementById('battery-level').textContent = "N/A";
+            document.getElementById('charging-status').textContent = "Battery API not supported";
+        }
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        // Set the initial theme
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.checked = currentTheme === 'light';
+        
+        // Toggle theme when checkbox is changed
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // APK Install Modal
+        const apkModal = document.getElementById('apkModal');
+        const closeApkBtn = document.getElementById('closeApkModal');
+        const floatingApkBtn = document.getElementById('floatingApkBtn');
+        
+        // Show modal when floating button is clicked
+        floatingApkBtn.addEventListener('click', () => {
+            apkModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Close modal when "Maybe Later" is clicked
+        closeApkBtn.addEventListener('click', () => {
+            apkModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        // Close modal when clicking outside
+        apkModal.addEventListener('click', (e) => {
+            if (e.target === apkModal) {
+                apkModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>
