@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confronter Tech Wizard Payments</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0c14;
+            --card: rgba(255,255,255,0.04);
+            --text: #e2e2f0;
+            --muted: #8a8ab0;
+            --accent: #7c3aed;
+            --border: rgba(255,255,255,0.06);
+        }
+
+        [data-theme="light"] {
+            --bg: #f5f5fa;
+            --card: rgba(255,255,255,0.7);
+            --text: #1a1a2e;
+            --muted: #6b6b8a;
+            --accent: #6d28d9;
+            --border: rgba(0,0,0,0.06);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        .rainbow-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #ff6b6b);
+            background-size: 300% 100%;
+            animation: shift 3s linear infinite;
+            z-index: 100;
+        }
+        @keyframes shift { to { background-position: 300% 0; } }
+
+        .theme-btn {
+            position: fixed;
+            top: 1rem; right: 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 50;
+        }
+        .theme-btn:hover { border-color: var(--accent); transform: scale(1.1); }
+        .theme-btn svg { width: 18px; height: 18px; transition: transform 0.4s; }
+        .sun { color: #f59e0b; }
+        .moon { color: #818cf8; }
+        [data-theme="light"] .moon { display: none; }
+        [data-theme="dark"] .sun { display: none; }
+
+        .greet {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .greet-time {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .greet-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 0.3rem;
+            background: linear-gradient(90deg, #ff6b6b, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff);
+        }
+
+        .logo-icon {
+            width: 48px; height: 48px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #48dbfb, #7c3aed);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-icon svg { width: 22px; height: 22px; color: #fff; }
+
+        .card h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .card p {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+        }
+        .card p span {
+            background: linear-gradient(90deg, #feca57, #48dbfb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .pay-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: #fff;
+            text-decoration: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(124,58,237,0.3);
+        }
+        .pay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(124,58,237,0.4);
+        }
+        .pay-btn svg { width: 16px; height: 16px; }
+
+        .secure {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            margin-top: 1rem;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .secure svg { width: 12px; height: 12px; color: #10b981; }
+
+        footer {
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        footer span {
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="rainbow-bar"></div>
+
+    <button class="theme-btn" id="toggle" aria-label="Toggle theme">
+        <svg class="sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" stroke-width="2"/><path stroke-width="2" stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+        <svg class="moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" stroke-linecap="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+
+    <div class="greet">
+        <div class="greet-time" id="clock"></div>
+        <div class="greet-text" id="greeting"></div>
+    </div>
+
+    <div class="card">
+        <div class="logo-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <h2>Tech Wizard Payments</h2>
+        <p><span>Easy & secure</span> payments instantly at <span>zero cost</span>. Fast, reliable, and built for you.</p>
+        <a href="https://lipwa.link/2672" class="pay-btn" target="_blank" rel="noopener">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Pay Now
+        </a>
+        <div class="secure">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Secure Connection
+        </div>
+    </div>
+
+    <footer>Made with <span>♥</span> by Confronter Tech</footer>
+
+    <script>
+        const toggle = document.getElementById('toggle');
+        const body = document.body;
+        const saved = localStorage.getItem('theme') || 'dark';
+        body.setAttribute('data-theme', saved);
+
+        toggle.addEventListener('click', () => {
+            const cur = body.getAttribute('data-theme');
+            const next = cur === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        });
+
+        function update() {
+            const now = new Date();
+            const h = now.getHours();
+            let g = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : h < 21 ? 'Good Evening' : 'Good Night';
+            document.getElementById('greeting').textContent = g + '!';
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true});
+        }
+        update();
+        setInterval(update, 1000);
+    </script>
+</body>
+</html>
