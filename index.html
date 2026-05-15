@@ -541,6 +541,12 @@ Welcome
 <span>Premium Downloaders</span>
 </a>
 
+<a href="#payments" class="nav-item">
+<i class="fas fa-credit-card"></i>
+<span>Payments</span>
+</a>
+
+
 <a href="https://t.me/+gJJbcOWV0F1lNjQ0" target="_blank" class="nav-item">
 <i class="fas fa-film"></i>
 <span>18+ HD Movies</span>
@@ -863,6 +869,29 @@ Billing Classes
 
 </div>
 
+<!-- 13 -->
+
+<div class="card">
+
+<div class="card-number">13</div>
+
+<div class="card-icon">
+<i class="fas fa-credit-card"></i>
+</div>
+
+<h3>Payments</h3>
+
+<p>
+Easy & secure payments instantly at zero cost. Fast, reliable, and built for you.
+</p>
+
+<a href="#payments" class="cyber-btn">
+<i class="fas fa-bolt"></i>
+Pay Now
+</a>
+
+</div>
+
 <!-- 12 -->
 
 <div class="card">
@@ -887,6 +916,211 @@ Explore More
 </div>
 
 </div>
+
+<!-- PAYMENTS SECTION -->
+
+<section class="hero" id="payments">
+
+<h2 class="section-title">
+Payments
+</h2>
+
+<style>
+.payments-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.payments-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    transition: .4s;
+}
+
+.payments-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 25px rgba(0,255,255,.15);
+}
+
+.payments-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #ff6b6b);
+    background-size: 300% 100%;
+    animation: rainbowShift 3s linear infinite;
+}
+
+@keyframes rainbowShift {
+    to { background-position: 300% 0; }
+}
+
+.payments-rainbow-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #ff6b6b);
+    background-size: 300% 100%;
+    animation: rainbowShift 3s linear infinite;
+}
+
+.payments-logo-icon {
+    width: 56px; height: 56px;
+    margin: 0.5rem auto 1rem;
+    background: linear-gradient(135deg, #48dbfb, #7c3aed);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 15px rgba(124,58,237,0.3);
+}
+
+.payments-logo-icon svg {
+    width: 26px; height: 26px; color: #fff;
+}
+
+.payments-card h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.payments-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.payments-card p span {
+    background: linear-gradient(90deg, #feca57, #48dbfb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+
+.payments-pay-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.8rem 2rem;
+    border-radius: 14px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(124,58,237,0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.payments-pay-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(124,58,237,0.4);
+}
+
+.payments-pay-btn svg {
+    width: 18px; height: 18px;
+}
+
+.payments-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-top: 1.2rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.payments-secure svg {
+    width: 14px; height: 14px;
+    color: #10b981;
+}
+
+.payments-greet {
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.payments-greet-time {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.payments-greet-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 0.3rem;
+    background: linear-gradient(90deg, #ff6b6b, #48dbfb, #ff9ff3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@media(max-width:900px){
+    .payments-card {
+        padding: 1.5rem;
+    }
+    .payments-card h2 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
+<div class="payments-container">
+
+<div class="payments-card">
+
+<div class="payments-rainbow-bar"></div>
+
+<div class="payments-greet">
+    <div class="payments-greet-time" id="paymentsClock"></div>
+    <div class="payments-greet-text" id="paymentsGreeting"></div>
+</div>
+
+<div class="payments-logo-icon">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+</div>
+
+<h2>Confronter Tech Wizard Payments</h2>
+
+<p><span>Easy & secure</span> payments instantly at <span>zero cost</span>. Fast, reliable, and built for you.</p>
+
+<a href="https://lipwa.link/2672" class="payments-pay-btn" target="_blank" rel="noopener">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    Pay Now
+</a>
+
+<div class="payments-secure">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+    Secure Connection
+</div>
+
+</div>
+
+</div>
+
+</section>
+
 
 <!-- ABOUT -->
 
@@ -1159,6 +1393,35 @@ document.getElementById("sidebar").classList.remove("show");
 });
 
 });
+
+
+
+/* PAYMENTS CLOCK & GREETING */
+
+function updatePaymentsClock(){
+
+const now=new Date();
+
+const h=now.getHours();
+
+let g = h < 12 ? 'Good Morning🌤' : h < 17 ? 'Good Afternoon☀️' : h < 21 ? 'Good Evening🌙' : 'Good Night😴';
+
+const paymentsGreetingEl=document.getElementById("paymentsGreeting");
+const paymentsClockEl=document.getElementById("paymentsClock");
+
+if(paymentsGreetingEl){
+paymentsGreetingEl.textContent=g+'!';
+}
+
+if(paymentsClockEl){
+paymentsClockEl.textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+}
+
+}
+
+setInterval(updatePaymentsClock,1000);
+
+updatePaymentsClock();
 
 </script>
 
