@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confronter FB Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #111827);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 25px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px 0 0 12px;
+            background: rgba(30, 41, 59, 0.6);
+            color: #e2e8f0;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 0 12px 12px 0;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #8b5cf6, #6366f1);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .video-info {
+            margin-bottom: 20px;
+        }
+
+        .video-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+        }
+
+        .thumbnail-container {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .thumbnail {
+            width: 100%;
+            display: block;
+        }
+
+        .download-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .download-option {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .download-option:hover {
+            background: rgba(30, 41, 59, 0.9);
+            transform: translateY(-5px);
+        }
+
+        .quality {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #8b5cf6;
+        }
+
+        .download-btn {
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #10b981, #22c55e);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(90deg, #22c55e, #10b981);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            display: none;
+            color: #ef4444;
+            text-align: center;
+            padding: 15px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 12px;
+            margin-top: 20px;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .creator {
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            input {
+                border-radius: 12px;
+                margin-bottom: 10px;
+            }
+            
+            button {
+                border-radius: 12px;
+                width: 100%;
+            }
+            
+            .download-options {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Confronter FB Downloader</h1>
+            <p class="subtitle">Download Facebook videos in high quality with ease</p>
+        </header>
+        
+        <div class="input-group">
+            <input type="url" id="fbUrl" placeholder="Paste Facebook video URL here..." required>
+            <button id="downloadBtn"><i class="fas fa-download"></i> Download</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing your request...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="video-info">
+                <h2 class="video-title" id="videoTitle"></h2>
+                <div class="thumbnail-container">
+                    <img src="" alt="Video thumbnail" class="thumbnail" id="videoThumbnail">
+                </div>
+            </div>
+            
+            <div class="download-options" id="downloadOptions">
+                <!-- Options will be generated here -->
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Created by <span class="creator">Confronter 2025</span> &copy; 2025</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const fbUrl = document.getElementById('fbUrl');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const resultContainer = document.getElementById('resultContainer');
+            const videoTitle = document.getElementById('videoTitle');
+            const videoThumbnail = document.getElementById('videoThumbnail');
+            const downloadOptions = document.getElementById('downloadOptions');
+            
+            downloadBtn.addEventListener('click', function() {
+                const url = fbUrl.value.trim();
+                
+                if (!url) {
+                    showError('Please enter a Facebook video URL');
+                    return;
+                }
+                
+                // Basic URL validation
+                if (!url.includes('facebook.com') && !url.includes('fb.com')) {
+                    showError('Please enter a valid Facebook URL');
+                    return;
+                }
+                
+                // Hide previous results and errors
+                error.style.display = 'none';
+                resultContainer.style.display = 'none';
+                loading.style.display = 'block';
+                
+                // Encode the URL for the API
+                const encodedUrl = encodeURIComponent(url);
+                const apiUrl = `https://apiskeith.vercel.app/download/fbdown?url=${encodedUrl}`;
+                
+                // Fetch video data from API
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        loading.style.display = 'none';
+                        
+                        if (data.status) {
+                            displayResult(data);
+                        } else {
+                            showError('Failed to fetch video information. Please check the URL and try again.');
+                        }
+                    })
+                    .catch(err => {
+                        loading.style.display = 'none';
+                        showError('An error occurred. Please try again later.');
+                        console.error('Error:', err);
+                    });
+            });
+            
+            function displayResult(data) {
+                // Set video title and thumbnail
+                videoTitle.textContent = decodeHtmlEntities(data.result.title);
+                videoThumbnail.src = data.result.thumbnail;
+                
+                // Generate download options
+                downloadOptions.innerHTML = '';
+                
+                if (data.result.media.hd) {
+                    createDownloadOption('HD Quality', data.result.media.hd, 'hd');
+                }
+                
+                if (data.result.media.sd) {
+                    createDownloadOption('SD Quality', data.result.media.sd, 'sd');
+                }
+                
+                // Show result container
+                resultContainer.style.display = 'block';
+                
+                // Scroll to results
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function createDownloadOption(qualityText, url, quality) {
+                const option = document.createElement('div');
+                option.className = 'download-option';
+                
+                const qualityEl = document.createElement('div');
+                qualityEl.className = 'quality';
+                qualityEl.textContent = qualityText;
+                
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.className = 'download-btn';
+                downloadLink.innerHTML = `<i class="fas fa-download"></i> Download ${quality.toUpperCase()}`;
+                downloadLink.setAttribute('download', '');
+                downloadLink.setAttribute('target', '_blank');
+                
+                option.appendChild(qualityEl);
+                option.appendChild(downloadLink);
+                downloadOptions.appendChild(option);
+            }
+            
+            function showError(message) {
+                error.textContent = message;
+                error.style.display = 'block';
+                
+                // Scroll to error
+                error.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function decodeHtmlEntities(text) {
+                const textArea = document.createElement('textarea');
+                textArea.innerHTML = text;
+                return textArea.value;
+            }
+            
+            // Allow pressing Enter to submit
+            fbUrl.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    downloadBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+      </html>
