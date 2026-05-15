@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confronter Tech | Premium Downloaders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-pink: #ff006e;
+            --dark-bg: #0a0a0f;
+            --card-bg: rgba(20, 20, 30, 0.8);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(188, 19, 254, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 0, 110, 0.1) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 15s infinite;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            animation: glow 3s ease-in-out infinite alternate;
+            margin-bottom: 10px;
+        }
+
+        @keyframes glow {
+            from {
+                filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.5));
+            }
+            to {
+                filter: drop-shadow(0 0 30px rgba(188, 19, 254, 0.8)) drop-shadow(0 0 40px rgba(255, 0, 110, 0.4));
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .tagline {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Main Grid */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            perspective: 1000px;
+        }
+
+        /* Floating Download Cards */
+        .download-card {
+            position: relative;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            overflow: hidden;
+            animation: floatCard 6s ease-in-out infinite;
+            animation-delay: calc(var(--i) * 0.5s);
+        }
+
+        .download-card:nth-child(1) { --i: 0; }
+        .download-card:nth-child(2) { --i: 1; }
+        .download-card:nth-child(3) { --i: 2; }
+        .download-card:nth-child(4) { --i: 3; }
+        .download-card:nth-child(5) { --i: 4; }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-15px) rotateX(2deg); }
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s;
+        }
+
+        .download-card:hover::before {
+            left: 100%;
+        }
+
+        .download-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--neon-blue);
+            box-shadow: 
+                0 20px 40px rgba(0, 243, 255, 0.2),
+                inset 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+
+        /* Platform Icons */
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .download-card:hover .icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .icon-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+        }
+
+        .tiktok { background: linear-gradient(135deg, #00f2ea33, #ff005033); }
+        .instagram { background: linear-gradient(135deg, #833ab433, #fd1d1d33, #fcb04533); }
+        .facebook { background: linear-gradient(135deg, #1877f233, #42b72a33); }
+        .youtube { background: linear-gradient(135deg, #ff000033, #28282833); }
+        .anime { background: linear-gradient(135deg, #ff006e33, #8338ec33); }
+
+        /* Card Content */
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .description {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* Download Button */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 35px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-decoration: none;
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.3);
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(188, 19, 254, 0.4);
+            letter-spacing: 3px;
+        }
+
+        .download-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Status Badge */
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 12px;
+            background: rgba(0, 243, 255, 0.2);
+            border: 1px solid var(--neon-blue);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* Features List */
+        .features {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+            padding: 0 10px;
+        }
+
+        .features li {
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features li::before {
+            content: '✓';
+            color: var(--neon-blue);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 60px;
+        }
+
+        .social-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-links a:hover {
+            background: var(--neon-blue);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 243, 255, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo { font-size: 2rem; }
+            .subtitle { font-size: 0.9rem; letter-spacing: 4px; }
+            .container { grid-template-columns: 1fr; }
+            .download-card { animation: none; }
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+        <div class="loader-text">INITIALIZING...</div>
+    </div>
+
+    <!-- Background Effects -->
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header>
+        <h1 class="logo">Confronter Tech</h1>
+        <p class="subtitle">Premium Downloaders</p>
+        <p class="tagline">Enjoy Free High-Quality Downloads</p>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- TikTok Downloader -->
+        <div class="download-card">
+            <span class="status-badge">Hot</span>
+            <div class="icon-wrapper tiktok">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </svg>
+            </div>
+            <h3>TikTok Downloader</h3>
+            <p class="description">Download TikTok videos without watermark in HD quality. Fast, free, and unlimited.</p>
+            <ul class="features">
+                <li>No Watermark</li>
+                <li>HD Quality</li>
+                <li>MP4 & MP3 Support</li>
+            </ul>
+            <a href="https://confronter-tiktok.vercel.app/" class="download-btn" onclick="handleDownload('TikTok')">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download Now
+            </a>
+        </div>
+
+        <!-- Instagram Downloader -->
+        <div class="download-card">
+            <div class="icon-wrapper instagram">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+            </div>
+            <h3>Instagram Downloader</h3>
+            <p class="description">Save Instagram photos, videos, reels, and stories with one click. High resolution guaranteed.</p>
+            <ul class="features">
+                <li>Photos & Videos</li>
+                <li>Stories & Reels</li>
+                <li>High Resolution</li>
+            </ul>
+            <a href="https://confronter-instagram.vercel.app/" class="download-btn" onclick="handleDownload('Instagram')">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download Now
+            </a>
+        </div>
+
+        <!-- Facebook Downloader -->
+        <div class="download-card">
+            <div class="icon-wrapper facebook">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+            </div>
+            <h3>Facebook Downloader</h3>
+            <p class="description">Download Facebook videos in HD quality. Support for public and private videos.</p>
+            <ul class="features">
+                <li>HD Video Quality</li>
+                <li>Private Videos</li>
+                <li>Fast Processing</li>
+            </ul>
+            <a href="https://confronter-fb.vercel.app/" class="download-btn" onclick="handleDownload('Facebook')">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download Now
+            </a>
+        </div>
+
+        <!-- YouTube Downloader -->
+        <div class="download-card">
+            <span class="status-badge">Popular</span>
+            <div class="icon-wrapper youtube">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+            </div>
+            <h3>YouTube Downloader</h3>
+            <p class="description">Download YouTube videos and playlists in MP4 or MP3 format. Up to 4K quality support.</p>
+            <ul class="features">
+                <li>Up to 4K Quality</li>
+                <li>MP3 Converter</li>
+                <li>Playlist Support</li>
+            </ul>
+            <a href="https://confronter-youtube.vercel.app/" class="download-btn" onclick="handleDownload('YouTube')">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download Now
+            </a>
+        </div>
+
+        <!-- Anime Downloader -->
+        <div class="download-card">
+            <span class="status-badge" style="background: rgba(255, 0, 110, 0.2); border-color: var(--neon-pink); color: var(--neon-pink);">18+</span>
+            <div class="icon-wrapper anime">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+            <h3>Anime Downloader</h3>
+            <p class="description">Download your favorite anime series and movies. Multiple quality options available.</p>
+            <ul class="features">
+                <li>Multiple Qualities</li>
+                <li>Sub & Dub</li>
+                <li>Batch Download</li>
+            </ul>
+            <a href="https://confronter-anime.vercel.app/" class="download-btn" onclick="handleDownload('Anime')" style="background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));">
+                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                Download Now
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024-2099 Confronter Tech. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.8rem;">Fast • Secure • Free</p>
+        <div class="social-links">
+            <a href="https://tiktok.com/@confronter._" title="Tiktok">Tiktok</a>
+            <i class="fab fa-tiktok"></i>
+            <a href="https://wa.me/254796283064" title="Whatsaap">Whatsap</a>
+            <i class="fab fa-whatsapp"></i>
+            <a href="https://t.me/confronter" title="Tele">Tele</a>
+            <i class="fab fa-telegram"></i>
+            <a href="https://github.com/confronter5" title="GitHub">Github</a>
+            <i class="fab fa-Github"></i>
+        </div>
+    </footer>
+
+    <script>
+        // Remove loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.background = ['#00f3ff', '#bc13fe', '#ff006e'][Math.floor(Math.random() * 3)];
+            particlesContainer.appendChild(particle);
+        }
+
+        // 3D Tilt Effect
+        document.querySelectorAll('.download-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+
+        // Download Handler
+        function handleDownload(platform) {
+            // Create ripple effect
+            const btn = event.currentTarget;
+            const ripple = document.createElement('span');
+            ripple.style.position = 'absolute';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            ripple.style.background = 'rgba(255,255,255,0.5)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.animation = 'ripple 0.6s ease-out';
+            
+            const rect = btn.getBoundingClientRect();
+            ripple.style.left = (event.clientX - rect.left) + 'px';
+            ripple.style.top = (event.clientY - rect.top) + 'px';
+            
+            btn.style.position = 'relative';
+            btn.style.overflow = 'hidden';
+            btn.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+            
+            // Show notification
+            showNotification(`Starting ${platform} download...`);
+            
+            // Add your actual download logic here
+            console.log(`Downloading from ${platform}...`);
+        }
+
+        // Notification System
+        function showNotification(message) {
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                font-family: 'Orbitron', sans-serif;
+                font-size: 0.9rem;
+                z-index: 10000;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                border: 1px solid rgba(255,255,255,0.2);
+            `;
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => notif.style.transform = 'translateX(0)', 100);
+            setTimeout(() => {
+                notif.style.transform = 'translateX(400px)';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    width: 200px;
+                    height: 200px;
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Parallax scroll effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.bg-animation');
+            parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+    </script>
+</body>
+  </html>
