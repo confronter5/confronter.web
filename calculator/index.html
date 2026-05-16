@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confronter Tech Wizard Calculator</title>
+
+<!-- Attractive Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+:root{
+    --bg:#070b1a;
+    --glass:rgba(255,255,255,0.06);
+    --border:rgba(255,255,255,0.08);
+    --text:#ffffff;
+    --text-secondary:rgba(255,255,255,0.7);
+    --cyan:#00f7ff;
+    --purple:#8a2eff;
+    --pink:#ff00c8;
+    --red:#ff4d6d;
+    --shadow:0 0 35px rgba(0,247,255,0.2);
+    --font-display:'Playfair Display', serif;
+    --font-body:'Montserrat', sans-serif;
+    --font-ui:'Inter', sans-serif;
+}
+
+.light-mode{
+    --bg:#eef2ff;
+    --glass:rgba(255,255,255,0.7);
+    --border:rgba(0,0,0,0.08);
+    --text:#1a1a2e;
+    --text-secondary:rgba(26,26,46,0.7);
+    --shadow:0 0 25px rgba(0,0,0,0.08);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:var(--bg);
+    overflow:hidden;
+    color:var(--text);
+    position:relative;
+    font-family:var(--font-body);
+    transition:background 0.5s ease;
+}
+
+/* Animated Background */
+body::before{
+    content:'';
+    position:absolute;
+    width:700px;
+    height:700px;
+    background:radial-gradient(circle,#8a2eff,transparent 70%);
+    top:-250px;
+    left:-250px;
+    opacity:.3;
+    animation:move1 8s infinite alternate;
+}
+
+body::after{
+    content:'';
+    position:absolute;
+    width:700px;
+    height:700px;
+    background:radial-gradient(circle,#00f7ff,transparent 70%);
+    bottom:-250px;
+    right:-250px;
+    opacity:.25;
+    animation:move2 8s infinite alternate;
+}
+
+@keyframes move1{
+    100%{transform:translate(80px,50px);}
+}
+
+@keyframes move2{
+    100%{transform:translate(-80px,-50px);}
+}
+
+/* Rainbow Border Lines */
+.rainbow-border-top,
+.rainbow-border-bottom{
+    position:fixed;
+    left:0;
+    width:100%;
+    height:4px;
+    z-index:1000;
+    background:linear-gradient(90deg, 
+        #ff0000, #ff7f00, #ffff00, #00ff00, 
+        #0000ff, #4b0082, #9400d3, #ff0000);
+    background-size:400% 100%;
+    animation:rainbow-flow 3s linear infinite;
+    box-shadow:0 0 20px rgba(255,0,0,0.5), 
+               0 0 40px rgba(0,255,0,0.3), 
+               0 0 60px rgba(0,0,255,0.2);
+}
+
+.rainbow-border-top{top:0;}
+.rainbow-border-bottom{bottom:0;}
+
+@keyframes rainbow-flow{
+    0%{background-position:0% 50%;}
+    100%{background-position:400% 50%;}
+}
+
+/* Calculator */
+.calculator{
+    width:420px;
+    padding:28px;
+    border-radius:30px;
+    background:var(--glass);
+    border:1px solid var(--border);
+    backdrop-filter:blur(25px);
+    box-shadow:var(--shadow);
+    position:relative;
+    z-index:10;
+    transition:all 0.5s ease;
+}
+
+/* Theme Toggle - Better Placement */
+.theme-toggle{
+    position:absolute;
+    top:-20px;
+    right:30px;
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg, #8a2eff, #00f7ff);
+    color:white;
+    font-size:1.3rem;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:3px solid var(--bg);
+    box-shadow:0 4px 15px rgba(0,247,255,0.4);
+    z-index:20;
+}
+
+.theme-toggle:hover{
+    transform:rotate(180deg) scale(1.1);
+    box-shadow:0 6px 25px rgba(0,247,255,0.6);
+}
+
+/* Title */
+.title{
+    text-align:center;
+    margin-bottom:20px;
+    margin-top:10px;
+}
+
+.title h1{
+    font-size:1.8rem;
+    font-weight:800;
+    color:var(--text);
+    font-family:var(--font-display);
+    letter-spacing:1px;
+}
+
+.title span{
+    background:linear-gradient(90deg,#00f7ff,#ff00c8,#8a2eff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+}
+
+.subtitle{
+    margin-top:8px;
+    font-size:.8rem;
+    opacity:.75;
+    letter-spacing:4px;
+    font-family:var(--font-body);
+    font-weight:600;
+    text-transform:uppercase;
+    color:var(--text-secondary);
+}
+
+/* Greeting */
+.welcome-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.greeting-box,
+.battery-box{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:18px;
+    padding:14px;
+    transition:all 0.3s ease;
+}
+
+.light-mode .greeting-box,
+.light-mode .battery-box{
+    background:rgba(0,0,0,0.03);
+    border:1px solid rgba(0,0,0,0.06);
+}
+
+.greeting-box{
+    flex:1;
+}
+
+.greeting{
+    font-size:1.1rem;
+    font-weight:700;
+    background:linear-gradient(90deg,#00f7ff,#8a2eff,#ff00c8);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    font-family:var(--font-display);
+}
+
+.sub-greeting{
+    margin-top:4px;
+    font-size:.8rem;
+    opacity:.8;
+    color:var(--text-secondary);
+    font-family:var(--font-body);
+    font-weight:500;
+}
+
+.battery-box{
+    width:120px;
+    text-align:center;
+}
+
+.battery-percent{
+    font-size:1.1rem;
+    font-weight:800;
+    color:var(--cyan);
+    font-family:var(--font-display);
+}
+
+.battery-status{
+    margin-top:4px;
+    font-size:.7rem;
+    opacity:.8;
+    color:var(--text-secondary);
+    font-family:var(--font-body);
+    font-weight:600;
+}
+
+/* Clock */
+.clock{
+    text-align:center;
+    margin-bottom:18px;
+    font-size:1.2rem;
+    color:var(--cyan);
+    font-weight:700;
+    font-family:var(--font-display);
+    letter-spacing:2px;
+    text-shadow:0 0 10px rgba(0,247,255,0.3);
+}
+
+/* Display */
+.display{
+    min-height:140px;
+    background:rgba(0,0,0,0.22);
+    border-radius:24px;
+    padding:20px;
+    margin-bottom:20px;
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.08);
+    transition:all 0.3s ease;
+}
+
+.light-mode .display{
+    background:rgba(0,0,0,0.05);
+    border:1px solid rgba(0,0,0,0.06);
+}
+
+.display::before{
+    content:'';
+    position:absolute;
+    inset:-100%;
+    background:linear-gradient(45deg,transparent,rgba(255,255,255,.15),transparent);
+    animation:shine 6s linear infinite;
+}
+
+@keyframes shine{
+    100%{transform:translateX(100%);}
+}
+
+.expression{
+    min-height:28px;
+    opacity:.7;
+    font-size:1rem;
+    word-wrap:break-word;
+    color:var(--text-secondary);
+    font-family:var(--font-body);
+    font-weight:500;
+}
+
+.result{
+    font-size:2.7rem;
+    text-align:right;
+    margin-top:12px;
+    color:var(--cyan);
+    text-shadow:0 0 15px rgba(0,247,255,.5);
+    word-wrap:break-word;
+    font-family:var(--font-display);
+    font-weight:700;
+}
+
+/* Buttons */
+.buttons{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+}
+
+button{
+    height:68px;
+    border:none;
+    border-radius:18px;
+    background:rgba(255,255,255,0.06);
+    color:var(--text);
+    font-size:1.2rem;
+    cursor:pointer;
+    transition:.25s;
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.08);
+    font-family:var(--font-body);
+    font-weight:600;
+}
+
+.light-mode button{
+    background:rgba(0,0,0,0.04);
+    border:1px solid rgba(0,0,0,0.06);
+    color:var(--text);
+}
+
+button::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);
+}
+
+button:hover{
+    transform:translateY(-4px) scale(1.03);
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+button:active{
+    transform:scale(.95);
+}
+
+.operator{
+    color:var(--pink);
+    box-shadow:0 0 15px rgba(255,0,200,.2);
+    font-weight:700;
+    font-size:1.4rem;
+}
+
+.equals{
+    background:linear-gradient(135deg,#8a2eff,#00f7ff);
+    color:white;
+    font-weight:800;
+    box-shadow:0 0 20px rgba(0,247,255,.4);
+    font-family:var(--font-display);
+    font-size:1.4rem;
+}
+
+.clear{
+    color:var(--red);
+    font-weight:700;
+}
+
+.function{
+    color:var(--cyan);
+    font-weight:600;
+}
+
+.zero{
+    grid-column:span 2;
+}
+
+/* Footer */
+.footer{
+    margin-top:20px;
+    text-align:center;
+    font-size:.75rem;
+    opacity:.65;
+    color:var(--text-secondary);
+    font-family:var(--font-body);
+    font-weight:500;
+    letter-spacing:1px;
+}
+
+.footer i{
+    color:var(--pink);
+    margin:0 4px;
+}
+
+/* Mobile */
+@media(max-width:450px){
+    .calculator{
+        width:95%;
+        padding:18px;
+        margin-top:20px;
+    }
+    button{
+        height:62px;
+        font-size:1.1rem;
+    }
+    .result{
+        font-size:2.2rem;
+    }
+    .title h1{
+        font-size:1.4rem;
+    }
+    .theme-toggle{
+        top:-15px;
+        right:20px;
+        width:45px;
+        height:45px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Rainbow Borders -->
+<div class="rainbow-border-top"></div>
+<div class="rainbow-border-bottom"></div>
+
+<div class="calculator">
+
+    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="title">
+        <h1><span>Confronter</span> Tech Wizard</h1>
+        <div class="subtitle">Advanced Smart Calculator</div>
+    </div>
+
+    <div class="welcome-bar">
+        <div class="greeting-box">
+            <div class="greeting" id="greetingText">Hello Mathematician <i class="fas fa-hand-sparkles"></i></div>
+            <div class="sub-greeting" id="dateText">Welcome Back</div>
+        </div>
+        <div class="battery-box">
+            <div class="battery-percent" id="batteryLevel">100%</div>
+            <div class="battery-status" id="batteryStatus">Charging <i class="fas fa-bolt"></i></div>
+        </div>
+    </div>
+
+    <div class="clock" id="clock">00:00:00</div>
+
+    <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
+    </div>
+
+    <div class="buttons">
+        <button class="clear" onclick="clearAll()">AC</button>
+        <button class="function" onclick="backspace()"><i class="fas fa-backspace"></i></button>
+        <button class="function" onclick="appendOperator('%')">%</button>
+        <button class="operator" onclick="appendOperator('/')">÷</button>
+
+        <button class="function" onclick="appendFunction('sqrt(')"><i class="fas fa-square-root-alt"></i></button>
+        <button class="function" onclick="appendFunction('^')">x<sup>y</sup></button>
+        <button class="function" onclick="appendFunction('π')">π</button>
+        <button class="operator" onclick="appendOperator('*')">×</button>
+
+        <button onclick="appendNumber('7')">7</button>
+        <button onclick="appendNumber('8')">8</button>
+        <button onclick="appendNumber('9')">9</button>
+        <button class="operator" onclick="appendOperator('-')">−</button>
+
+        <button onclick="appendNumber('4')">4</button>
+        <button onclick="appendNumber('5')">5</button>
+        <button onclick="appendNumber('6')">6</button>
+        <button class="operator" onclick="appendOperator('+')">+</button>
+
+        <button onclick="appendNumber('1')">1</button>
+        <button onclick="appendNumber('2')">2</button>
+        <button onclick="appendNumber('3')">3</button>
+        <button class="equals" onclick="calculate()">=</button>
+
+        <button class="zero" onclick="appendNumber('0')">0</button>
+        <button onclick="appendDecimal()">.</button>
+        <button class="function" onclick="appendFunction('(')">(</button>
+        <button class="function" onclick="appendFunction(')')">)</button>
+    </div>
+
+    <div class="footer">
+        Made By Confronter Tech Wizard <i class="fas fa-bolt"></i>
+    </div>
+
+</div>
+
+<script>
+
+/* Calculator Logic */
+let currentExpression = '';
+let currentResult = '0';
+
+const expressionElement = document.getElementById('expression');
+const resultElement = document.getElementById('result');
+
+function updateDisplay(){
+    expressionElement.textContent = currentExpression;
+    resultElement.textContent = currentResult;
+}
+
+function appendNumber(number){
+    if(currentResult === '0'){
+        currentResult = number;
+    }else{
+        currentResult += number;
+    }
+    updateDisplay();
+}
+
+function appendDecimal(){
+    if(!currentResult.includes('.')){
+        currentResult += '.';
+    }
+    updateDisplay();
+}
+
+function appendOperator(operator){
+    if(currentResult !== ''){
+        currentExpression += currentResult + operator;
+        currentResult = '';
+    }
+    updateDisplay();
+}
+
+function appendFunction(func){
+    if(func === 'π'){
+        currentResult = Math.PI.toFixed(8);
+    }
+    else if(func === '^'){
+        currentExpression += currentResult + '**';
+        currentResult = '';
+    }
+    else if(func === 'sqrt('){
+        currentExpression += 'Math.sqrt(';
+        currentResult = '';
+    }
+    else{
+        currentExpression += func;
+    }
+    updateDisplay();
+}
+
+function calculate(){
+    try{
+        let expression = currentExpression + currentResult;
+        const result = eval(expression);
+        currentResult = result.toString();
+        currentExpression = '';
+        updateDisplay();
+    }catch{
+        currentResult = 'Error';
+        updateDisplay();
+        setTimeout(()=>{
+            currentResult='0';
+            updateDisplay();
+        },1200);
+    }
+}
+
+function clearAll(){
+    currentExpression='';
+    currentResult='0';
+    updateDisplay();
+}
+
+function backspace(){
+    currentResult = currentResult.slice(0,-1);
+    if(currentResult === ''){
+        currentResult='0';
+    }
+    updateDisplay();
+}
+
+/* Greeting */
+function updateGreeting(){
+    const hour = new Date().getHours();
+    let greeting='';
+    if(hour < 12) greeting = 'Good Morning';
+    else if(hour < 17) greeting = 'Good Afternoon';
+    else greeting = 'Good Evening';
+
+    document.getElementById('greetingText').innerHTML = 
+    `${greeting}, Mathematician <i class="fas fa-hand-sparkles"></i>`;
+}
+updateGreeting();
+
+/* Date */
+function updateDate(){
+    const now = new Date();
+    const options = {weekday:'long', month:'long', day:'numeric'};
+    document.getElementById('dateText').textContent = 
+    now.toLocaleDateString('en-US', options);
+}
+updateDate();
+
+/* Clock */
+function updateClock(){
+    const now = new Date();
+    document.getElementById('clock').textContent = 
+    now.toLocaleTimeString('en-US', {hour12:false});
+}
+setInterval(updateClock,1000);
+updateClock();
+
+/* Battery */
+async function updateBattery(){
+    if('getBattery' in navigator){
+        const battery = await navigator.getBattery();
+        function refreshBattery(){
+            const level = Math.floor(battery.level * 100);
+            document.getElementById('batteryLevel').textContent = level + '%';
+            document.getElementById('batteryStatus').innerHTML = 
+            battery.charging ? 'Charging <i class="fas fa-bolt"></i>' : 'Battery <i class="fas fa-battery-full"></i>';
+        }
+        refreshBattery();
+        battery.addEventListener('levelchange', refreshBattery);
+        battery.addEventListener('chargingchange', refreshBattery);
+    }else{
+        document.getElementById('batteryStatus').textContent = 'Unsupported';
+    }
+}
+updateBattery();
+
+/* Theme Toggle */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.onclick = ()=>{
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    themeToggle.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+};
+
+/* Keyboard Support */
+document.addEventListener('keydown', (e)=>{
+    const key = e.key;
+    if(/[0-9]/.test(key)) appendNumber(key);
+    else if(key === '.') appendDecimal();
+    else if(['+','-','*','/','%'].includes(key)) appendOperator(key);
+    else if(key === 'Enter') calculate();
+    else if(key === 'Backspace') backspace();
+    else if(key === 'Escape') clearAll();
+});
+
+</script>
+
+</body>
+  </html>
