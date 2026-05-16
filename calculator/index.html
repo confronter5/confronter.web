@@ -508,11 +508,20 @@ button:active{
         <button class="function" onclick="appendFunction(')')">)</button>
     </div>
 
-    <div class="footer">
-        Made By Confronter Tech Wizard <i class="fas fa-bolt"></i>
-    </div>
+    
+    
 
-</div>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024-2099 Made by Confronter Tech Wizard. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.75rem;">Fast • Secure • Free</p>
+        <div class="social-links">
+            <a href="https://tiktok.com/@confronter._" title="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://wa.me/254796283064" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://t.me/confronter" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://github.com/confronter5" title="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+    </footer>
 
 <script>
 
@@ -605,9 +614,9 @@ function backspace(){
 function updateGreeting(){
     const hour = new Date().getHours();
     let greeting='';
-    if(hour < 12) greeting = 'Good Morning';
-    else if(hour < 17) greeting = 'Good Afternoon';
-    else greeting = 'Good Evening';
+    if(hour < 12) greeting = 'Good Morning🌤';
+    else if(hour < 17) greeting = 'Good Afternoon☀️';
+    else greeting = 'Good Evening🌙';
 
     document.getElementById('greetingText').innerHTML = 
     `${greeting}, Mathematician <i class="fas fa-hand-sparkles"></i>`;
