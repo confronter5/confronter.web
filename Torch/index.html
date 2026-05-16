@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Confronter Tech Wizard Torch</title>
+   <link rel="icon" href="https://files.catbox.moe/5e39uh.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+  <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 50%, #0f0f23 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        body.torch-on {
+            background: radial-gradient(circle at 50% 40%, #1a1a3e 0%, #0d0d1a 100%);
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .app-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #7b2cbf, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .greeting {
+            font-size: 1.05rem;
+            color: #a0d2eb;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .current-time {
+            font-size: 2.3rem;
+            font-weight: 300;
+            color: #fff;
+            margin: 8px 0;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Battery Status */
+        .battery-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeIn 1s ease 0.2s both;
+        }
+
+        .battery-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .battery-icon {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            border: 2px solid rgba(255,255,255,0.6);
+            border-radius: 5px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+        }
+
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .battery-level {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            border-radius: 2px;
+            transition: width 0.5s ease, background 0.5s ease;
+            min-width: 5%;
+        }
+
+        .battery-level.low {
+            background: linear-gradient(90deg, #ff4444, #cc0000);
+        }
+
+        .battery-level.medium {
+            background: linear-gradient(90deg, #ffaa00, #ff8800);
+        }
+
+        .battery-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .charging-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .charging-status.not-charging {
+            color: #ffaa00;
+        }
+
+        .bolt-icon {
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+
+        .status-pill {
+            background: rgba(255,255,255,0.08);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+            box-shadow: 0 0 8px #ff4444;
+            transition: all 0.3s;
+        }
+
+        .status-dot.active {
+            background: #00ff88;
+            box-shadow: 0 0 8px #00ff88;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Torch Section */
+        .torch-section {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .torch-wrapper {
+            position: relative;
+            width: 300px;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* Light Effects */
+        .light-beam {
+            position: absolute;
+            bottom: 220px;
+            left: 50%;
+            transform: translateX(-50%) scaleY(0);
+            width: 220px;
+            height: 350px;
+            background: linear-gradient(180deg, 
+                rgba(255, 255, 220, 0.95) 0%, 
+                rgba(255, 255, 180, 0.7) 25%, 
+                rgba(255, 255, 120, 0.4) 50%, 
+                rgba(255, 255, 80, 0.15) 75%,
+                transparent 100%);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
+            filter: blur(6px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        .light-beam.active {
+            transform: translateX(-50%) scaleY(1);
+            opacity: 1;
+            animation: flicker 0.15s infinite alternate;
+        }
+
+        .torch-glow {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(255,255,220,0.35) 0%, transparent 65%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .torch-glow.active {
+            opacity: 1;
+        }
+
+        /* SVG Torch */
+        .torch-svg-container {
+            position: relative;
+            z-index: 5;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.6));
+            transition: filter 0.3s;
+        }
+
+        .torch-svg-container.on {
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.6)) drop-shadow(0 -10px 40px rgba(255,255,200,0.3));
+        }
+
+        /* Focus Ring (adjustable head) */
+        .focus-ring-overlay {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 35px;
+            cursor: grab;
+            z-index: 20;
+            border-radius: 50%;
+            /* invisible hit area */
+        }
+
+        .focus-ring-overlay:active {
+            cursor: grabbing;
+        }
+
+        .focus-hint {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #00d4ff;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 25;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+
+        .torch-wrapper:hover .focus-hint {
+            opacity: 1;
+        }
+
+        /* Power Button - Named POWER ON / POWER OFF */
+        .power-section {
+            margin-top: 25px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .power-btn {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.1);
+            background: linear-gradient(145deg, #2a2a3e, #1a1a2e);
+            color: white;
+            cursor: pointer;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 2px 5px rgba(255,255,255,0.1),
+                0 0 0 0 rgba(255, 0, 0, 0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin: 0 auto;
+        }
+
+        .power-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.6),
+                inset 0 2px 5px rgba(255,255,255,0.15),
+                0 0 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .power-btn:active {
+            transform: scale(0.95);
+        }
+
+        .power-btn.on {
+            background: linear-gradient(145deg, #00cc6a, #00994d);
+            border-color: rgba(0, 255, 136, 0.3);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 2px 5px rgba(255,255,255,0.2),
+                0 0 40px rgba(0, 255, 136, 0.4);
+        }
+
+        .power-btn.on:hover {
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.6),
+                inset 0 2px 5px rgba(255,255,255,0.25),
+                0 0 50px rgba(0, 255, 136, 0.5);
+        }
+
+        .power-icon-svg {
+            width: 50px;
+            height: 50px;
+            transition: all 0.3s;
+        }
+
+        .power-btn.on .power-icon-svg {
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+        }
+
+        .power-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .power-btn.on .power-label {
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        /* Brightness Control */
+        .brightness-control {
+            width: 100%;
+            max-width: 320px;
+            margin: 25px auto;
+            background: rgba(255,255,255,0.06);
+            padding: 18px;
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+            animation: fadeIn 1s ease 0.7s both;
+        }
+
+        .brightness-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #a0d2eb;
+            font-weight: 500;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #1a1a2e, #3a3a5e);
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #00d4ff, #0099cc);
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+            border: 3px solid #fff;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #00d4ff, #0099cc);
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+        }
+
+        /* Timer Section */
+        .timer-section {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 22px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+            animation: fadeIn 1s ease 0.8s both;
+        }
+
+        .timer-label {
+            font-size: 0.85rem;
+            color: #a0d2eb;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        .timer-display {
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: #fff;
+            text-shadow: 0 0 25px rgba(255,255,255,0.3);
+            font-family: 'Courier New', monospace;
+        }
+
+        .duration-off {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #ffaa88;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        /* Screen Flash Effect */
+        .screen-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 220, 0.08);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .screen-flash.active {
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.92; filter: blur(6px); }
+            100% { opacity: 1; filter: blur(5px); }
+        }
+
+        @keyframes rotateRing {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .app-title { font-size: 1.3rem; }
+            .current-time { font-size: 1.8rem; }
+            .torch-wrapper { width: 260px; height: 340px; }
+            .power-btn { width: 120px; height: 120px; }
+            .power-icon-svg { width: 40px; height: 40px; }
+            .power-label { font-size: 0.75rem; }
+        }
+
+        .instructions {
+            text-align: center;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions kbd {
+            background: rgba(255,255,255,0.15);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-flash" id="screenFlash"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="app-title">Confronter Tech Wizard Torch</h1>
+            <div class="greeting" id="greeting">Welcome, Tech Wizard!</div>
+            <div class="current-time" id="currentTime">00:00:00</div>
+        </div>
+
+        <!-- Battery Status -->
+        <div class="battery-container">
+            <div class="battery-info">
+                <div class="battery-icon">
+                    <div class="battery-level" id="batteryLevel" style="width: 50%"></div>
+                </div>
+                <div>
+                    <div class="battery-text" id="batteryText">50%</div>
+                </div>
+            </div>
+            <div class="charging-status not-charging" id="chargingStatus">
+                <span class="bolt-icon" id="boltIcon">⚡</span>
+                <span id="chargingText">Not Charging</span>
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="status-bar">
+            <div class="status-pill">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Torch Off</span>
+            </div>
+            <div class="status-pill">
+                <span>💡</span>
+                <span id="brightnessValue">50%</span>
+            </div>
+        </div>
+
+        <!-- Torch Section -->
+        <div class="torch-section">
+            <div class="torch-wrapper" id="torchWrapper">
+                <div class="focus-hint">🔧 Click ring to adjust focus</div>
+                <div class="torch-glow" id="torchGlow"></div>
+                <div class="light-beam" id="lightBeam"></div>
+                
+                <!-- Focus Ring Click Area -->
+                <div class="focus-ring-overlay" id="focusRing" title="Click to adjust focus"></div>
+
+                <!-- High Quality SVG Torch -->
+                <div class="torch-svg-container" id="torchSvgContainer">
+                    <svg width="200" height="320" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <!-- Metallic Gradients -->
+                            <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#1a1a1a"/>
+                                <stop offset="20%" style="stop-color:#3a3a3a"/>
+                                <stop offset="50%" style="stop-color:#4a4a4a"/>
+                                <stop offset="80%" style="stop-color:#2a2a2a"/>
+                                <stop offset="100%" style="stop-color:#111"/>
+                            </linearGradient>
+                            
+                            <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#2a2a2a"/>
+                                <stop offset="25%" style="stop-color:#555"/>
+                                <stop offset="50%" style="stop-color:#666"/>
+                                <stop offset="75%" style="stop-color:#444"/>
+                                <stop offset="100%" style="stop-color:#222"/>
+                            </linearGradient>
+
+                            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#777"/>
+                                <stop offset="50%" style="stop-color:#444"/>
+                                <stop offset="100%" style="stop-color:#333"/>
+                            </linearGradient>
+
+                            <linearGradient id="lensGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e8e8d0"/>
+                                <stop offset="50%" style="stop-color:#f5f5dc"/>
+                                <stop offset="100%" style="stop-color:#d4d4b8"/>
+                            </linearGradient>
+
+                            <radialGradient id="bulbGrad" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" style="stop-color:#fff"/>
+                                <stop offset="40%" style="stop-color:#ffffcc"/>
+                                <stop offset="100%" style="stop-color:#ffcc00"/>
+                            </radialGradient>
+
+                            <linearGradient id="gripGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#222"/>
+                                <stop offset="50%" style="stop-color:#333"/>
+                                <stop offset="100%" style="stop-color:#1a1a1a"/>
+                            </linearGradient>
+
+                            <!-- Glow Filter -->
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Light Glow (behind torch) -->
+                        <ellipse cx="100" cy="45" rx="70" ry="40" fill="url(#bulbGrad)" opacity="0" id="svgGlow" filter="url(#glow)">
+                            <animate attributeName="opacity" values="0;0.6;0.4;0.7;0.5" dur="0.1s" repeatCount="indefinite" begin="indefinite"/>
+                        </ellipse>
+
+                        <!-- Torch Head -->
+                        <path d="M 40 80 L 50 40 L 150 40 L 160 80 Z" fill="url(#headGrad)" stroke="#222" stroke-width="1"/>
+                        
+                        <!-- Head Detail Lines -->
+                        <line x1="45" y1="65" x2="155" y2="65" stroke="#333" stroke-width="1"/>
+                        <line x1="48" y1="55" x2="152" y2="55" stroke="#333" stroke-width="1"/>
+
+                        <!-- Adjustable Focus Ring -->
+                        <rect x="35" y="75" width="130" height="20" rx="5" fill="url(#ringGrad)" stroke="#222" stroke-width="1" id="svgFocusRing"/>
+                        <!-- Ring Grip Lines -->
+                        <line x1="45" y1="80" x2="45" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="55" y1="80" x2="55" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="65" y1="80" x2="65" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="75" y1="80" x2="75" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="85" y1="80" x2="85" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="95" y1="80" x2="95" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="105" y1="80" x2="105" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="115" y1="80" x2="115" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="125" y1="80" x2="125" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="135" y1="80" x2="135" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="145" y1="80" x2="145" y2="90" stroke="#222" stroke-width="2"/>
+                        <line x1="155" y1="80" x2="155" y2="90" stroke="#222" stroke-width="2"/>
+
+                        <!-- Lens -->
+                        <ellipse cx="100" cy="40" rx="48" ry="12" fill="url(#lensGrad)" stroke="#555" stroke-width="2"/>
+                        
+                        <!-- Bulb/LED -->
+                        <ellipse cx="100" cy="42" rx="25" ry="8" fill="url(#bulbGrad)" id="svgBulb"/>
+
+                        <!-- Torch Body -->
+                        <rect x="55" y="95" width="90" height="160" rx="8" fill="url(#bodyGrad)"/>
+
+                        <!-- Body Grip Lines -->
+                        <rect x="60" y="110" width="80" height="8" rx="4" fill="url(#gripGrad)"/>
+                        <rect x="60" y="125" width="80" height="8" rx="4" fill="url(#gripGrad)"/>
+                        <rect x="60" y="140" width="80" height="8" rx="4" fill="url(#gripGrad)"/>
+                        <rect x="60" y="155" width="80" height="8" rx="4" fill="url(#gripGrad)"/>
+                        <rect x="60" y="170" width="80" height="8" rx="4" fill="url(#gripGrad)"/>
+                        <rect x="60" y="185" width="80" height="8" rx="4" fill="url(#gripGrad)"/>
+
+                        <!-- Side Button -->
+                        <rect x="140" y="130" width="12" height="25" rx="3" fill="#333" stroke="#222" stroke-width="1"/>
+                        <rect x="142" y="132" width="8" height="21" rx="2" fill="#555"/>
+
+                        <!-- Bottom Cap -->
+                        <path d="M 55 255 L 55 270 Q 100 285 145 270 L 145 255 Z" fill="url(#headGrad)" stroke="#222" stroke-width="1"/>
+                        
+                        <!-- Lanyard Hole -->
+                        <circle cx="100" cy="275" r="4" fill="#111" stroke="#333" stroke-width="1"/>
+
+                        <!-- Brand Text -->
+                        <text x="100" y="220" text-anchor="middle" fill="#666" font-size="8" font-family="Arial" font-weight="bold" letter-spacing="2">CONFRONTER</text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- POWER ON / POWER OFF Button -->
+            <div class="power-section">
+                <button class="power-btn" id="powerBtn" onclick="toggleTorch()">
+                    <svg class="power-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3V12M12 12L8 8M12 12L16 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="powerIconPath"/>
+                        <path d="M7.5 5.5C5.5 7.5 4.5 10 4.5 12.5C4.5 17.5 8.5 21.5 13.5 21.5C18.5 21.5 22.5 17.5 22.5 12.5C22.5 10 21.5 7.5 19.5 5.5" 
+                              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" id="powerCirclePath"/>
+                    </svg>
+                    <span class="power-label" id="powerLabel">POWER ON</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Brightness Control -->
+        <div class="brightness-control">
+            <div class="brightness-label">
+                <span>🔆 Light Intensity</span>
+                <span id="sliderValue">50%</span>
+            </div>
+            <input type="range" min="1" max="100" value="50" class="slider" id="brightnessSlider">
+        </div>
+
+        <!-- Timer Section -->
+        <div class="timer-section">
+            <div class="timer-label">⏱️ Torch Running Time</div>
+            <div class="timer-display" id="runningTimer">00:00:00</div>
+            <div class="duration-off" id="durationOff">Torch has been off for: 00:00:00</div>
+        </div>
+
+        <div class="instructions">
+            <p>🔧 <kbd>Click the ring</kbd> to adjust focus | <kbd>Drag slider</kbd> for brightness</p>
+            <p>⚡ Press <kbd>SPACE</kbd> or click POWER button to toggle torch</p>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024-2099 Made by Confronter Tech Wizard. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.75rem;">Fast • Secure • Free</p>
+        <div class="social-links">
+            <a href="https://tiktok.com/@confronter._" title="TikTok"><i class="fab fa-tiktok"></i></a>
+            <a href="https://wa.me/254796283064" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://t.me/confronter" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://github.com/confronter5" title="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+    </footer>
+    <script>
+        // State Management
+        let isTorchOn = false;
+        let startTime = null;
+        let offStartTime = new Date();
+        let timerInterval = null;
+        let offTimerInterval = null;
+        let brightness = 50;
+        let isLoosened = false;
+
+        // DOM Elements
+        const powerBtn = document.getElementById('powerBtn');
+        const powerLabel = document.getElementById('powerLabel');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const lightBeam = document.getElementById('lightBeam');
+        const torchGlow = document.getElementById('torchGlow');
+        const screenFlash = document.getElementById('screenFlash');
+        const runningTimer = document.getElementById('runningTimer');
+        const durationOff = document.getElementById('durationOff');
+        const brightnessSlider = document.getElementById('brightnessSlider');
+        const sliderValue = document.getElementById('sliderValue');
+        const brightnessValue = document.getElementById('brightnessValue');
+        const focusRing = document.getElementById('focusRing');
+        const greeting = document.getElementById('greeting');
+        const currentTime = document.getElementById('currentTime');
+        const torchSvgContainer = document.getElementById('torchSvgContainer');
+        const svgBulb = document.getElementById('svgBulb');
+        const svgGlow = document.getElementById('svgGlow');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            setInterval(updateTime, 1000);
+            initBattery();
+            startOffTimer();
+            
+            // Brightness slider
+            brightnessSlider.addEventListener('input', (e) => {
+                brightness = e.target.value;
+                sliderValue.textContent = brightness + '%';
+                brightnessValue.textContent = brightness + '%';
+                updateBrightness();
+            });
+
+            // Focus ring toggle
+            focusRing.addEventListener('click', toggleFocus);
+        });
+
+        // Time and Greeting
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            currentTime.textContent = `${hours}:${minutes}:${seconds}`;
+            updateGreeting(now.getHours());
+        }
+
+        function updateGreeting(hour) {
+            let greet = '';
+            if (hour >= 5 && hour < 12) {
+                greet = '☀️ Good Morning, Tech Wizard!';
+            } else if (hour >= 12 && hour < 17) {
+                greet = '🌤️ Good Afternoon, Tech Wizard!';
+            } else if (hour >= 17 && hour < 21) {
+                greet = '🌅 Good Evening, Tech Wizard!';
+            } else {
+                greet = '🌙 Good Night, Tech Wizard!';
+            }
+            greeting.textContent = greet;
+        }
+
+        // Battery API
+        async function initBattery() {
+            const batteryLevel = document.getElementById('batteryLevel');
+            const batteryText = document.getElementById('batteryText');
+            const chargingStatus = document.getElementById('chargingStatus');
+            const chargingText = document.getElementById('chargingText');
+            const boltIcon = document.getElementById('boltIcon');
+
+            function updateBatteryUI(battery) {
+                const level = Math.round(battery.level * 100);
+                batteryLevel.style.width = level + '%';
+                batteryText.textContent = level + '%';
+                
+                batteryLevel.classList.remove('low', 'medium');
+                if (level <= 20) {
+                    batteryLevel.classList.add('low');
+                } else if (level <= 50) {
+                    batteryLevel.classList.add('medium');
+                }
+
+                if (battery.charging) {
+                    chargingStatus.classList.remove('not-charging');
+                    chargingText.textContent = 'Charging';
+                    boltIcon.style.display = 'inline';
+                } else {
+                    chargingStatus.classList.add('not-charging');
+                    chargingText.textContent = 'Not Charging';
+                    boltIcon.style.display = 'none';
+                }
+            }
+
+            if ('getBattery' in navigator) {
+                try {
+                    const battery = await navigator.getBattery();
+                    updateBatteryUI(battery);
+                    battery.addEventListener('levelchange', () => updateBatteryUI(battery));
+                    battery.addEventListener('chargingchange', () => updateBatteryUI(battery));
+                } catch (e) {
+                    batteryText.textContent = 'N/A';
+                    chargingText.textContent = 'Unknown';
+                }
+            } else {
+                batteryLevel.style.width = '75%';
+                batteryText.textContent = '75%';
+                chargingStatus.classList.add('not-charging');
+                chargingText.textContent = 'Not Charging';
+                boltIcon.style.display = 'none';
+            }
+        }
+
+        // Torch Toggle
+        function toggleTorch() {
+            isTorchOn = !isTorchOn;
+            
+            if (isTorchOn) {
+                // Turn On
+                powerBtn.classList.add('on');
+                powerLabel.textContent = 'POWER OFF';
+                statusDot.classList.add('active');
+                statusText.textContent = 'Torch On';
+                lightBeam.classList.add('active');
+                torchGlow.classList.add('active');
+                screenFlash.classList.add('active');
+                document.body.classList.add('torch-on');
+                torchSvgContainer.classList.add('on');
+                
+                // SVG Bulb Glow
+                svgBulb.setAttribute('fill', '#fff');
+                svgBulb.setAttribute('filter', 'url(#glow)');
+                svgGlow.setAttribute('opacity', '0.6');
+                
+                startTime = new Date();
+                startTimer();
+                stopOffTimer();
+                
+                accessRealTorch(true);
+            } else {
+                // Turn Off
+                powerBtn.classList.remove('on');
+                powerLabel.textContent = 'POWER ON';
+                statusDot.classList.remove('active');
+                statusText.textContent = 'Torch Off';
+                lightBeam.classList.remove('active');
+                torchGlow.classList.remove('active');
+                screenFlash.classList.remove('active');
+                document.body.classList.remove('torch-on');
+                torchSvgContainer.classList.remove('on');
+                
+                // SVG Bulb Off
+                svgBulb.setAttribute('fill', 'url(#bulbGrad)');
+                svgBulb.removeAttribute('filter');
+                svgGlow.setAttribute('opacity', '0');
+                
+                stopTimer();
+                offStartTime = new Date();
+                startOffTimer();
+                
+                accessRealTorch(false);
+            }
+        }
+
+        // Real Torch Access
+        async function accessRealTorch(turnOn) {
+            if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment', torch: turnOn }
+                    });
+                    if (!turnOn) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                } catch (e) {
+                    // Silent fail
+                }
+            }
+        }
+
+        // Brightness Control
+        function updateBrightness() {
+            const opacity = brightness / 100;
+            lightBeam.style.opacity = isTorchOn ? opacity : 0;
+            screenFlash.style.opacity = isTorchOn ? opacity * 0.3 : 0;
+            
+            const width = 150 + (brightness * 1.5);
+            lightBeam.style.width = width + 'px';
+            
+            // Update SVG bulb brightness
+            if (isTorchOn) {
+                svgGlow.setAttribute('opacity', (0.3 + (opacity * 0.5)).toString());
+            }
+        }
+
+        // Focus Ring Toggle
+        function toggleFocus() {
+            isLoosened = !isLoosened;
+            const svgRing = document.getElementById('svgFocusRing');
+            
+            if (isLoosened) {
+                // Loosened - wider beam
+                lightBeam.style.clipPath = 'polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%)';
+                lightBeam.style.filter = 'blur(12px)';
+                svgRing.setAttribute('transform', 'translate(0, 5) rotate(5, 100, 85)');
+                svgRing.setAttribute('stroke', '#00d4ff');
+            } else {
+                // Tightened - focused beam
+                lightBeam.style.clipPath = 'polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%)';
+                lightBeam.style.filter = 'blur(6px)';
+                svgRing.setAttribute('transform', 'translate(0, 0) rotate(0, 100, 85)');
+                svgRing.setAttribute('stroke', '#222');
+            }
+        }
+
+        // Timers
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = now - startTime;
+                runningTimer.textContent = formatDuration(diff);
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            runningTimer.textContent = '00:00:00';
+        }
+
+        function startOffTimer() {
+            offTimerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = now - offStartTime;
+                durationOff.textContent = `Torch has been off for: ${formatDuration(diff)}`;
+            }, 1000);
+        }
+
+        function stopOffTimer() {
+            clearInterval(offTimerInterval);
+            durationOff.textContent = '🔥 Torch is currently ON';
+        }
+
+        function formatDuration(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleTorch();
+            }
+        });
+    </script>
+</body>
+</html>
