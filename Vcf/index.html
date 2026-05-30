@@ -3,160 +3,577 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instant Prefix Adder</title>
+    <title>Confronter Tech Wizard Vcf Prefix Adder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-primary: #fef3c7;
+            --bg-secondary: #fffbeb;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --accent: #f59e0b;
+            --accent-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+            --accent-glow: rgba(245, 158, 11, 0.3);
+            --border: #e2e8f0;
+            --shadow: 0 20px 60px rgba(0,0,0,0.08);
+            --success: #22c55e;
+            --info: #3b82f6;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #60a5fa;
+            --accent-gradient: linear-gradient(135deg, #60a5fa, #a78bfa);
+            --accent-glow: rgba(96, 165, 250, 0.3);
+            --border: #334155;
+            --shadow: 0 20px 60px rgba(0,0,0,0.4);
+            --success: #4ade80;
+            --info: #60a5fa;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-x: hidden;
         }
-        .container {
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 500px;
-            background: #1e293b;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
         }
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 600px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Header Bar */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .battery-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .battery-icon {
+            width: 24px;
+            height: 12px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 3px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 1px;
+        }
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -4px;
+            width: 2px;
+            height: 6px;
+            background: var(--text-secondary);
+            border-radius: 0 1px 1px 0;
+        }
+        .battery-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 1px;
+            transition: width 0.5s ease;
+        }
+        .battery-charging {
+            color: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+        .theme-toggle:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* Greeting Section */
+        .greeting-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .greeting-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+        }
+        .live-clock {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
         }
-        .subtitle { color: #94a3b8; margin-bottom: 30px; font-size: 0.95rem; }
-        
+        .greeting-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .greeting-emoji {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Title */
+        .app-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .app-title h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 6px;
+        }
+        .app-title .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .wizard-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: sparkle 3s infinite;
+        }
+        @keyframes sparkle {
+            0%, 100% { filter: brightness(1); transform: scale(1); }
+            50% { filter: brightness(1.3); transform: scale(1.1); }
+        }
+
+        /* Dropzone */
         .dropzone {
-            border: 2px dashed #475569;
-            border-radius: 12px;
-            padding: 40px;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 50px 30px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             margin-bottom: 25px;
-            background: #0f172a;
+            background: var(--bg-secondary);
+            position: relative;
+            overflow: hidden;
         }
         .dropzone:hover, .dropzone.dragover {
-            border-color: #60a5fa;
-            background: #1e293b;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-2px);
         }
-        .dropzone-icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .dropzone-text { color: #94a3b8; font-size: 0.95rem; }
+        .dropzone-icon { 
+            font-size: 3rem; 
+            margin-bottom: 15px; 
+            display: block;
+            animation: float-icon 3s ease-in-out infinite;
+        }
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .dropzone-text { 
+            color: var(--text-secondary); 
+            font-size: 1rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+        }
+        .dropzone-text strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
         #fileInput { display: none; }
-        
+
+        /* File Loaded */
         .file-loaded {
             display: none;
-            background: #0f172a;
-            border-radius: 8px;
-            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px 20px;
             margin-bottom: 20px;
-            border-left: 3px solid #22c55e;
+            border-left: 4px solid var(--success);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
         }
         .file-loaded.show { display: block; }
-        .file-loaded strong { color: #22c55e; }
-        
+        .file-loaded strong { color: var(--success); }
+
+        /* Input Group */
         .input-group {
             display: none;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             margin-bottom: 20px;
         }
         .input-group.show { display: flex; }
         .input-group label {
-            font-size: 0.85rem;
-            color: #94a3b8;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 3px;
         }
         .input-group input {
-            padding: 14px 16px;
-            border: 2px solid #334155;
-            border-radius: 8px;
-            background: #0f172a;
-            color: #f1f5f9;
-            font-size: 1.1rem;
-            transition: border-color 0.2s;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
         .input-group input:focus {
             outline: none;
-            border-color: #60a5fa;
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
-        
+        .input-group input::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Buttons */
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            background: var(--accent-gradient);
             color: white;
             display: none;
+            position: relative;
+            overflow: hidden;
         }
         .btn-primary.show { display: block; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 25px -5px rgba(59,130,246,0.4); }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+        .btn-primary:active { transform: translateY(0); }
         .btn-secondary {
-            background: #334155;
-            color: #e2e8f0;
-            margin-top: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            margin-top: 12px;
             display: none;
+            border: 2px solid var(--border);
         }
         .btn-secondary.show { display: block; }
-        .btn-secondary:hover { background: #475569; }
-        
+        .btn-secondary:hover { 
+            background: var(--accent); 
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Status */
         .status {
             margin-top: 20px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 0.95rem;
             display: none;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            text-align: center;
         }
         .status.show { display: block; }
-        .status.success { background: #064e3b; color: #6ee7b7; border: 1px solid #059669; }
-        .status.info { background: #1e3a5f; color: #93c5fd; border: 1px solid #3b82f6; }
+        .status.success { 
+            background: rgba(34, 197, 94, 0.1); 
+            color: var(--success); 
+            border: 1px solid var(--success);
+        }
+        .status.info { 
+            background: rgba(59, 130, 246, 0.1); 
+            color: var(--info); 
+            border: 1px solid var(--info);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container { padding: 25px; }
+            .live-clock { font-size: 1.8rem; }
+            .app-title h1 { font-size: 1.2rem; }
+        }
     </style>
 </head>
-<body>
+<body data-theme="light">
+    <!-- Animated Particles -->
+    <div class="particles" id="particles"></div>
+
     <div class="container">
-        <h1>⚡ Prefix Adder</h1>
-        <p class="subtitle">Add a prefix to ALL contacts instantly</p>
-        
+        <!-- Header Bar -->
+        <div class="header-bar">
+            <div class="battery-status" id="batteryStatus">
+                <div class="battery-icon">
+                    <div class="battery-fill" id="batteryFill" style="width: 0%"></div>
+                </div>
+                <span id="batteryText">--%</span>
+                <span id="chargingIcon"></span>
+            </div>
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                ☀️
+            </button>
+        </div>
+
+        <!-- Greeting Section -->
+        <div class="greeting-section">
+            <span class="greeting-emoji" id="greetingEmoji">🌅</span>
+            <div class="live-clock" id="liveClock">00:00:00</div>
+            <div class="greeting-text" id="greetingText">Welcome</div>
+        </div>
+
+        <!-- App Title -->
+        <div class="app-title">
+            <span class="wizard-icon">🧙‍♂️</span>
+            <h1>Confronter Tech Wizard</h1>
+            <div class="subtitle">Vcf Prefix Adder</div>
+        </div>
+
+        <!-- Dropzone -->
         <div class="dropzone" id="dropzone">
-            <div class="dropzone-icon">📁</div>
+            <span class="dropzone-icon">📁</span>
             <div class="dropzone-text">
-                <strong>Drop</strong> your .vcf file here or <strong>click to browse</strong>
+                <p><strong>Drop</strong> your .vcf file here or <strong>click to browse</strong></p>
             </div>
         </div>
         <input type="file" id="fileInput" accept=".vcf,.vcard">
-        
+
+        <!-- File Loaded -->
         <div class="file-loaded" id="fileLoaded">
-            ✅ <strong id="fileName">contacts.vcf</strong> — <span id="contactCount">0</span> contacts
+            ✅ <strong id="fileName">contacts.vcf</strong> — <span id="contactCount">0</span> contacts ready
         </div>
-        
+
+        <!-- Input -->
         <div class="input-group" id="inputGroup">
-            <label>Prefix to Add</label>
-            <input type="text" id="prefixInput" placeholder="e.g. Dr., Mr., +1, VIP " onkeydown="if(event.key==='Enter') applyPrefix()">
+            <label>⚡ Prefix to Add</label>
+            <input type="text" id="prefixInput" placeholder="e.g. 🚀, ✨️, VIP, 😍" onkeydown="if(event.key==='Enter') applyPrefix()">
         </div>
-        
-        <button class="btn btn-primary" id="applyBtn" onclick="applyPrefix()">Add Prefix to All</button>
-        <button class="btn btn-secondary" id="downloadBtn" onclick="downloadVCF()">⬇ Download</button>
-        
+
+        <!-- Buttons -->
+        <button class="btn btn-primary" id="applyBtn" onclick="applyPrefix()">✨ Add to All Contacts</button>
+        <button class="btn btn-secondary" id="downloadBtn" onclick="downloadVCF()">⬇ Download Magic</button>
+
+        <!-- Status -->
         <div class="status" id="status"></div>
     </div>
 
     <script>
+        // ========== PARTICLES ==========
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (10 + Math.random() * 10) + 's';
+                p.style.width = (2 + Math.random() * 4) + 'px';
+                p.style.height = p.style.width;
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // ========== THEME TOGGLE ==========
+        let isDark = false;
+        function toggleTheme() {
+            isDark = !isDark;
+            document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+        }
+
+        // ========== BATTERY STATUS ==========
+        async function updateBattery() {
+            try {
+                if ('getBattery' in navigator) {
+                    const battery = await navigator.getBattery();
+
+                    function renderBattery() {
+                        const level = Math.round(battery.level * 100);
+                        const isCharging = battery.charging;
+
+                        document.getElementById('batteryFill').style.width = level + '%';
+                        document.getElementById('batteryText').textContent = level + '%';
+
+                        const icon = document.getElementById('chargingIcon');
+                        if (isCharging) {
+                            icon.textContent = '⚡';
+                            icon.className = 'battery-charging';
+                        } else {
+                            icon.textContent = '';
+                            icon.className = '';
+                        }
+
+                        // Color based on level
+                        const fill = document.getElementById('batteryFill');
+                        if (level <= 20) fill.style.background = '#ef4444';
+                        else if (level <= 50) fill.style.background = '#f59e0b';
+                        else fill.style.background = 'var(--accent)';
+                    }
+
+                    renderBattery();
+                    battery.addEventListener('levelchange', renderBattery);
+                    battery.addEventListener('chargingchange', renderBattery);
+                } else {
+                    document.getElementById('batteryText').textContent = 'N/A';
+                }
+            } catch (e) {
+                document.getElementById('batteryText').textContent = 'N/A';
+            }
+        }
+        updateBattery();
+
+        // ========== LIVE CLOCK & GREETING ==========
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('liveClock').textContent = `${hours}:${minutes}:${seconds}`;
+
+            const h = now.getHours();
+            let greeting = 'Welcome';
+            let emoji = '✨';
+
+            if (h >= 5 && h < 12) { greeting = 'Good Morning'; emoji = '🌅'; }
+            else if (h >= 12 && h < 17) { greeting = 'Good Afternoon'; emoji = '☀️'; }
+            else if (h >= 17 && h < 21) { greeting = 'Good Evening'; emoji = '🌇'; }
+            else { greeting = 'Good Night'; emoji = '🌙'; }
+
+            document.getElementById('greetingText').textContent = greeting;
+            document.getElementById('greetingEmoji').textContent = emoji;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ========== FILE HANDLING ==========
         let vcfContent = '';
         let modifiedVCF = '';
         let contactCount = 0;
@@ -176,83 +593,80 @@
 
         function handleFile(file) {
             if (!file.name.match(/\.(vcf|vcard)$/i)) {
-                showStatus('Upload a .vcf or .vcard file', 'info');
+                showStatus('Please upload a .vcf or .vcard file', 'info');
                 return;
             }
             const reader = new FileReader();
             reader.onload = (e) => {
                 vcfContent = e.target.result;
                 contactCount = (vcfContent.match(/BEGIN:VCARD/gi) || []).length;
-                
+
                 document.getElementById('fileName').textContent = file.name;
                 document.getElementById('contactCount').textContent = contactCount;
                 document.getElementById('fileLoaded').classList.add('show');
                 document.getElementById('inputGroup').classList.add('show');
                 document.getElementById('applyBtn').classList.add('show');
                 document.getElementById('prefixInput').focus();
-                
-                showStatus(`${contactCount} contacts loaded. Type prefix and hit Enter or click Add.`, 'success');
+
+                showStatus(`✨ ${contactCount} contacts loaded! Type prefix and hit Enter.`, 'success');
             };
             reader.readAsText(file);
         }
 
+        // ========== APPLY PREFIX ==========
         function applyPrefix() {
-            const prefix = document.getElementById('prefixInput').value;
-            if (!prefix) { showStatus('Type a prefix first', 'info'); return; }
-            
+            const prefix = document.getElementById('prefixInput').value.trim();
+            if (!prefix) { showStatus('Type a prefix first, Wizard!', 'info'); return; }
+
             modifiedVCF = vcfContent;
             let changed = 0;
-            
-            // Process each contact block
+
             const cards = modifiedVCF.split(/(?=BEGIN:VCARD)/i);
             const processed = cards.map(card => {
                 if (!card.trim() || !card.includes('BEGIN:VCARD')) return card;
-                
+
                 let updated = card;
-                let hasN = false;
-                
-                // Update N: field — add prefix to position 4 (prefixes)
+
+                // Update N: field — add prefix to position 4
                 updated = updated.replace(/^N([^:]*):(.*?)$/gm, (match, params, value) => {
-                    hasN = true;
                     const parts = value.split(';');
-                    // Ensure 5 parts: family;given;additional;prefixes;suffixes
                     while (parts.length < 5) parts.push('');
-                    // Prepend new prefix to existing prefixes (with space if existing)
                     const existing = parts[3] || '';
                     parts[3] = existing ? prefix + ' ' + existing : prefix;
                     changed++;
                     return `N${params}:${parts.join(';')}`;
                 });
-                
-                // Update FN: field — prepend prefix to full name
+
+                // Update FN: field — prepend prefix
                 updated = updated.replace(/^FN([^:]*):(.*?)$/gm, (match, params, value) => {
                     const trimmed = value.trim();
-                    // Avoid double-adding if prefix already there
                     if (trimmed.startsWith(prefix)) return match;
                     return `FN${params}:${prefix} ${trimmed}`;
                 });
-                
+
                 return updated;
             });
-            
+
             modifiedVCF = processed.join('');
-            
+
             document.getElementById('downloadBtn').classList.add('show');
-            showStatus(`✅ Added "${prefix}" to ${changed} contacts. Ready to download!`, 'success');
+            showStatus(`🎉 Magic done! "${prefix}" added to ${changed} contacts!`, 'success');
         }
 
+        // ========== DOWNLOAD ==========
         function downloadVCF() {
-            if (!modifiedVCF) { showStatus('Nothing to download', 'info'); return; }
+            if (!modifiedVCF) { showStatus('Nothing to download yet', 'info'); return; }
             const blob = new Blob([modifiedVCF], { type: 'text/vcard' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'contacts_with_prefix.vcf';
+            a.download = 'wizard_contacts.vcf';
             a.click();
             URL.revokeObjectURL(url);
-            showStatus('⬇ Downloaded!', 'success');
+            showStatus('⬇ Downloaded! Your contacts are enchanted!', 'success');
         }
 
+        // ========== STATUS ==========
         function showStatus(msg, type) {
             const status = document.getElementById('status');
             status.textContent = msg;
@@ -260,4 +674,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
