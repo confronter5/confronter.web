@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --bg-card: #0a0a0a;
+            --bg-input: #111111;
+            --text: #ffffff;
+            --text-muted: #888888;
+            --text-dim: #555555;
+            --accent: #667eea;
+            --accent-2: #764ba2;
+            --border: #1a1a1a;
+            --error: #ff4444;
+            --success: #00e676;
+            --warning: #ffaa00;
+            --shadow: rgba(102,126,234,0.15);
+            --glow: rgba(102,126,234,0.3);
+        }
+
+        :root[data-theme="light"] {
+            --bg: #ffffff;
+            --bg-card: #f8f8f8;
+            --bg-input: #f0f0f0;
+            --text: #000000;
+            --text-muted: #666666;
+            --text-dim: #aaaaaa;
+            --border: #e0e0e0;
+            --shadow: rgba(0,0,0,0.08);
+            --glow: rgba(102,126,234,0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        /* Particles */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .particle {
+            position: absolute; width: 3px; height: 3px;
+            background: var(--accent); border-radius: 50%; opacity: 0.12;
+            animation: float 15s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.12; }
+            25% { transform: translateY(-30px) translateX(15px); opacity: 0.25; }
+            50% { transform: translateY(-15px) translateX(-10px); opacity: 0.08; }
+            75% { transform: translateY(-40px) translateX(20px); opacity: 0.2; }
+        }
+
+        /* Login */
+        .login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); display: flex; justify-content: center; align-items: center;
+            z-index: 1000; padding: 16px;
+        }
+        .login-box {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 20px; padding: 32px; width: 100%; max-width: 360px;
+            text-align: center; position: relative; z-index: 1;
+        }
+        .login-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
+            background-size: 200% 100%; animation: shimmer 3s infinite; border-radius: 20px 20px 0 0;
+        }
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; }
+        }
+        .login-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px; font-size: 22px; box-shadow: 0 4px 20px var(--shadow);
+        }
+        .login-box h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .login-box p { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; }
+        .login-box input {
+            width: 100%; padding: 12px 14px; background: var(--bg-input);
+            border: 1.5px solid var(--border); border-radius: 12px;
+            font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text);
+            margin-bottom: 12px; outline: none; transition: all 0.3s;
+        }
+        .login-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
+        .login-box input::placeholder { color: var(--text-dim); }
+        .login-box button {
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff; border: none; border-radius: 12px;
+            font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .login-box button:hover { transform: translateY(-1px); box-shadow: 0 8px 25px var(--shadow); }
+        .login-error { color: var(--error); font-size: 10px; margin-top: 10px; display: none; }
+
+        /* Dashboard */
+        .dashboard { display: none; padding: 12px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        .dashboard.show { display: block; }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 6px 10px; margin-bottom: 12px; font-size: 10px;
+            font-family: 'Space Grotesk', monospace; font-weight: 500; letter-spacing: 0.5px;
+            color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .status-bar .left { display: flex; align-items: center; gap: 10px; }
+        .status-bar .right { display: flex; align-items: center; gap: 10px; }
+        .battery { display: flex; align-items: center; gap: 4px; padding: 2px 6px;
+            background: var(--bg-input); border-radius: 6px; border: 1px solid var(--border); }
+        .battery-icon { width: 14px; height: 7px; border: 1px solid var(--text-muted);
+            border-radius: 2px; position: relative; display: flex; align-items: center; padding: 1px; }
+        .battery-icon::after { content: ''; position: absolute; right: -3px; width: 2px; height: 3px;
+            background: var(--text-muted); border-radius: 0 1px 1px 0; }
+        .battery-fill { height: 100%; border-radius: 1px; transition: width 0.5s; }
+        .battery-fill.high { background: var(--success); }
+        .battery-fill.medium { background: var(--warning); }
+        .battery-fill.low { background: var(--error); }
+        .charging-indicator { color: var(--success); font-size: 9px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        .theme-toggle {
+            background: none; border: none; cursor: pointer; padding: 4px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; color: var(--text-muted);
+        }
+        .theme-toggle:hover { background: var(--bg-input); color: var(--text); }
+        .theme-toggle svg { width: 14px; height: 14px; }
+
+        /* Header */
+        .dash-header {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 18px 20px; margin-bottom: 12px; display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+        }
+        .dash-header h1 { font-size: 16px; font-weight: 700; }
+        .dash-header .sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+        .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+        .stat-card {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff; padding: 10px 18px; border-radius: 12px; text-align: center; min-width: 80px;
+        }
+        .stat-card h3 { font-family: 'Space Grotesk', monospace; font-size: 22px; font-weight: 700; line-height: 1; }
+        .stat-card p { font-size: 9px; opacity: 0.85; margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Actions */
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .btn {
+            padding: 9px 16px; border-radius: 10px; font-size: 10px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; border: none;
+            display: inline-flex; align-items: center; gap: 5px;
+            font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 0.6px;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+        .btn-success { background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; }
+        .btn-danger { background: linear-gradient(135deg, var(--error), #c0392b); color: #fff; }
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #e67e22); color: #fff; }
+        .btn-ghost { background: var(--bg-input); color: var(--text); border: 1px solid var(--border); }
+
+        .search-box { margin-bottom: 12px; }
+        .search-box input {
+            width: 100%; max-width: 320px; padding: 10px 14px; background: var(--bg-input);
+            border: 1.5px solid var(--border); border-radius: 12px;
+            font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--text); outline: none;
+            transition: all 0.3s;
+        }
+        .search-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); }
+        .search-box input::placeholder { color: var(--text-dim); }
+
+        /* Table */
+        .table-wrap {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            overflow: hidden; overflow-x: auto;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th {
+            background: var(--bg-input); padding: 10px 12px; text-align: left;
+            font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--text-muted); border-bottom: 1px solid var(--border);
+        }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text); }
+        tr:hover { background: var(--bg-input); }
+        tr:last-child td { border-bottom: none; }
+        .name-cell { font-weight: 600; }
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 20px;
+            font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .badge-today { background: rgba(0,230,118,0.15); color: var(--success); }
+        .badge-old { background: var(--bg-input); color: var(--text-muted); border: 1px solid var(--border); }
+        .btn-del {
+            padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 600;
+            cursor: pointer; border: none; background: rgba(255,68,68,0.15); color: var(--error);
+            transition: all 0.3s; font-family: 'Outfit', sans-serif;
+        }
+        .btn-del:hover { background: var(--error); color: #fff; }
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+        .empty-state .icon { font-size: 36px; margin-bottom: 10px; opacity: 0.3; }
+        .empty-state h3 { font-size: 14px; margin-bottom: 4px; }
+        .empty-state p { font-size: 11px; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 999; padding: 16px;
+        }
+        :root[data-theme="light"] .modal-overlay { background: rgba(0,0,0,0.4); }
+        .modal-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 24px; max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        .modal h2 { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+        .modal pre {
+            background: var(--bg-input); padding: 12px; border-radius: 10px;
+            overflow-x: auto; font-size: 10px; line-height: 1.5; max-height: 300px;
+            overflow-y: auto; font-family: 'Space Grotesk', monospace; color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .modal-actions { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
+
+        .checkbox-col { width: 36px; }
+        .checkbox-col input { width: 14px; height: 14px; cursor: pointer; accent-color: var(--accent); }
+
+        @media (max-width: 600px) {
+            .dash-header { padding: 14px; }
+            .dash-header h1 { font-size: 14px; }
+            .stat-card { padding: 8px 14px; min-width: 70px; }
+            .stat-card h3 { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="login-icon">🔐</div>
+            <h2>Admin Login</h2>
+            <p>Enter your password to access the VCF Manager</p>
+            <input type="password" id="adminPassword" placeholder="Enter password" onkeypress="if(event.key==='Enter') login()">
+            <button onclick="login()">Login</button>
+            <p class="login-error" id="loginError">Incorrect password. Please try again.</p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="status-bar">
+            <div class="left">
+                <span>📅</span><span id="statusDate">--/--/----</span>
+                <span>⏲️</span><span id="statusTime">--:--:--</span>
+            </div>
+            <div class="right">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+                    <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div class="battery">
+                    <span class="charging-indicator" id="chargingIcon" style="display:none;">⚡</span>
+                    <div class="battery-icon"><div class="battery-fill high" id="batteryFill" style="width:80%"></div></div>
+                    <span id="batteryPercent">--%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-header">
+            <div>
+                <h1>📇 VCF Admin Panel</h1>
+                <p class="sub">Manage contacts and generate VCF files</p>
+            </div>
+            <div class="stats">
+                <div class="stat-card"><h3 id="totalContacts">0</h3><p>Total</p></div>
+                <div class="stat-card" style="background:linear-gradient(135deg,#25d366,#128c7e)"><h3 id="todayContacts">0</h3><p>Today</p></div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-success" onclick="generateVCF()">⬇ Generate VCF</button>
+            <button class="btn btn-primary" onclick="previewVCF()">👁 Preview</button>
+            <button class="btn btn-warning" onclick="exportCSV()">📄 CSV</button>
+            <button class="btn btn-danger" onclick="clearAll()">🗑 Clear All</button>
+            <button class="btn btn-ghost" onclick="logout()" style="margin-left:auto;">Logout</button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name, phone, or email..." oninput="renderContacts()">
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="checkbox-col"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                        <th>Name</th><th>Phone</th><th>Email</th><th>Added</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="contactsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal">
+            <h2>VCF Preview</h2>
+            <pre id="vcfPreview"></pre>
+            <div class="modal-actions">
+                <button class="btn btn-ghost" onclick="closePreview()">Close</button>
+                <button class="btn btn-success" onclick="downloadVCF()">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "admin123";
+        let contacts = [], selectedContacts = new Set();
+
+        // Particles
+        function createParticles() {
+            const c = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random()*100 + '%';
+                p.style.top = Math.random()*100 + '%';
+                p.style.animationDelay = Math.random()*15 + 's';
+                p.style.animationDuration = (10+Math.random()*10) + 's';
+                c.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // Theme
+        const themeToggle = document.getElementById('themeToggle');
+        const moonIcon = document.getElementById('moonIcon');
+        const sunIcon = document.getElementById('sunIcon');
+        const root = document.documentElement;
+
+        function setTheme(t) {
+            if (t === 'light') { root.setAttribute('data-theme','light'); moonIcon.style.display='none'; sunIcon.style.display='block'; }
+            else { root.removeAttribute('data-theme'); moonIcon.style.display='block'; sunIcon.style.display='none'; }
+            localStorage.setItem('theme', t);
+        }
+        setTheme(localStorage.getItem('theme') || 'dark');
+        themeToggle.addEventListener('click', () => setTheme(root.getAttribute('data-theme')==='light'?'dark':'light'));
+
+        // Clock
+        function updateClock() {
+            const n = new Date();
+            document.getElementById('statusDate').textContent = n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'2-digit',year:'numeric'});
+            document.getElementById('statusTime').textContent = n.toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // Battery
+        async function updateBattery() {
+            try {
+                if ('getBattery' in navigator) {
+                    const b = await navigator.getBattery();
+                    function render() {
+                        const lvl = Math.round(b.level*100);
+                        document.getElementById('batteryFill').style.width = lvl+'%';
+                        document.getElementById('batteryPercent').textContent = lvl+'%';
+                        document.getElementById('batteryFill').className = 'battery-fill ' + (lvl>50?'high':lvl>20?'medium':'low');
+                        document.getElementById('chargingIcon').style.display = b.charging?'inline':'none';
+                    }
+                    render(); b.addEventListener('levelchange',render); b.addEventListener('chargingchange',render);
+                } else { document.getElementById('batteryPercent').textContent = 'N/A'; }
+            } catch(e) { document.getElementById('batteryPercent').textContent = 'N/A'; }
+        }
+        updateBattery();
+
+        // Auth
+        function login() {
+            if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboard').classList.add('show');
+                loadContacts();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+        function logout() {
+            document.getElementById('dashboard').classList.remove('show');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        // Data
+        function loadContacts() {
+            contacts = JSON.parse(localStorage.getItem('vcf_contacts') || '[]');
+            updateStats(); renderContacts();
+        }
+        function updateStats() {
+            document.getElementById('totalContacts').textContent = contacts.length;
+            const today = new Date().toDateString();
+            document.getElementById('todayContacts').textContent = contacts.filter(c => new Date(c.timestamp).toDateString()===today).length;
+        }
+
+        function getFiltered() {
+            const s = document.getElementById('searchInput').value.toLowerCase();
+            return contacts.filter(c => c.fullName.toLowerCase().includes(s) || c.phoneNumber.toLowerCase().includes(s) || c.email.toLowerCase().includes(s));
+        }
+
+        function renderContacts() {
+            const filtered = getFiltered();
+            const tbody = document.getElementById('contactsTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📂</div><h3>No contacts found</h3><p>${contacts.length===0?'No contacts added yet.':'No matches found.'}</p></div></td></tr>`;
+                return;
+            }
+            const today = new Date().toDateString();
+            tbody.innerHTML = filtered.map(c => {
+                const isToday = new Date(c.timestamp).toDateString() === today;
+                return `<tr>
+                    <td class="checkbox-col"><input type="checkbox" ${selectedContacts.has(c.id)?'checked':''} onchange="toggleSelect(${c.id})"></td>
+                    <td class="name-cell">${escapeHtml(c.fullName)}</td>
+                    <td>${escapeHtml(c.phoneNumber)}</td>
+                    <td>${escapeHtml(c.email)}</td>
+                    <td><span class="badge ${isToday?'badge-today':'badge-old'}">${isToday?'Today':formatDate(c.timestamp)}</span></td>
+                    <td><button class="btn-del" onclick="deleteContact(${c.id})">Delete</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function toggleSelect(id) {
+            selectedContacts.has(id) ? selectedContacts.delete(id) : selectedContacts.add(id);
+            renderContacts();
+        }
+        function toggleSelectAll() {
+            const f = getFiltered();
+            const all = f.every(c => selectedContacts.has(c.id));
+            f.forEach(c => all ? selectedContacts.delete(c.id) : selectedContacts.add(c.id));
+            renderContacts();
+        }
+        function deleteContact(id) {
+            if (!confirm('Delete this contact?')) return;
+            contacts = contacts.filter(c => c.id !== id);
+            selectedContacts.delete(id);
+            localStorage.setItem('vcf_contacts', JSON.stringify(contacts));
+            updateStats(); renderContacts();
+        }
+        function clearAll() {
+            if (!confirm('Delete ALL contacts? This cannot be undone!')) return;
+            contacts = []; selectedContacts.clear();
+            localStorage.removeItem('vcf_contacts');
+            updateStats(); renderContacts();
+        }
+
+        function generateVCFContent(selOnly=false) {
+            let target = (selOnly && selectedContacts.size>0) ? contacts.filter(c=>selectedContacts.has(c.id)) : contacts;
+            if (target.length===0) return '';
+            let vcf = '';
+            target.forEach(c => {
+                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${c.fullName}\nN:${c.fullName.split(' ').reverse().join(';')};;;\nTEL;TYPE=CELL:${c.phoneNumber}\nEMAIL:${c.email}\nNOTE:Added ${new Date(c.timestamp).toLocaleString()}\nEND:VCARD\n`;
+            });
+            return vcf;
+        }
+
+        function generateVCF() {
+            const vcf = generateVCFContent();
+            if (!vcf) { alert('No contacts to export!'); return; }
+            downloadFile(vcf, 'contacts.vcf', 'text/vcard');
+            alert(`VCF generated with ${contacts.length} contacts!`);
+        }
+        function previewVCF() {
+            const vcf = generateVCFContent();
+            if (!vcf) { alert('No contacts to preview!'); return; }
+            document.getElementById('vcfPreview').textContent = vcf;
+            document.getElementById('previewModal').classList.add('show');
+        }
+        function closePreview() { document.getElementById('previewModal').classList.remove('show'); }
+        function downloadVCF() { downloadFile(generateVCFContent(), 'contacts.vcf', 'text/vcard'); closePreview(); }
+
+        function exportCSV() {
+            if (contacts.length===0) { alert('No contacts to export!'); return; }
+            let csv = 'Name,Phone,Email,Date Added\n';
+            contacts.forEach(c => csv += `"${c.fullName}","${c.phoneNumber}","${c.email}","${new Date(c.timestamp).toLocaleString()}"\n`);
+            downloadFile(csv, 'contacts.csv', 'text/csv');
+        }
+
+        function downloadFile(content, filename, mime) {
+            const blob = new Blob([content], {type:mime});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+        function formatDate(ts) {
+            const d = new Date(ts), n = new Date(), diff = n-d, days = Math.floor(diff/(1000*60*60*24));
+            if (days===0) return 'Today'; if (days===1) return 'Yesterday'; if (days<7) return `${days}d ago`;
+            return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        }
+
+        document.getElementById('previewModal').addEventListener('click', e => { if(e.target===e.currentTarget) closePreview(); });
+    </script>
+</body>
+              </html>
