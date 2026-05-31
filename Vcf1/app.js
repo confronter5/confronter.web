@@ -1,6 +1,6 @@
 // ==================== CONFIG ====================
 const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/YOUR_GROUP_INVITE_CODE";
-const VCF_RELEASE_DATE = new Date(2026, 5, 30, 23, 59);
+const VCF_RELEASE_DATE = new Date(2026, 6, 11, 23, 59);
 
 const COUNTRY_CODES = [
     { code: "93", name: "Afghanistan (+93)" },
