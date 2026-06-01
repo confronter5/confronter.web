@@ -80,21 +80,24 @@
                     <input type="text" id="fullName" placeholder="John Doe" autocomplete="name">
                     <div class="error-msg" id="nameError">⚠ Please enter your name</div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Country Code <span class="req">*</span></label>
                     <select id="countryCode" class="country-select">
                         <option value="" disabled selected>Select your country</option>
                     </select>
-                    <div class="hint">Don't add (+). Just select your country — we'll handle the code.</div>
+                    <div class="hint">Select your country — the code will be auto-prefixed in your phone number.</div>
                     <div class="error-msg" id="countryError">⚠ Please select your country code</div>
                 </div>
 
                 <div class="form-group">
                     <label>Phone Number <span class="req">*</span></label>
-                    <input type="tel" id="phoneNumber" placeholder="791234567" autocomplete="tel">
-                    <div class="hint">Enter number without country code or (+) sign</div>
-                    <div class="error-msg" id="phoneError">⚠ Please enter a valid phone number (digits only, no +)</div>
+                    <div class="phone-input-wrapper" id="phoneWrapper">
+                        <span class="phone-prefix" id="phonePrefix">+</span>
+                        <input type="tel" id="phoneNumber" placeholder="793908671" autocomplete="tel" disabled>
+                    </div>
+                    <div class="hint">Must start with the country code you selected above (e.g. 254793908671)</div>
+                    <div class="error-msg" id="phoneError">⚠ Phone must start with the selected country code and contain only digits</div>
                     <div class="error-msg" id="duplicateError">⚠ This phone number is already registered</div>
                 </div>
 
@@ -145,4 +148,4 @@
 
     <script src="app.js"></script>
 </body>
-</html>
+    </html>
