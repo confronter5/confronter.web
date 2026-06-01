@@ -202,6 +202,7 @@
         tr:hover { background: var(--bg-input); }
         tr:last-child td { border-bottom: none; }
         .name-cell { font-weight: 600; }
+        .phone-cell { font-family: 'Space Grotesk', monospace; letter-spacing: 0.3px; }
         .badge {
             display: inline-block; padding: 2px 8px; border-radius: 20px;
             font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
@@ -348,6 +349,24 @@
         const ADMIN_PASSWORD = "admin123";
         let contacts = [], selectedContacts = new Set();
 
+        // ========== PHONE NUMBER FORMATTING ==========
+        // Adds + sign to phone number for display/export
+        function formatPhone(phone) {
+            if (!phone) return '';
+            phone = String(phone).trim();
+            // Add + if not already present
+            if (phone.charAt(0) !== '+') {
+                return '+' + phone;
+            }
+            return phone;
+        }
+
+        // Removes + sign for storage consistency (optional helper)
+        function stripPhone(phone) {
+            if (!phone) return '';
+            return String(phone).replace(/^\+/, '').trim();
+        }
+
         // Particles
         function createParticles() {
             const c = document.getElementById('particles');
@@ -434,7 +453,14 @@
 
         function getFiltered() {
             const s = document.getElementById('searchInput').value.toLowerCase();
-            return contacts.filter(c => c.fullName.toLowerCase().includes(s) || c.phoneNumber.toLowerCase().includes(s) || c.email.toLowerCase().includes(s));
+            return contacts.filter(c => {
+                const phoneWithPlus = formatPhone(c.phoneNumber).toLowerCase();
+                const phoneWithoutPlus = stripPhone(c.phoneNumber).toLowerCase();
+                return c.fullName.toLowerCase().includes(s) || 
+                       phoneWithPlus.includes(s) || 
+                       phoneWithoutPlus.includes(s) || 
+                       c.email.toLowerCase().includes(s);
+            });
         }
 
         function renderContacts() {
@@ -447,10 +473,11 @@
             const today = new Date().toDateString();
             tbody.innerHTML = filtered.map(c => {
                 const isToday = new Date(c.timestamp).toDateString() === today;
+                const displayPhone = formatPhone(c.phoneNumber); // +254793908671
                 return `<tr>
                     <td class="checkbox-col"><input type="checkbox" ${selectedContacts.has(c.id)?'checked':''} onchange="toggleSelect(${c.id})"></td>
                     <td class="name-cell">${escapeHtml(c.fullName)}</td>
-                    <td>${escapeHtml(c.phoneNumber)}</td>
+                    <td class="phone-cell">${escapeHtml(displayPhone)}</td>
                     <td>${escapeHtml(c.email)}</td>
                     <td><span class="badge ${isToday?'badge-today':'badge-old'}">${isToday?'Today':formatDate(c.timestamp)}</span></td>
                     <td><button class="btn-del" onclick="deleteContact(${c.id})">Delete</button></td>
@@ -487,7 +514,8 @@
             if (target.length===0) return '';
             let vcf = '';
             target.forEach(c => {
-                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${c.fullName}\nN:${c.fullName.split(' ').reverse().join(';')};;;\nTEL;TYPE=CELL:${c.phoneNumber}\nEMAIL:${c.email}\nNOTE:Added ${new Date(c.timestamp).toLocaleString()}\nEND:VCARD\n`;
+                const phoneWithPlus = formatPhone(c.phoneNumber); // +254793908671
+                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${c.fullName}\nN:${c.fullName.split(' ').reverse().join(';')};;;\nTEL;TYPE=CELL:${phoneWithPlus}\nEMAIL:${c.email}\nNOTE:Added ${new Date(c.timestamp).toLocaleString()}\nEND:VCARD\n`;
             });
             return vcf;
         }
@@ -510,7 +538,10 @@
         function exportCSV() {
             if (contacts.length===0) { alert('No contacts to export!'); return; }
             let csv = 'Name,Phone,Email,Date Added\n';
-            contacts.forEach(c => csv += `"${c.fullName}","${c.phoneNumber}","${c.email}","${new Date(c.timestamp).toLocaleString()}"\n`);
+            contacts.forEach(c => {
+                const phoneWithPlus = formatPhone(c.phoneNumber); // +254793908671
+                csv += `"${c.fullName}","${phoneWithPlus}","${c.email}","${new Date(c.timestamp).toLocaleString()}"\n`;
+            });
             downloadFile(csv, 'contacts.csv', 'text/csv');
         }
 
@@ -533,4 +564,4 @@
         document.getElementById('previewModal').addEventListener('click', e => { if(e.target===e.currentTarget) closePreview(); });
     </script>
 </body>
-              </html>
+</html>
