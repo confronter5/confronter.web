@@ -303,11 +303,11 @@ themeToggle.addEventListener('click', () => {
 
 function updateClock() {
     const now = new Date();
-    const dateStr = now.toLocaleDateString('en-US', { 
-        weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' 
+    const dateStr = now.toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: '2-digit', year: 'numeric'
     });
-    const timeStr = now.toLocaleTimeString('en-US', { 
-        hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' 
+    const timeStr = now.toLocaleTimeString('en-US', {
+        hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
     document.getElementById('statusDate').textContent = dateStr;
     document.getElementById('statusTime').textContent = timeStr;
@@ -367,12 +367,13 @@ function normalizePhone(phone) {
     return phone.replace(/\D/g, '');
 }
 
+function buildDisplayPhone(countryCode, phoneNumber) {
+    return '+' + countryCode + normalizePhone(phoneNumber);
+}
+
 function isDuplicatePhone(countryCode, phoneNumber) {
-    const fullNumber = countryCode + normalizePhone(phoneNumber);
-    return contacts.some(c => {
-        const existingFull = c.countryCode + normalizePhone(c.phoneNumber);
-        return existingFull === fullNumber;
-    });
+    const fullNumber = buildDisplayPhone(countryCode, phoneNumber);
+    return contacts.some(c => c.displayPhone === fullNumber);
 }
 
 function isDuplicateEmail(email) {
@@ -440,6 +441,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         fullName,
         countryCode,
         phoneNumber,
+        displayPhone: buildDisplayPhone(countryCode, phoneNumber),
         email,
         timestamp: new Date().toISOString()
     });
