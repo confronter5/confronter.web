@@ -1,0 +1,55 @@
+
+/* Phone Input Wrapper */
+.phone-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 2px solid var(--border-color, rgba(255,255,255,0.1));
+    border-radius: 12px;
+    background: var(--input-bg, rgba(255,255,255,0.05));
+    transition: border-color 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+}
+
+.phone-input-wrapper.active {
+    border-color: var(--accent-color, #00d4ff);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+}
+
+.phone-input-wrapper.error {
+    border-color: #ff4757;
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.15);
+}
+
+.phone-prefix {
+    padding: 12px 8px 12px 16px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-secondary, #94a3b8);
+    white-space: nowrap;
+    user-select: none;
+    border-right: 1px solid var(--border-color, rgba(255,255,255,0.1));
+    background: var(--input-bg, rgba(255,255,255,0.03));
+}
+
+.phone-input-wrapper.active .phone-prefix {
+    color: var(--accent-color, #00d4ff);
+}
+
+.phone-input-wrapper input[type="tel"] {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 16px;
+    font-size: 1rem;
+    color: var(--text-primary, #e2e8f0);
+    outline: none;
+}
+
+.phone-input-wrapper input[type="tel"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.phone-input-wrapper input[type="tel"]::placeholder {
+    color: var(--text-muted, #64748b);
+}
