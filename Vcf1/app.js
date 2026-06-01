@@ -248,6 +248,7 @@ const COUNTRY_CODES = [
 
 let contacts = JSON.parse(localStorage.getItem('vcf_contacts') || '[]');
 let autoRedirectTimer = null;
+let currentCountryCode = '';
 
 function populateCountryCodes() {
     const select = document.getElementById('countryCode');
@@ -363,12 +364,74 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
+// ========== PHONE INPUT HANDLING ==========
+const countrySelect = document.getElementById('countryCode');
+const phoneInput = document.getElementById('phoneNumber');
+const phonePrefix = document.getElementById('phonePrefix');
+const phoneWrapper = document.getElementById('phoneWrapper');
+
+countrySelect.addEventListener('change', function() {
+    this.classList.remove('error');
+    document.getElementById('countryError').classList.remove('show');
+
+    currentCountryCode = this.value;
+
+    if (currentCountryCode) {
+        phonePrefix.textContent = '+' + currentCountryCode;
+        phoneInput.disabled = false;
+        phoneWrapper.classList.add('active');
+        phoneInput.focus();
+        // Auto-prefix the country code if input is empty
+        if (!phoneInput.value) {
+            phoneInput.value = currentCountryCode;
+        }
+    } else {
+        phonePrefix.textContent = '+';
+        phoneInput.disabled = true;
+        phoneWrapper.classList.remove('active');
+        phoneInput.value = '';
+    }
+});
+
+phoneInput.addEventListener('input', function() {
+    this.classList.remove('error');
+    document.getElementById('phoneError').classList.remove('show');
+    document.getElementById('duplicateError').classList.remove('show');
+
+    // Strip non-digits
+    let val = this.value.replace(/\D/g, '');
+
+    // If user deletes the country code prefix, restore it
+    if (currentCountryCode && !val.startsWith(currentCountryCode)) {
+        val = currentCountryCode + val;
+    }
+
+    this.value = val;
+});
+
+phoneInput.addEventListener('keydown', function(e) {
+    // Prevent deleting the country code prefix
+    const prefixLen = currentCountryCode ? currentCountryCode.length : 0;
+    const cursorPos = this.selectionStart;
+
+    if ((e.key === 'Backspace' || e.key === 'Delete') && cursorPos <= prefixLen) {
+        e.preventDefault();
+    }
+});
+
+phoneInput.addEventListener('focus', function() {
+    if (currentCountryCode && !this.value) {
+        this.value = currentCountryCode;
+    }
+});
+// ==========================================
+
 function normalizePhone(phone) {
     return phone.replace(/\D/g, '');
 }
 
 function buildDisplayPhone(countryCode, phoneNumber) {
-    return '+' + countryCode + normalizePhone(phoneNumber);
+    return '+' + countryCode + normalizePhone(phoneNumber).replace(countryCode, '');
 }
 
 function isDuplicatePhone(countryCode, phoneNumber) {
@@ -406,8 +469,19 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         valid = false;
     }
 
+    // Phone validation: must start with country code, digits only, min length after code
     const phoneDigitsOnly = /^\d+$/;
-    if (!phoneNumber || !phoneDigitsOnly.test(phoneNumber) || phoneNumber.length < 5) {
+    const minDigitsAfterCode = 5;
+
+    if (!phoneNumber || !phoneDigitsOnly.test(phoneNumber)) {
+        document.getElementById('phoneNumber').classList.add('error');
+        document.getElementById('phoneError').classList.add('show');
+        valid = false;
+    } else if (countryCode && !phoneNumber.startsWith(countryCode)) {
+        document.getElementById('phoneNumber').classList.add('error');
+        document.getElementById('phoneError').classList.add('show');
+        valid = false;
+    } else if (countryCode && phoneNumber.length < countryCode.length + minDigitsAfterCode) {
         document.getElementById('phoneNumber').classList.add('error');
         document.getElementById('phoneError').classList.add('show');
         valid = false;
@@ -473,6 +547,13 @@ function closeModal() {
     document.getElementById('contactForm').reset();
     document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
     document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+
+    // Reset phone input state
+    currentCountryCode = '';
+    phonePrefix.textContent = '+';
+    phoneInput.disabled = true;
+    phoneWrapper.classList.remove('active');
+
     if (autoRedirectTimer) clearInterval(autoRedirectTimer);
 }
 
@@ -481,12 +562,11 @@ function addAnother() {
     document.getElementById('fullName').focus();
 }
 
-['fullName', 'phoneNumber', 'email'].forEach(id => {
+['fullName', 'email'].forEach(id => {
     document.getElementById(id).addEventListener('input', function() {
         this.classList.remove('error');
         const errorMap = {
             'fullName': 'nameError',
-            'phoneNumber': ['phoneError', 'duplicateError'],
             'email': ['emailError', 'emailDuplicateError']
         };
         const errs = errorMap[id];
@@ -496,9 +576,4 @@ function addAnother() {
             document.getElementById(errs).classList.remove('show');
         }
     });
-});
-
-document.getElementById('countryCode').addEventListener('change', function() {
-    this.classList.remove('error');
-    document.getElementById('countryError').classList.remove('show');
 });
