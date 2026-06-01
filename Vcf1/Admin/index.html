@@ -397,6 +397,14 @@
             color: white;
             box-shadow: 0 4px 24px rgba(37, 211, 102, 0.3);
             animation: whatsapp-glow 3s ease-in-out infinite;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .whatsapp-card:hover {
+            transform: translateY(-2px);
         }
 
         @keyframes whatsapp-glow {
@@ -576,11 +584,11 @@
         </div>
 
         <!-- WhatsApp -->
-        <div class="whatsapp-card">
+        <a href="https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1" target="_blank" class="whatsapp-card">
             <div class="whatsapp-icon">📱</div>
             <div class="whatsapp-text">Make sure you have joined the WhatsApp Group!</div>
-            <div class="whatsapp-sub">Join our group to stay updated on the VCF release</div>
-        </div>
+            <div class="whatsapp-sub">Tap here Join our group to stay updated on the VCF release</div>
+        </a>
     </div>
 
     <div class="footer">
@@ -606,13 +614,12 @@
         document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
         document.getElementById('theme-text').textContent = savedTheme === 'dark' ? 'Dark' : 'Light';
 
-        // Countdown Timer (30 days from now)
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + 30);
+        // Countdown Timer — June 15, 2026, 23:59 (same as first HTML)
+        const VCF_RELEASE_DATE = new Date(2026, 5, 15, 23, 59);
 
         function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
+            const now = new Date();
+            const distance = VCF_RELEASE_DATE - now;
 
             if (distance < 0) {
                 document.getElementById('countdown').innerHTML = "RELEASED! 🎉";
