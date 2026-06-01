@@ -527,7 +527,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     document.getElementById('whatsappBtn').href = WHATSAPP_GROUP_LINK;
     waSection.classList.add('show');
 
-    let countdown = 3;
+    let countdown = 1;
     const msg = document.getElementById('autoRedirectMsg');
     msg.textContent = `Redirecting to WhatsApp in ${countdown}s...`;
 
