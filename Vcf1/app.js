@@ -444,6 +444,28 @@ function isDuplicateEmail(email) {
     return contacts.some(c => c.email.toLowerCase().trim() === normalizedEmail);
 }
 
+// ========== TEXT TO SPEECH ==========
+function speakVerificationSuccess() {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance('You were verified Successfully');
+        utterance.lang = 'en-US';
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        window.speechSynthesis.speak(utterance);
+    }
+}
+// ===================================
+
+// ========== VERIFIED COUNT DISPLAY ==========
+function updateVerifiedCount() {
+    const countEl = document.getElementById('verifiedCount');
+    if (countEl) {
+        countEl.textContent = contacts.length;
+    }
+}
+// ===========================================
+
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -520,6 +542,12 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         timestamp: new Date().toISOString()
     });
     localStorage.setItem('vcf_contacts', JSON.stringify(contacts));
+
+    // Speak verification success message
+    speakVerificationSuccess();
+
+    // Update verified count display
+    updateVerifiedCount();
 
     document.getElementById('successModal').classList.add('show');
 
