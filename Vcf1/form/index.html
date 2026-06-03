@@ -15,9 +15,9 @@
         /* ===== CIRCULAR VERIFIED MEMBERS COUNTER ===== */
         .members-counter-circle {
             position: relative;
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 20px;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -27,14 +27,14 @@
             position: absolute;
             inset: 0;
             border-radius: 50%;
-            border: 4px solid rgba(16, 185, 129, 0.15);
+            border: 3px solid rgba(16, 185, 129, 0.15);
         }
 
         .counter-ring-fill {
             position: absolute;
-            inset: -4px;
+            inset: -3px;
             border-radius: 50%;
-            border: 4px solid transparent;
+            border: 3px solid transparent;
             border-top-color: #10b981;
             border-right-color: #06b6d4;
             animation: ringSpin 3s linear infinite;
@@ -53,8 +53,8 @@
 
         .counter-circle-number {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 32px;
-            font-weight: 800;
+            font-size: 28px;
+            font-weight: 700;
             background: linear-gradient(135deg, #10b981, #06b6d4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -65,38 +65,38 @@
         }
 
         .counter-circle-number.updating {
-            transform: scale(1.2);
+            transform: scale(1.15);
             filter: brightness(1.5);
         }
 
         .counter-circle-label {
             font-family: 'Outfit', sans-serif;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 700;
             color: rgba(255, 255, 255, 0.5);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         .counter-circle-pulse {
             position: absolute;
-            bottom: 8px;
-            right: 8px;
-            width: 10px;
-            height: 10px;
+            bottom: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
             background: #10b981;
             border-radius: 50%;
             animation: livePulse 2s ease infinite;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
         }
 
         .counter-circle-pulse::before {
             content: '';
             position: absolute;
-            inset: -3px;
+            inset: -2px;
             border-radius: 50%;
-            border: 1.5px solid #10b981;
+            border: 1px solid #10b981;
             animation: ripple 2s ease infinite;
         }
 
@@ -114,6 +114,26 @@
         body.dark-mode {
             background: #0a0a0f;
             color: #ffffff;
+        }
+
+        /* Minimized font sizes for main page */
+        .header-card h1 { font-size: 22px; }
+        .header-card p { font-size: 12px; }
+        .countdown-unit .num { font-size: 28px; }
+        .countdown-unit .lbl { font-size: 9px; }
+        .form-group label { font-size: 12px; }
+        .form-group input, .form-group select { font-size: 13px; padding: 12px 14px; }
+        .hint { font-size: 10px; }
+        .error-msg { font-size: 10px; }
+        .btn-submit { font-size: 13px; padding: 14px; }
+        .whatsapp-card h3 { font-size: 18px; }
+        .whatsapp-card p { font-size: 12px; }
+        .footer a { font-size: 11px; }
+
+        /* Country select with flags */
+        .country-select option {
+            font-size: 13px;
+            padding: 4px;
         }
     </style>
 </head>
@@ -265,4 +285,4 @@
 
     <script src="app.js"></script>
 </body>
-                </html>
+</html>
