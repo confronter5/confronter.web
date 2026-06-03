@@ -556,7 +556,15 @@
             if (target.length===0) return '';
             let vcf = '';
             target.forEach(c => {
-                vcf += 'BEGIN:VCARD\nVERSION:3.0\nFN:'+c.name+'\nN:'+c.name.split(' ').reverse().join(';')+';;;\nTEL;TYPE=CELL:'+c.phone+'\nEMAIL:'+c.email+'\nNOTE:Verified '+new Date(c.verifiedAt).toLocaleString()+'\nEND:VCARD\n';
+                vcf += 'BEGIN:VCARD
+VERSION:3.0
+FN:'+c.name+'
+N:'+c.name.split(' ').reverse().join(';')+';;;
+TEL;TYPE=CELL:'+c.phone+'
+EMAIL:'+c.email+'
+NOTE:Verified '+new Date(c.verifiedAt).toLocaleString()+'
+END:VCARD
+';
             });
             return vcf;
         }
@@ -578,9 +586,11 @@
 
         function exportCSV() {
             if (contacts.length===0) { alert('No contacts to export!'); return; }
-            let csv = 'Name,Country Code,Phone,Email,Date Verified\n';
+            let csv = 'Name,Country Code,Phone,Email,Date Verified
+';
             contacts.forEach(c => {
-                csv += '"'+c.name+'","'+c.countryCode+'","'+c.phone+'","'+c.email+'","'+new Date(c.verifiedAt).toLocaleString()+'"\n';
+                csv += '"'+c.name+'","'+c.countryCode+'","'+c.phone+'","'+c.email+'","'+new Date(c.verifiedAt).toLocaleString()+'"
+';
             });
             downloadFile(csv, 'contacts.csv', 'text/csv');
         }
@@ -604,4 +614,4 @@
         document.getElementById('previewModal').addEventListener('click', e => { if(e.target===e.currentTarget) closePreview(); });
     </script>
 </body>
-</html>
+    </html>
