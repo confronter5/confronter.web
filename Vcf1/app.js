@@ -122,6 +122,189 @@ class MembersCounter {
     }
 }
 
+// ===== COUNTRY PHONE VALIDATION =====
+const countryPhoneRules = {
+    '+93': { name: 'Afghanistan', minLen: 9, maxLen: 9, startsWith: ['7'], example: '793908671' },
+    '+355': { name: 'Albania', minLen: 9, maxLen: 9, startsWith: ['6'], example: '691234567' },
+    '+213': { name: 'Algeria', minLen: 9, maxLen: 9, startsWith: ['5', '6', '7'], example: '551234567' },
+    '+376': { name: 'Andorra', minLen: 6, maxLen: 6, startsWith: ['3', '4', '6'], example: '312345' },
+    '+244': { name: 'Angola', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+54': { name: 'Argentina', minLen: 10, maxLen: 10, startsWith: ['1', '2', '3'], example: '9112345678' },
+    '+374': { name: 'Armenia', minLen: 8, maxLen: 8, startsWith: ['3', '4', '5', '7', '9'], example: '91234567' },
+    '+61': { name: 'Australia', minLen: 9, maxLen: 9, startsWith: ['4'], example: '412345678' },
+    '+43': { name: 'Austria', minLen: 10, maxLen: 10, startsWith: ['6'], example: '6412345678' },
+    '+994': { name: 'Azerbaijan', minLen: 9, maxLen: 9, startsWith: ['4', '5', '6', '7'], example: '501234567' },
+    '+973': { name: 'Bahrain', minLen: 8, maxLen: 8, startsWith: ['3'], example: '31234567' },
+    '+880': { name: 'Bangladesh', minLen: 10, maxLen: 10, startsWith: ['1'], example: '1712345678' },
+    '+375': { name: 'Belarus', minLen: 9, maxLen: 9, startsWith: ['2', '3', '4', '5'], example: '291234567' },
+    '+32': { name: 'Belgium', minLen: 9, maxLen: 9, startsWith: ['4'], example: '471234567' },
+    '+501': { name: 'Belize', minLen: 7, maxLen: 7, startsWith: ['6'], example: '6123456' },
+    '+229': { name: 'Benin', minLen: 8, maxLen: 8, startsWith: ['4', '5', '6'], example: '61234567' },
+    '+975': { name: 'Bhutan', minLen: 8, maxLen: 8, startsWith: ['1', '7'], example: '77123456' },
+    '+591': { name: 'Bolivia', minLen: 8, maxLen: 8, startsWith: ['6', '7'], example: '71234567' },
+    '+387': { name: 'Bosnia', minLen: 8, maxLen: 8, startsWith: ['6'], example: '61234567' },
+    '+267': { name: 'Botswana', minLen: 8, maxLen: 8, startsWith: ['7'], example: '71234567' },
+    '+55': { name: 'Brazil', minLen: 11, maxLen: 11, startsWith: ['1', '2', '3', '4', '5', '6', '7', '8', '9'], example: '11912345678' },
+    '+673': { name: 'Brunei', minLen: 7, maxLen: 7, startsWith: ['7', '8'], example: '7123456' },
+    '+359': { name: 'Bulgaria', minLen: 9, maxLen: 9, startsWith: ['8'], example: '871234567' },
+    '+226': { name: 'Burkina Faso', minLen: 8, maxLen: 8, startsWith: ['5', '6', '7'], example: '61234567' },
+    '+257': { name: 'Burundi', minLen: 8, maxLen: 8, startsWith: ['7', '2'], example: '71234567' },
+    '+855': { name: 'Cambodia', minLen: 8, maxLen: 9, startsWith: ['1', '6', '7', '8', '9'], example: '91234567' },
+    '+237': { name: 'Cameroon', minLen: 9, maxLen: 9, startsWith: ['6'], example: '612345678' },
+    '+1': { name: 'Canada/USA', minLen: 10, maxLen: 10, startsWith: ['2', '3', '4', '5', '6', '7', '8', '9'], example: '4161234567' },
+    '+238': { name: 'Cape Verde', minLen: 7, maxLen: 7, startsWith: ['5', '9'], example: '9123456' },
+    '+236': { name: 'Central African Republic', minLen: 8, maxLen: 8, startsWith: ['7'], example: '71234567' },
+    '+235': { name: 'Chad', minLen: 8, maxLen: 8, startsWith: ['6', '7', '9'], example: '61234567' },
+    '+56': { name: 'Chile', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+86': { name: 'China', minLen: 11, maxLen: 11, startsWith: ['1'], example: '13812345678' },
+    '+57': { name: 'Colombia', minLen: 10, maxLen: 10, startsWith: ['3'], example: '3123456789' },
+    '+269': { name: 'Comoros', minLen: 7, maxLen: 7, startsWith: ['3', '7'], example: '7123456' },
+    '+242': { name: 'Congo', minLen: 9, maxLen: 9, startsWith: ['0', '4', '5', '6'], example: '551234567' },
+    '+243': { name: 'Congo DRC', minLen: 9, maxLen: 9, startsWith: ['8', '9'], example: '812345678' },
+    '+506': { name: 'Costa Rica', minLen: 8, maxLen: 8, startsWith: ['6', '7', '8'], example: '71234567' },
+    '+385': { name: 'Croatia', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+53': { name: 'Cuba', minLen: 8, maxLen: 8, startsWith: ['5'], example: '51234567' },
+    '+357': { name: 'Cyprus', minLen: 8, maxLen: 8, startsWith: ['9'], example: '91234567' },
+    '+420': { name: 'Czech Republic', minLen: 9, maxLen: 9, startsWith: ['6', '7'], example: '612345678' },
+    '+45': { name: 'Denmark', minLen: 8, maxLen: 8, startsWith: ['2', '3', '4', '5', '6', '7', '8', '9'], example: '21234567' },
+    '+253': { name: 'Djibouti', minLen: 8, maxLen: 8, startsWith: ['7', '8'], example: '71234567' },
+    '+593': { name: 'Ecuador', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+20': { name: 'Egypt', minLen: 10, maxLen: 10, startsWith: ['1'], example: '1012345678' },
+    '+503': { name: 'El Salvador', minLen: 8, maxLen: 8, startsWith: ['6', '7'], example: '71234567' },
+    '+240': { name: 'Equatorial Guinea', minLen: 9, maxLen: 9, startsWith: ['2', '5', '6'], example: '551234567' },
+    '+291': { name: 'Eritrea', minLen: 7, maxLen: 7, startsWith: ['1', '7'], example: '7123456' },
+    '+372': { name: 'Estonia', minLen: 8, maxLen: 8, startsWith: ['5'], example: '51234567' },
+    '+251': { name: 'Ethiopia', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+679': { name: 'Fiji', minLen: 7, maxLen: 7, startsWith: ['7', '9'], example: '7123456' },
+    '+358': { name: 'Finland', minLen: 9, maxLen: 10, startsWith: ['4', '5'], example: '412345678' },
+    '+33': { name: 'France', minLen: 9, maxLen: 9, startsWith: ['6', '7'], example: '612345678' },
+    '+241': { name: 'Gabon', minLen: 8, maxLen: 8, startsWith: ['2', '4', '5', '6', '7'], example: '61234567' },
+    '+220': { name: 'Gambia', minLen: 7, maxLen: 7, startsWith: ['2', '3', '4', '5', '6', '7', '8', '9'], example: '2123456' },
+    '+995': { name: 'Georgia', minLen: 9, maxLen: 9, startsWith: ['5'], example: '512345678' },
+    '+49': { name: 'Germany', minLen: 10, maxLen: 11, startsWith: ['1', '5', '6', '7', '8', '9'], example: '1512345678' },
+    '+233': { name: 'Ghana', minLen: 9, maxLen: 9, startsWith: ['2', '5'], example: '512345678' },
+    '+30': { name: 'Greece', minLen: 10, maxLen: 10, startsWith: ['6'], example: '6912345678' },
+    '+502': { name: 'Guatemala', minLen: 8, maxLen: 8, startsWith: ['3', '4', '5'], example: '41234567' },
+    '+224': { name: 'Guinea', minLen: 9, maxLen: 9, startsWith: ['6'], example: '612345678' },
+    '+245': { name: 'Guinea-Bissau', minLen: 7, maxLen: 7, startsWith: ['5', '6', '7'], example: '6123456' },
+    '+592': { name: 'Guyana', minLen: 7, maxLen: 7, startsWith: ['6'], example: '6123456' },
+    '+509': { name: 'Haiti', minLen: 8, maxLen: 8, startsWith: ['3', '4'], example: '41234567' },
+    '+504': { name: 'Honduras', minLen: 8, maxLen: 8, startsWith: ['3', '8', '9'], example: '91234567' },
+    '+36': { name: 'Hungary', minLen: 9, maxLen: 9, startsWith: ['2', '3', '7'], example: '201234567' },
+    '+354': { name: 'Iceland', minLen: 7, maxLen: 7, startsWith: ['6', '7', '8'], example: '6123456' },
+    '+91': { name: 'India', minLen: 10, maxLen: 10, startsWith: ['6', '7', '8', '9'], example: '9123456789' },
+    '+62': { name: 'Indonesia', minLen: 10, maxLen: 12, startsWith: ['8'], example: '8123456789' },
+    '+98': { name: 'Iran', minLen: 10, maxLen: 10, startsWith: ['9'], example: '9123456789' },
+    '+964': { name: 'Iraq', minLen: 10, maxLen: 10, startsWith: ['7'], example: '7123456789' },
+    '+353': { name: 'Ireland', minLen: 9, maxLen: 9, startsWith: ['8'], example: '871234567' },
+    '+972': { name: 'Israel', minLen: 9, maxLen: 9, startsWith: ['5'], example: '512345678' },
+    '+39': { name: 'Italy', minLen: 10, maxLen: 10, startsWith: ['3'], example: '3123456789' },
+    '+225': { name: 'Ivory Coast', minLen: 8, maxLen: 8, startsWith: ['0', '4', '5', '7'], example: '71234567' },
+    '+81': { name: 'Japan', minLen: 10, maxLen: 10, startsWith: ['7', '8', '9'], example: '9012345678' },
+    '+962': { name: 'Jordan', minLen: 9, maxLen: 9, startsWith: ['7'], example: '712345678' },
+    '+7': { name: 'Kazakhstan', minLen: 10, maxLen: 10, startsWith: ['7'], example: '7123456789' },
+    '+254': { name: 'Kenya', minLen: 9, maxLen: 9, startsWith: ['1', '7'], example: '712345678' },
+    '+686': { name: 'Kiribati', minLen: 5, maxLen: 5, startsWith: ['7', '9'], example: '71234' },
+    '+965': { name: 'Kuwait', minLen: 8, maxLen: 8, startsWith: ['5', '6', '9'], example: '51234567' },
+    '+996': { name: 'Kyrgyzstan', minLen: 9, maxLen: 9, startsWith: ['5', '7'], example: '512345678' },
+    '+856': { name: 'Laos', minLen: 9, maxLen: 10, startsWith: ['2', '5', '7', '9'], example: '201234567' },
+    '+371': { name: 'Latvia', minLen: 8, maxLen: 8, startsWith: ['2'], example: '21234567' },
+    '+961': { name: 'Lebanon', minLen: 7, maxLen: 8, startsWith: ['3', '7', '8'], example: '71234567' },
+    '+266': { name: 'Lesotho', minLen: 8, maxLen: 8, startsWith: ['5', '6'], example: '51234567' },
+    '+231': { name: 'Liberia', minLen: 7, maxLen: 8, startsWith: ['4', '5', '6', '7'], example: '61234567' },
+    '+218': { name: 'Libya', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+423': { name: 'Liechtenstein', minLen: 7, maxLen: 7, startsWith: ['7'], example: '7123456' },
+    '+370': { name: 'Lithuania', minLen: 8, maxLen: 8, startsWith: ['6'], example: '61234567' },
+    '+352': { name: 'Luxembourg', minLen: 9, maxLen: 9, startsWith: ['6'], example: '621234567' },
+    '+261': { name: 'Madagascar', minLen: 9, maxLen: 9, startsWith: ['3'], example: '321234567' },
+    '+265': { name: 'Malawi', minLen: 9, maxLen: 9, startsWith: ['8', '9'], example: '881234567' },
+    '+60': { name: 'Malaysia', minLen: 9, maxLen: 10, startsWith: ['1'], example: '123456789' },
+    '+960': { name: 'Maldives', minLen: 7, maxLen: 7, startsWith: ['7', '9'], example: '7123456' },
+    '+223': { name: 'Mali', minLen: 8, maxLen: 8, startsWith: ['5', '6', '7', '8', '9'], example: '61234567' },
+    '+356': { name: 'Malta', minLen: 8, maxLen: 8, startsWith: ['7', '9'], example: '71234567' },
+    '+692': { name: 'Marshall Islands', minLen: 7, maxLen: 7, startsWith: ['4', '5', '6'], example: '6123456' },
+    '+222': { name: 'Mauritania', minLen: 8, maxLen: 8, startsWith: ['2', '3', '4'], example: '31234567' },
+    '+230': { name: 'Mauritius', minLen: 8, maxLen: 8, startsWith: ['5'], example: '51234567' },
+    '+52': { name: 'Mexico', minLen: 10, maxLen: 10, startsWith: ['1'], example: '1234567890' },
+    '+691': { name: 'Micronesia', minLen: 7, maxLen: 7, startsWith: ['3', '9'], example: '9123456' },
+    '+373': { name: 'Moldova', minLen: 8, maxLen: 8, startsWith: ['6', '7'], example: '61234567' },
+    '+377': { name: 'Monaco', minLen: 8, maxLen: 8, startsWith: ['4'], example: '41234567' },
+    '+976': { name: 'Mongolia', minLen: 8, maxLen: 8, startsWith: ['8', '9'], example: '81234567' },
+    '+382': { name: 'Montenegro', minLen: 8, maxLen: 8, startsWith: ['6'], example: '61234567' },
+    '+212': { name: 'Morocco', minLen: 9, maxLen: 9, startsWith: ['6', '7'], example: '612345678' },
+    '+258': { name: 'Mozambique', minLen: 9, maxLen: 9, startsWith: ['8', '9'], example: '841234567' },
+    '+95': { name: 'Myanmar', minLen: 8, maxLen: 10, startsWith: ['9'], example: '91234567' },
+    '+264': { name: 'Namibia', minLen: 9, maxLen: 9, startsWith: ['8'], example: '812345678' },
+    '+674': { name: 'Nauru', minLen: 7, maxLen: 7, startsWith: ['5', '7'], example: '5123456' },
+    '+977': { name: 'Nepal', minLen: 10, maxLen: 10, startsWith: ['9', '8'], example: '9812345678' },
+    '+31': { name: 'Netherlands', minLen: 9, maxLen: 9, startsWith: ['6'], example: '612345678' },
+    '+64': { name: 'New Zealand', minLen: 8, maxLen: 10, startsWith: ['2'], example: '21234567' },
+    '+505': { name: 'Nicaragua', minLen: 8, maxLen: 8, startsWith: ['7', '8'], example: '81234567' },
+    '+227': { name: 'Niger', minLen: 8, maxLen: 8, startsWith: ['8', '9'], example: '81234567' },
+    '+234': { name: 'Nigeria', minLen: 10, maxLen: 10, startsWith: ['7', '8', '9'], example: '8123456789' },
+    '+850': { name: 'North Korea', minLen: 9, maxLen: 10, startsWith: ['1', '2', '8', '9'], example: '191234567' },
+    '+389': { name: 'North Macedonia', minLen: 8, maxLen: 8, startsWith: ['7'], example: '71234567' },
+    '+47': { name: 'Norway', minLen: 8, maxLen: 8, startsWith: ['4', '9'], example: '41234567' },
+    '+968': { name: 'Oman', minLen: 8, maxLen: 8, startsWith: ['7', '9'], example: '71234567' },
+    '+92': { name: 'Pakistan', minLen: 10, maxLen: 10, startsWith: ['3'], example: '3123456789' },
+    '+680': { name: 'Palau', minLen: 7, maxLen: 7, startsWith: ['7', '8'], example: '7123456' },
+    '+507': { name: 'Panama', minLen: 8, maxLen: 8, startsWith: ['6'], example: '61234567' },
+    '+675': { name: 'Papua New Guinea', minLen: 8, maxLen: 8, startsWith: ['7'], example: '71234567' },
+    '+595': { name: 'Paraguay', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+51': { name: 'Peru', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+63': { name: 'Philippines', minLen: 10, maxLen: 10, startsWith: ['9'], example: '9123456789' },
+    '+48': { name: 'Poland', minLen: 9, maxLen: 9, startsWith: ['5', '6', '7', '8'], example: '512345678' },
+    '+351': { name: 'Portugal', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+974': { name: 'Qatar', minLen: 8, maxLen: 8, startsWith: ['3', '5', '6', '7'], example: '31234567' },
+    '+40': { name: 'Romania', minLen: 9, maxLen: 9, startsWith: ['7'], example: '712345678' },
+    '+7': { name: 'Russia', minLen: 10, maxLen: 10, startsWith: ['9'], example: '9123456789' },
+    '+250': { name: 'Rwanda', minLen: 9, maxLen: 9, startsWith: ['7', '8'], example: '781234567' },
+    '+685': { name: 'Samoa', minLen: 5, maxLen: 7, startsWith: ['7', '8'], example: '7123456' },
+    '+378': { name: 'San Marino', minLen: 8, maxLen: 10, startsWith: ['3'], example: '31234567' },
+    '+239': { name: 'Sao Tome', minLen: 7, maxLen: 7, startsWith: ['9'], example: '9123456' },
+    '+966': { name: 'Saudi Arabia', minLen: 9, maxLen: 9, startsWith: ['5'], example: '512345678' },
+    '+221': { name: 'Senegal', minLen: 9, maxLen: 9, startsWith: ['7'], example: '712345678' },
+    '+381': { name: 'Serbia', minLen: 8, maxLen: 9, startsWith: ['6'], example: '61234567' },
+    '+248': { name: 'Seychelles', minLen: 7, maxLen: 7, startsWith: ['2', '5'], example: '5123456' },
+    '+232': { name: 'Sierra Leone', minLen: 8, maxLen: 8, startsWith: ['7', '8', '9'], example: '71234567' },
+    '+65': { name: 'Singapore', minLen: 8, maxLen: 8, startsWith: ['8', '9'], example: '81234567' },
+    '+421': { name: 'Slovakia', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+386': { name: 'Slovenia', minLen: 8, maxLen: 8, startsWith: ['3', '4', '5', '6', '7'], example: '31234567' },
+    '+677': { name: 'Solomon Islands', minLen: 7, maxLen: 7, startsWith: ['7', '8'], example: '7123456' },
+    '+252': { name: 'Somalia', minLen: 7, maxLen: 9, startsWith: ['6', '9'], example: '61234567' },
+    '+27': { name: 'South Africa', minLen: 9, maxLen: 9, startsWith: ['6', '7', '8'], example: '712345678' },
+    '+82': { name: 'South Korea', minLen: 10, maxLen: 10, startsWith: ['1'], example: '1012345678' },
+    '+211': { name: 'South Sudan', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+34': { name: 'Spain', minLen: 9, maxLen: 9, startsWith: ['6', '7'], example: '612345678' },
+    '+94': { name: 'Sri Lanka', minLen: 9, maxLen: 9, startsWith: ['7'], example: '712345678' },
+    '+249': { name: 'Sudan', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+597': { name: 'Suriname', minLen: 7, maxLen: 7, startsWith: ['6', '7', '8'], example: '7123456' },
+    '+46': { name: 'Sweden', minLen: 9, maxLen: 10, startsWith: ['7'], example: '712345678' },
+    '+41': { name: 'Switzerland', minLen: 9, maxLen: 9, startsWith: ['7'], example: '712345678' },
+    '+963': { name: 'Syria', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+992': { name: 'Tajikistan', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+255': { name: 'Tanzania', minLen: 9, maxLen: 9, startsWith: ['6', '7'], example: '712345678' },
+    '+66': { name: 'Thailand', minLen: 9, maxLen: 9, startsWith: ['6', '8', '9'], example: '812345678' },
+    '+228': { name: 'Togo', minLen: 8, maxLen: 8, startsWith: ['9'], example: '91234567' },
+    '+676': { name: 'Tonga', minLen: 5, maxLen: 7, startsWith: ['8', '9'], example: '8123456' },
+    '+216': { name: 'Tunisia', minLen: 8, maxLen: 8, startsWith: ['2', '4', '5', '9'], example: '21234567' },
+    '+90': { name: 'Turkey', minLen: 10, maxLen: 10, startsWith: ['5'], example: '5123456789' },
+    '+993': { name: 'Turkmenistan', minLen: 8, maxLen: 8, startsWith: ['6'], example: '61234567' },
+    '+688': { name: 'Tuvalu', minLen: 5, maxLen: 5, startsWith: ['8', '9'], example: '81234' },
+    '+256': { name: 'Uganda', minLen: 9, maxLen: 9, startsWith: ['7'], example: '712345678' },
+    '+380': { name: 'Ukraine', minLen: 9, maxLen: 9, startsWith: ['6', '7', '9'], example: '671234567' },
+    '+971': { name: 'UAE', minLen: 9, maxLen: 9, startsWith: ['5'], example: '512345678' },
+    '+44': { name: 'United Kingdom', minLen: 10, maxLen: 10, startsWith: ['7'], example: '7123456789' },
+    '+598': { name: 'Uruguay', minLen: 8, maxLen: 8, startsWith: ['9'], example: '91234567' },
+    '+998': { name: 'Uzbekistan', minLen: 9, maxLen: 9, startsWith: ['9'], example: '912345678' },
+    '+678': { name: 'Vanuatu', minLen: 7, maxLen: 7, startsWith: ['5', '7'], example: '5123456' },
+    '+58': { name: 'Venezuela', minLen: 10, maxLen: 10, startsWith: ['4'], example: '4123456789' },
+    '+84': { name: 'Vietnam', minLen: 9, maxLen: 9, startsWith: ['3', '5', '7', '8', '9'], example: '912345678' },
+    '+967': { name: 'Yemen', minLen: 9, maxLen: 9, startsWith: ['7', '9'], example: '712345678' },
+    '+260': { name: 'Zambia', minLen: 9, maxLen: 9, startsWith: ['9', '7'], example: '912345678' },
+    '+263': { name: 'Zimbabwe', minLen: 9, maxLen: 9, startsWith: ['7', '8'], example: '712345678' }
+};
+
 // ===== FORM HANDLING =====
 class ContactForm {
     constructor() {
@@ -132,207 +315,21 @@ class ContactForm {
         this.phonePrefix = document.getElementById('phonePrefix');
         this.email = document.getElementById('email');
         this.whatsappSection = document.getElementById('whatsappSection');
+        this.currentRule = null;
         this.init();
     }
     init() {
         this.populateCountries();
         this.setupEventListeners();
+        this.updatePhoneHint();
     }
     populateCountries() {
-        const countries = [
-            { code: '+93', name: 'Afghanistan 🇦🇫' },
-            { code: '+355', name: 'Albania 🇦🇱' },
-            { code: '+213', name: 'Algeria 🇩🇿' },
-            { code: '+376', name: 'Andorra 🇦🇩' },
-            { code: '+244', name: 'Angola 🇦🇴' },
-            { code: '+54', name: 'Argentina 🇦🇷' },
-            { code: '+374', name: 'Armenia 🇦🇲' },
-            { code: '+61', name: 'Australia 🇦🇺' },
-            { code: '+43', name: 'Austria 🇦🇹' },
-            { code: '+994', name: 'Azerbaijan 🇦🇿' },
-            { code: '+973', name: 'Bahrain 🇧🇭' },
-            { code: '+880', name: 'Bangladesh 🇧🇩' },
-            { code: '+375', name: 'Belarus 🇧🇾' },
-            { code: '+32', name: 'Belgium 🇧🇪' },
-            { code: '+501', name: 'Belize 🇧🇿' },
-            { code: '+229', name: 'Benin 🇧🇯' },
-            { code: '+975', name: 'Bhutan 🇧🇹' },
-            { code: '+591', name: 'Bolivia 🇧🇴' },
-            { code: '+387', name: 'Bosnia 🇧🇦' },
-            { code: '+267', name: 'Botswana 🇧🇼' },
-            { code: '+55', name: 'Brazil 🇧🇷' },
-            { code: '+673', name: 'Brunei 🇧🇳' },
-            { code: '+359', name: 'Bulgaria 🇧🇬' },
-            { code: '+226', name: 'Burkina Faso 🇧🇫' },
-            { code: '+257', name: 'Burundi 🇧🇮' },
-            { code: '+855', name: 'Cambodia 🇰🇭' },
-            { code: '+237', name: 'Cameroon 🇨🇲' },
-            { code: '+1', name: 'Canada 🇨🇦' },
-            { code: '+238', name: 'Cape Verde 🇨🇻' },
-            { code: '+236', name: 'Central African Republic 🇨🇫' },
-            { code: '+235', name: 'Chad 🇹🇩' },
-            { code: '+56', name: 'Chile 🇨🇱' },
-            { code: '+86', name: 'China 🇨🇳' },
-            { code: '+57', name: 'Colombia 🇨🇴' },
-            { code: '+269', name: 'Comoros 🇰🇲' },
-            { code: '+242', name: 'Congo 🇨🇬' },
-            { code: '+243', name: 'Congo DRC 🇨🇩' },
-            { code: '+506', name: 'Costa Rica 🇨🇷' },
-            { code: '+385', name: 'Croatia 🇭🇷' },
-            { code: '+53', name: 'Cuba 🇨🇺' },
-            { code: '+357', name: 'Cyprus 🇨🇾' },
-            { code: '+420', name: 'Czech Republic 🇨🇿' },
-            { code: '+45', name: 'Denmark 🇩🇰' },
-            { code: '+253', name: 'Djibouti 🇩🇯' },
-            { code: '+1', name: 'Dominica 🇩🇲' },
-            { code: '+1', name: 'Dominican Republic 🇩🇴' },
-            { code: '+593', name: 'Ecuador 🇪🇨' },
-            { code: '+20', name: 'Egypt 🇪🇬' },
-            { code: '+503', name: 'El Salvador 🇸🇻' },
-            { code: '+240', name: 'Equatorial Guinea 🇬🇶' },
-            { code: '+291', name: 'Eritrea 🇪🇷' },
-            { code: '+372', name: 'Estonia 🇪🇪' },
-            { code: '+251', name: 'Ethiopia 🇪🇹' },
-            { code: '+679', name: 'Fiji 🇫🇯' },
-            { code: '+358', name: 'Finland 🇫🇮' },
-            { code: '+33', name: 'France 🇫🇷' },
-            { code: '+241', name: 'Gabon 🇬🇦' },
-            { code: '+220', name: 'Gambia 🇬🇲' },
-            { code: '+995', name: 'Georgia 🇬🇪' },
-            { code: '+49', name: 'Germany 🇩🇪' },
-            { code: '+233', name: 'Ghana 🇬🇭' },
-            { code: '+30', name: 'Greece 🇬🇷' },
-            { code: '+502', name: 'Guatemala 🇬🇹' },
-            { code: '+224', name: 'Guinea 🇬🇳' },
-            { code: '+245', name: 'Guinea-Bissau 🇬🇼' },
-            { code: '+592', name: 'Guyana 🇬🇾' },
-            { code: '+509', name: 'Haiti 🇭🇹' },
-            { code: '+504', name: 'Honduras 🇭🇳' },
-            { code: '+36', name: 'Hungary 🇭🇺' },
-            { code: '+354', name: 'Iceland 🇮🇸' },
-            { code: '+91', name: 'India 🇮🇳' },
-            { code: '+62', name: 'Indonesia 🇮🇩' },
-            { code: '+98', name: 'Iran 🇮🇷' },
-            { code: '+964', name: 'Iraq 🇮🇶' },
-            { code: '+353', name: 'Ireland 🇮🇪' },
-            { code: '+972', name: 'Israel 🇮🇱' },
-            { code: '+39', name: 'Italy 🇮🇹' },
-            { code: '+225', name: 'Ivory Coast 🇨🇮' },
-            { code: '+1', name: 'Jamaica 🇯🇲' },
-            { code: '+81', name: 'Japan 🇯🇵' },
-            { code: '+962', name: 'Jordan 🇯🇴' },
-            { code: '+7', name: 'Kazakhstan 🇰🇿' },
-            { code: '+254', name: 'Kenya 🇰🇪' },
-            { code: '+686', name: 'Kiribati 🇰🇮' },
-            { code: '+965', name: 'Kuwait 🇰🇼' },
-            { code: '+996', name: 'Kyrgyzstan 🇰🇬' },
-            { code: '+856', name: 'Laos 🇱🇦' },
-            { code: '+371', name: 'Latvia 🇱🇻' },
-            { code: '+961', name: 'Lebanon 🇱🇧' },
-            { code: '+266', name: 'Lesotho 🇱🇸' },
-            { code: '+231', name: 'Liberia 🇱🇷' },
-            { code: '+218', name: 'Libya 🇱🇾' },
-            { code: '+423', name: 'Liechtenstein 🇱🇮' },
-            { code: '+370', name: 'Lithuania 🇱🇹' },
-            { code: '+352', name: 'Luxembourg 🇱🇺' },
-            { code: '+261', name: 'Madagascar 🇲🇬' },
-            { code: '+265', name: 'Malawi 🇲🇼' },
-            { code: '+60', name: 'Malaysia 🇲🇾' },
-            { code: '+960', name: 'Maldives 🇲🇻' },
-            { code: '+223', name: 'Mali 🇲🇱' },
-            { code: '+356', name: 'Malta 🇲🇹' },
-            { code: '+692', name: 'Marshall Islands 🇲🇭' },
-            { code: '+222', name: 'Mauritania 🇲🇷' },
-            { code: '+230', name: 'Mauritius 🇲🇺' },
-            { code: '+52', name: 'Mexico 🇲🇽' },
-            { code: '+691', name: 'Micronesia 🇫🇲' },
-            { code: '+373', name: 'Moldova 🇲🇩' },
-            { code: '+377', name: 'Monaco 🇲🇨' },
-            { code: '+976', name: 'Mongolia 🇲🇳' },
-            { code: '+382', name: 'Montenegro 🇲🇪' },
-            { code: '+212', name: 'Morocco 🇲🇦' },
-            { code: '+258', name: 'Mozambique 🇲🇿' },
-            { code: '+95', name: 'Myanmar 🇲🇲' },
-            { code: '+264', name: 'Namibia 🇳🇦' },
-            { code: '+674', name: 'Nauru 🇳🇷' },
-            { code: '+977', name: 'Nepal 🇳🇵' },
-            { code: '+31', name: 'Netherlands 🇳🇱' },
-            { code: '+64', name: 'New Zealand 🇳🇿' },
-            { code: '+505', name: 'Nicaragua 🇳🇮' },
-            { code: '+227', name: 'Niger 🇳🇪' },
-            { code: '+234', name: 'Nigeria 🇳🇬' },
-            { code: '+850', name: 'North Korea 🇰🇵' },
-            { code: '+389', name: 'North Macedonia 🇲🇰' },
-            { code: '+47', name: 'Norway 🇳🇴' },
-            { code: '+968', name: 'Oman 🇴🇲' },
-            { code: '+92', name: 'Pakistan 🇵🇰' },
-            { code: '+680', name: 'Palau 🇵🇼' },
-            { code: '+507', name: 'Panama 🇵🇦' },
-            { code: '+675', name: 'Papua New Guinea 🇵🇬' },
-            { code: '+595', name: 'Paraguay 🇵🇾' },
-            { code: '+51', name: 'Peru 🇵🇪' },
-            { code: '+63', name: 'Philippines 🇵🇭' },
-            { code: '+48', name: 'Poland 🇵🇱' },
-            { code: '+351', name: 'Portugal 🇵🇹' },
-            { code: '+974', name: 'Qatar 🇶🇦' },
-            { code: '+40', name: 'Romania 🇷🇴' },
-            { code: '+7', name: 'Russia 🇷🇺' },
-            { code: '+250', name: 'Rwanda 🇷🇼' },
-            { code: '+1', name: 'Saint Kitts and Nevis 🇰🇳' },
-            { code: '+1', name: 'Saint Lucia 🇱🇨' },
-            { code: '+1', name: 'Saint Vincent 🇻🇨' },
-            { code: '+685', name: 'Samoa 🇼🇸' },
-            { code: '+378', name: 'San Marino 🇸🇲' },
-            { code: '+239', name: 'Sao Tome 🇸🇹' },
-            { code: '+966', name: 'Saudi Arabia 🇸🇦' },
-            { code: '+221', name: 'Senegal 🇸🇳' },
-            { code: '+381', name: 'Serbia 🇷🇸' },
-            { code: '+248', name: 'Seychelles 🇸🇨' },
-            { code: '+232', name: 'Sierra Leone 🇸🇱' },
-            { code: '+65', name: 'Singapore 🇸🇬' },
-            { code: '+421', name: 'Slovakia 🇸🇰' },
-            { code: '+386', name: 'Slovenia 🇸🇮' },
-            { code: '+677', name: 'Solomon Islands 🇸🇧' },
-            { code: '+252', name: 'Somalia 🇸🇴' },
-            { code: '+27', name: 'South Africa 🇿🇦' },
-            { code: '+82', name: 'South Korea 🇰🇷' },
-            { code: '+211', name: 'South Sudan 🇸🇸' },
-            { code: '+34', name: 'Spain 🇪🇸' },
-            { code: '+94', name: 'Sri Lanka 🇱🇰' },
-            { code: '+249', name: 'Sudan 🇸🇩' },
-            { code: '+597', name: 'Suriname 🇸🇷' },
-            { code: '+46', name: 'Sweden 🇸🇪' },
-            { code: '+41', name: 'Switzerland 🇨🇭' },
-            { code: '+963', name: 'Syria 🇸🇾' },
-            { code: '+992', name: 'Tajikistan 🇹🇯' },
-            { code: '+255', name: 'Tanzania 🇹🇿' },
-            { code: '+66', name: 'Thailand 🇹🇭' },
-            { code: '+228', name: 'Togo 🇹🇬' },
-            { code: '+676', name: 'Tonga 🇹🇴' },
-            { code: '+1', name: 'Trinidad and Tobago 🇹🇹' },
-            { code: '+216', name: 'Tunisia 🇹🇳' },
-            { code: '+90', name: 'Turkey 🇹🇷' },
-            { code: '+993', name: 'Turkmenistan 🇹🇲' },
-            { code: '+688', name: 'Tuvalu 🇹🇻' },
-            { code: '+256', name: 'Uganda 🇺🇬' },
-            { code: '+380', name: 'Ukraine 🇺🇦' },
-            { code: '+971', name: 'UAE 🇦🇪' },
-            { code: '+44', name: 'United Kingdom 🇬🇧' },
-            { code: '+1', name: 'United States 🇺🇸' },
-            { code: '+598', name: 'Uruguay 🇺🇾' },
-            { code: '+998', name: 'Uzbekistan 🇺🇿' },
-            { code: '+678', name: 'Vanuatu 🇻🇺' },
-            { code: '+39', name: 'Vatican City 🇻🇦' },
-            { code: '+58', name: 'Venezuela 🇻🇪' },
-            { code: '+84', name: 'Vietnam 🇻🇳' },
-            { code: '+967', name: 'Yemen 🇾🇪' },
-            { code: '+260', name: 'Zambia 🇿🇲' },
-            { code: '+263', name: 'Zimbabwe 🇿🇼' }
-        ];
-        countries.forEach(country => {
+        const codes = Object.keys(countryPhoneRules).sort();
+        codes.forEach(code => {
+            const rule = countryPhoneRules[code];
             const option = document.createElement('option');
-            option.value = country.code;
-            option.textContent = country.name + ' (' + country.code + ')';
+            option.value = code;
+            option.textContent = rule.name + ' ' + code;
             this.countryCode.appendChild(option);
         });
     }
@@ -341,13 +338,62 @@ class ContactForm {
             const code = this.countryCode.value;
             this.phonePrefix.textContent = code || '+';
             this.phoneNumber.disabled = !code;
+            this.currentRule = code ? countryPhoneRules[code] : null;
+            this.updatePhoneHint();
+            this.updatePlaceholder();
             if (code) { this.phoneNumber.focus(); }
         });
+        this.phoneNumber.addEventListener('input', () => {
+            this.validatePhoneLive();
+        });
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    }
+    updatePhoneHint() {
+        const hintEl = document.querySelector('#phoneWrapper').parentElement.querySelector('.hint');
+        if (this.currentRule) {
+            hintEl.textContent = this.currentRule.name + ' phone: ' + this.currentRule.minLen + '-' + this.currentRule.maxLen + ' digits. Example: ' + this.currentRule.example;
+        } else {
+            hintEl.textContent = 'Select a country first';
+        }
+    }
+    updatePlaceholder() {
+        if (this.currentRule) {
+            this.phoneNumber.placeholder = this.currentRule.example;
+        } else {
+            this.phoneNumber.placeholder = '793908671';
+        }
+    }
+    validatePhoneLive() {
+        const phone = this.phoneNumber.value;
+        const phoneError = document.getElementById('phoneError');
+        if (!this.currentRule) return true;
+
+        // Remove non-digits
+        const digitsOnly = phone.replace(/\D/g, '');
+
+        if (digitsOnly.length > 0) {
+            const startsWithValid = this.currentRule.startsWith.some(prefix => digitsOnly.startsWith(prefix));
+            const lengthValid = digitsOnly.length >= this.currentRule.minLen && digitsOnly.length <= this.currentRule.maxLen;
+
+            if (!startsWithValid) {
+                phoneError.textContent = '⚠ Phone must start with ' + this.currentRule.startsWith.join(', ') + ' for ' + this.currentRule.name;
+                phoneError.classList.add('show');
+                return false;
+            }
+            if (!lengthValid) {
+                phoneError.textContent = '⚠ Phone must be ' + this.currentRule.minLen + '-' + this.currentRule.maxLen + ' digits for ' + this.currentRule.name;
+                phoneError.classList.add('show');
+                return false;
+            }
+        }
+
+        phoneError.classList.remove('show');
+        return true;
     }
     validateForm() {
         let isValid = true;
         document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+
         if (!this.fullName.value.trim()) {
             document.getElementById('nameError').classList.add('show');
             isValid = false;
@@ -356,16 +402,30 @@ class ContactForm {
             document.getElementById('countryError').classList.add('show');
             isValid = false;
         }
+
         const code = this.countryCode.value;
-        const phone = this.phoneNumber.value;
+        const phone = this.phoneNumber.value.replace(/\D/g, '');
         const fullPhone = code + phone;
-        if (!phone || !/^\d+$/.test(phone)) {
+
+        if (!phone) {
+            document.getElementById('phoneError').textContent = '⚠ Please enter your phone number';
             document.getElementById('phoneError').classList.add('show');
             isValid = false;
-        } else if (code && !phone.startsWith(code.replace('+', ''))) {
-            document.getElementById('phoneError').classList.add('show');
-            isValid = false;
+        } else if (this.currentRule) {
+            const startsWithValid = this.currentRule.startsWith.some(prefix => phone.startsWith(prefix));
+            const lengthValid = phone.length >= this.currentRule.minLen && phone.length <= this.currentRule.maxLen;
+
+            if (!startsWithValid) {
+                document.getElementById('phoneError').textContent = '⚠ Phone must start with ' + this.currentRule.startsWith.join(', ') + ' for ' + this.currentRule.name;
+                document.getElementById('phoneError').classList.add('show');
+                isValid = false;
+            } else if (!lengthValid) {
+                document.getElementById('phoneError').textContent = '⚠ Phone must be ' + this.currentRule.minLen + '-' + this.currentRule.maxLen + ' digits for ' + this.currentRule.name;
+                document.getElementById('phoneError').classList.add('show');
+                isValid = false;
+            }
         }
+
         const duplicates = MembersCounter.memberExists(fullPhone, this.email.value);
         if (duplicates.phoneExists) {
             document.getElementById('duplicateError').classList.add('show');
@@ -375,28 +435,36 @@ class ContactForm {
             document.getElementById('emailDuplicateError').classList.add('show');
             isValid = false;
         }
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(this.email.value)) {
             document.getElementById('emailError').classList.add('show');
             isValid = false;
         }
+
         return isValid;
     }
     handleSubmit(e) {
         e.preventDefault();
         if (!this.validateForm()) return;
+
+        const code = this.countryCode.value;
+        const phoneDigits = this.phoneNumber.value.replace(/\D/g, '');
         const memberData = {
             name: this.fullName.value.trim(),
-            countryCode: this.countryCode.value,
-            phone: this.countryCode.value + this.phoneNumber.value,
+            countryCode: code,
+            phone: code + phoneDigits,
             email: this.email.value.trim()
         };
+
         MembersCounter.addMember(memberData);
         document.getElementById('successModal').classList.add('show');
         if (this.whatsappSection) { this.whatsappSection.classList.add('show'); }
         this.form.reset();
         this.phonePrefix.textContent = '+';
         this.phoneNumber.disabled = true;
+        this.currentRule = null;
+        this.updatePhoneHint();
     }
 }
 
