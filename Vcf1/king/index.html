@@ -163,68 +163,46 @@
         .stat-card h3 { font-family: 'Space Grotesk', monospace; font-size: 22px; font-weight: 700; line-height: 1; }
         .stat-card p { font-size: 9px; opacity: 0.85; margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Verified Members Counter - Admin Style */
-        .members-counter-admin {
-            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
-            padding: 20px; margin-bottom: 12px; display: flex;
-            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
-            position: relative; overflow: hidden;
+        /* Circular Counter */
+        .counter-wrap {
+            display: flex; justify-content: center; margin-bottom: 12px;
         }
-        .members-counter-admin::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, var(--success), #00bcd4, var(--success));
-            background-size: 200% 100%; animation: shimmer 3s infinite;
-            border-radius: 16px 16px 0 0;
+        .counter-circle {
+            position: relative; width: 120px; height: 120px;
+            display: flex; align-items: center; justify-content: center;
         }
-        .counter-admin-left { display: flex; align-items: center; gap: 16px; }
-        .counter-admin-icon {
-            width: 48px; height: 48px; background: linear-gradient(135deg, var(--success), #00bcd4);
-            border-radius: 14px; display: flex; align-items: center; justify-content: center;
-            font-size: 22px; box-shadow: 0 4px 20px rgba(0,230,118,0.15);
-            animation: bounce 2s ease infinite;
+        .counter-ring {
+            position: absolute; inset: 0; border-radius: 50%;
+            border: 3px solid rgba(16, 185, 129, 0.15);
         }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+        .counter-ring-fill {
+            position: absolute; inset: -3px; border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #10b981;
+            border-right-color: #06b6d4;
+            animation: ringSpin 3s linear infinite;
         }
-        .counter-admin-stats h2 {
-            font-family: 'Space Grotesk', monospace; font-size: 32px; font-weight: 700;
-            background: linear-gradient(135deg, var(--success), #00bcd4);
+        @keyframes ringSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .counter-inner {
+            position: relative; z-index: 1; text-align: center;
+        }
+        .counter-inner h2 {
+            font-family: 'Space Grotesk', monospace; font-size: 28px; font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
             line-height: 1;
         }
-        .counter-admin-stats p {
-            font-size: 10px; color: var(--text-muted); text-transform: uppercase;
-            letter-spacing: 1.5px; margin-top: 4px;
+        .counter-inner p {
+            font-size: 9px; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-top: 3px;
         }
-        .counter-admin-right { display: flex; align-items: center; gap: 12px; }
-        .counter-admin-pulse {
-            width: 12px; height: 12px; background: var(--success); border-radius: 50%;
-            position: relative; animation: livePulse 2s ease infinite;
-        }
-        .counter-admin-pulse::before {
-            content: ''; position: absolute; inset: -4px; border-radius: 50%;
-            border: 2px solid var(--success); animation: ripple 2s ease infinite;
+        .counter-dot {
+            position: absolute; bottom: 6px; right: 6px;
+            width: 10px; height: 10px; background: #10b981; border-radius: 50%;
+            animation: livePulse 2s ease infinite;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
         }
         @keyframes livePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-        @keyframes ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
-        .counter-admin-bar {
-            width: 100%; height: 4px; background: var(--bg-input); border-radius: 2px;
-            margin-top: 16px; overflow: hidden; position: relative;
-        }
-        .counter-admin-progress {
-            height: 100%; background: linear-gradient(90deg, var(--success), #00bcd4);
-            border-radius: 2px; transition: width 1s ease; position: relative;
-        }
-        .counter-admin-progress::after {
-            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 20px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
-            animation: shimmer 2s ease infinite;
-        }
-        .counter-admin-sub {
-            font-size: 10px; color: var(--text-muted); margin-top: 10px;
-            text-align: center; text-transform: uppercase; letter-spacing: 1px;
-        }
 
         /* Actions */
         .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -315,7 +293,7 @@
             .dash-header h1 { font-size: 14px; }
             .stat-card { padding: 8px 14px; min-width: 70px; }
             .stat-card h3 { font-size: 18px; }
-            .counter-admin-stats h2 { font-size: 24px; }
+            .counter-inner h2 { font-size: 22px; }
         }
     </style>
 </head>
@@ -373,23 +351,16 @@
             </div>
         </div>
 
-        <!-- Verified Members Counter -->
-        <div class="members-counter-admin" id="membersCounter">
-            <div class="counter-admin-left">
-                <div class="counter-admin-icon">👥</div>
-                <div class="counter-admin-stats">
+        <!-- Circular Counter -->
+        <div class="counter-wrap">
+            <div class="counter-circle">
+                <div class="counter-ring"></div>
+                <div class="counter-ring-fill"></div>
+                <div class="counter-inner">
                     <h2 id="verifiedCount">0</h2>
-                    <p>Verified Members</p>
+                    <p>Verified</p>
                 </div>
-            </div>
-            <div class="counter-admin-right">
-                <div class="counter-admin-pulse"></div>
-            </div>
-            <div style="width:100%;">
-                <div class="counter-admin-bar">
-                    <div class="counter-admin-progress" id="memberProgress" style="width:0%"></div>
-                </div>
-                <div class="counter-admin-sub">Real-time member count from form submissions</div>
+                <div class="counter-dot"></div>
             </div>
         </div>
 
@@ -433,21 +404,6 @@
     <script>
         const ADMIN_PASSWORD = "admin123";
         let contacts = [], selectedContacts = new Set();
-
-        // ========== PHONE NUMBER FORMATTING ==========
-        function formatPhone(phone) {
-            if (!phone) return '';
-            phone = String(phone).trim();
-            if (phone.charAt(0) !== '+') {
-                return '+' + phone;
-            }
-            return phone;
-        }
-
-        function stripPhone(phone) {
-            if (!phone) return '';
-            return String(phone).replace(/^\+/, '').trim();
-        }
 
         // Particles
         function createParticles() {
@@ -522,40 +478,25 @@
             document.getElementById('loginError').style.display = 'none';
         }
 
-        // ========== VERIFIED MEMBERS COUNTER ==========
-        function updateMembersCounter() {
+        // Circular Counter
+        function updateCounter() {
             const count = contacts.length;
-            const countEl = document.getElementById('verifiedCount');
-            const progressEl = document.getElementById('memberProgress');
-            const maxMembers = 1000;
-
-            // Animate the number
+            const el = document.getElementById('verifiedCount');
             let current = 0;
             const step = Math.max(1, Math.ceil(count / 20));
             const animate = () => {
-                if (current >= count) {
-                    current = count;
-                    countEl.textContent = current.toLocaleString();
-                    return;
-                }
-                current += step;
-                if (current > count) current = count;
-                countEl.textContent = current.toLocaleString();
+                if (current >= count) { current = count; el.textContent = current.toLocaleString(); return; }
+                current += step; if (current > count) current = count;
+                el.textContent = current.toLocaleString();
                 requestAnimationFrame(animate);
             };
             animate();
-
-            // Update progress bar
-            const progress = Math.min((count / maxMembers) * 100, 100);
-            progressEl.style.width = progress + '%';
         }
 
         // Data
         function loadContacts() {
             contacts = JSON.parse(localStorage.getItem('verifiedMembers') || '[]');
-            updateStats();
-            updateMembersCounter();
-            renderContacts();
+            updateStats(); updateCounter(); renderContacts();
         }
         function updateStats() {
             document.getElementById('totalContacts').textContent = contacts.length;
@@ -566,11 +507,8 @@
         function getFiltered() {
             const s = document.getElementById('searchInput').value.toLowerCase();
             return contacts.filter(c => {
-                const phoneWithPlus = formatPhone(c.phone).toLowerCase();
-                const phoneWithoutPlus = stripPhone(c.phone).toLowerCase();
                 return c.name.toLowerCase().includes(s) ||
-                       phoneWithPlus.includes(s) ||
-                       phoneWithoutPlus.includes(s) ||
+                       c.phone.toLowerCase().includes(s) ||
                        c.email.toLowerCase().includes(s);
             });
         }
@@ -579,21 +517,13 @@
             const filtered = getFiltered();
             const tbody = document.getElementById('contactsTableBody');
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">📂</div><h3>No contacts found</h3><p>${contacts.length===0?'No contacts added yet.':'No matches found.'}</p></div></td></tr>`;
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">📂</div><h3>No contacts found</h3><p>'+(contacts.length===0?'No contacts added yet.':'No matches found.')+'</p></div></td></tr>';
                 return;
             }
             const today = new Date().toDateString();
             tbody.innerHTML = filtered.map(c => {
                 const isToday = new Date(c.verifiedAt).toDateString() === today;
-                const displayPhone = formatPhone(c.phone);
-                return `<tr>
-                    <td class="checkbox-col"><input type="checkbox" ${selectedContacts.has(c.id)?'checked':''} onchange="toggleSelect('${c.id}')"></td>
-                    <td class="name-cell">${escapeHtml(c.name)}</td>
-                    <td class="phone-cell">${escapeHtml(displayPhone)}</td>
-                    <td>${escapeHtml(c.email)}</td>
-                    <td><span class="badge ${isToday?'badge-today':'badge-old'}">${isToday?'Today':formatDate(c.verifiedAt)}</span></td>
-                    <td><button class="btn-del" onclick="deleteContact('${c.id}')">Delete</button></td>
-                </tr>`;
+                return '<tr><td class="checkbox-col"><input type="checkbox" '+(selectedContacts.has(c.id)?'checked':'')+' onchange="toggleSelect(''+c.id+'')"></td><td class="name-cell">'+escapeHtml(c.name)+'</td><td class="phone-cell">'+escapeHtml(c.phone)+'</td><td>'+escapeHtml(c.email)+'</td><td><span class="badge '+(isToday?'badge-today':'badge-old')+'">'+(isToday?'Today':formatDate(c.verifiedAt))+'</span></td><td><button class="btn-del" onclick="deleteContact(''+c.id+'')">Delete</button></td></tr>';
             }).join('');
         }
 
@@ -612,17 +542,13 @@
             contacts = contacts.filter(c => c.id !== id);
             selectedContacts.delete(id);
             localStorage.setItem('verifiedMembers', JSON.stringify(contacts));
-            updateStats();
-            updateMembersCounter();
-            renderContacts();
+            updateStats(); updateCounter(); renderContacts();
         }
         function clearAll() {
             if (!confirm('Delete ALL contacts? This cannot be undone!')) return;
             contacts = []; selectedContacts.clear();
             localStorage.removeItem('verifiedMembers');
-            updateStats();
-            updateMembersCounter();
-            renderContacts();
+            updateStats(); updateCounter(); renderContacts();
         }
 
         function generateVCFContent(selOnly=false) {
@@ -630,16 +556,7 @@
             if (target.length===0) return '';
             let vcf = '';
             target.forEach(c => {
-                const phoneWithPlus = formatPhone(c.phone);
-                vcf += `BEGIN:VCARD
-VERSION:3.0
-FN:${c.name}
-N:${c.name.split(' ').reverse().join(';')};;;
-TEL;TYPE=CELL:${phoneWithPlus}
-EMAIL:${c.email}
-NOTE:Verified ${new Date(c.verifiedAt).toLocaleString()}
-END:VCARD
-`;
+                vcf += 'BEGIN:VCARD\nVERSION:3.0\nFN:'+c.name+'\nN:'+c.name.split(' ').reverse().join(';')+';;;\nTEL;TYPE=CELL:'+c.phone+'\nEMAIL:'+c.email+'\nNOTE:Verified '+new Date(c.verifiedAt).toLocaleString()+'\nEND:VCARD\n';
             });
             return vcf;
         }
@@ -648,7 +565,7 @@ END:VCARD
             const vcf = generateVCFContent();
             if (!vcf) { alert('No contacts to export!'); return; }
             downloadFile(vcf, 'contacts.vcf', 'text/vcard');
-            alert(`VCF generated with ${contacts.length} contacts!`);
+            alert('VCF generated with '+contacts.length+' contacts!');
         }
         function previewVCF() {
             const vcf = generateVCFContent();
@@ -661,12 +578,9 @@ END:VCARD
 
         function exportCSV() {
             if (contacts.length===0) { alert('No contacts to export!'); return; }
-            let csv = 'Name,Country Code,Phone,Email,Date Verified
-';
+            let csv = 'Name,Country Code,Phone,Email,Date Verified\n';
             contacts.forEach(c => {
-                const phoneWithPlus = formatPhone(c.phone);
-                csv += `"${c.name}","${c.countryCode}","${phoneWithPlus}","${c.email}","${new Date(c.verifiedAt).toLocaleString()}"
-`;
+                csv += '"'+c.name+'","'+c.countryCode+'","'+c.phone+'","'+c.email+'","'+new Date(c.verifiedAt).toLocaleString()+'"\n';
             });
             downloadFile(csv, 'contacts.csv', 'text/csv');
         }
@@ -683,7 +597,7 @@ END:VCARD
         function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
         function formatDate(ts) {
             const d = new Date(ts), n = new Date(), diff = n-d, days = Math.floor(diff/(1000*60*60*24));
-            if (days===0) return 'Today'; if (days===1) return 'Yesterday'; if (days<7) return `${days}d ago`;
+            if (days===0) return 'Today'; if (days===1) return 'Yesterday'; if (days<7) return days+'d ago';
             return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
         }
 
