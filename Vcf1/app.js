@@ -1,169 +1,117 @@
-// ===== THEME MANAGEMENT =====
+// ===== THEME MANAGEMENT (Dark Mode Default) =====
 class ThemeManager {
     constructor() {
         this.body = document.body;
         this.moonIcon = document.getElementById('moonIcon');
         this.sunIcon = document.getElementById('sunIcon');
         this.themeToggle = document.getElementById('themeToggle');
-
         this.init();
     }
-
     init() {
-        // Default is dark mode - body already has 'dark-mode' class in HTML
-        // Only check localStorage if user has explicitly toggled before
         const savedTheme = localStorage.getItem('theme');
-
-        if (savedTheme === 'light') {
-            this.setLightMode();
-        } else {
-            // Ensure dark mode is set (default)
-            this.setDarkMode();
-        }
-
+        if (savedTheme === 'light') { this.setLightMode(); } else { this.setDarkMode(); }
         this.themeToggle.addEventListener('click', () => this.toggle());
     }
-
     setDarkMode() {
         this.body.classList.remove('light-mode');
         this.body.classList.add('dark-mode');
-        this.moonIcon.style.display = 'block';
-        this.sunIcon.style.display = 'none';
+        if (this.moonIcon) this.moonIcon.style.display = 'block';
+        if (this.sunIcon) this.sunIcon.style.display = 'none';
         localStorage.setItem('theme', 'dark');
     }
-
     setLightMode() {
         this.body.classList.remove('dark-mode');
         this.body.classList.add('light-mode');
-        this.moonIcon.style.display = 'none';
-        this.sunIcon.style.display = 'block';
+        if (this.moonIcon) this.moonIcon.style.display = 'none';
+        if (this.sunIcon) this.sunIcon.style.display = 'block';
         localStorage.setItem('theme', 'light');
     }
-
     toggle() {
-        if (this.body.classList.contains('dark-mode')) {
-            this.setLightMode();
-        } else {
-            this.setDarkMode();
-        }
+        if (this.body.classList.contains('dark-mode')) { this.setLightMode(); } else { this.setDarkMode(); }
     }
 }
 
-// ===== VERIFIED MEMBERS COUNTER =====
+// ===== CIRCULAR MEMBERS COUNTER =====
 class MembersCounter {
     constructor() {
         this.count = 0;
         this.targetCount = 0;
         this.element = document.getElementById('verifiedCount');
-        this.progressElement = document.getElementById('memberProgress');
-        this.maxMembers = 1000; // Adjust based on your expected max
-
         this.init();
     }
-
     init() {
-        // Load exact count from localStorage on page load
         this.loadCount();
-
-        // Animate on load
         this.animateEntrance();
     }
-
     loadCount() {
         const stored = localStorage.getItem('verifiedMembers');
         const members = stored ? JSON.parse(stored) : [];
         this.targetCount = members.length;
-        this.count = 0; // Start from 0 for animation
+        this.count = 0;
         this.updateDisplay();
     }
-
     updateDisplay() {
         if (this.count === this.targetCount) return;
-
         const diff = this.targetCount - this.count;
-        const step = Math.max(1, Math.ceil(diff / 15)); // Smooth animation steps
-
+        const step = Math.max(1, Math.ceil(diff / 15));
         const animate = () => {
             if (Math.abs(this.targetCount - this.count) <= step) {
                 this.count = this.targetCount;
                 this.render();
                 return;
             }
-
             this.count += step;
             this.render();
             requestAnimationFrame(animate);
         };
-
         animate();
     }
-
     render() {
-        this.element.textContent = this.count.toLocaleString();
-        this.element.classList.add('updating');
-
-        setTimeout(() => {
-            this.element.classList.remove('updating');
-        }, 300);
-
-        // Update progress bar
-        const progress = Math.min((this.count / this.maxMembers) * 100, 100);
-        this.progressElement.style.width = `${progress}%`;
+        if (this.element) {
+            this.element.textContent = this.count.toLocaleString();
+            this.element.classList.add('updating');
+            setTimeout(() => this.element.classList.remove('updating'), 300);
+        }
     }
-
     animateEntrance() {
-        const card = document.querySelector('.members-counter-card');
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-
-        setTimeout(() => {
-            card.style.transition = 'all 0.6s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, 300);
+        const card = document.getElementById('membersCounter');
+        if (card) {
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            }, 300);
+        }
     }
-
-    // Call this when a new member is successfully verified
     static addMember(memberData) {
         const stored = localStorage.getItem('verifiedMembers');
         const members = stored ? JSON.parse(stored) : [];
-
-        // Add new member with timestamp
         members.push({
             ...memberData,
             verifiedAt: new Date().toISOString(),
             id: Date.now().toString(36) + Math.random().toString(36).substr(2)
         });
-
         localStorage.setItem('verifiedMembers', JSON.stringify(members));
-
-        // Update counter immediately
         if (window.membersCounter) {
             window.membersCounter.targetCount = members.length;
             window.membersCounter.updateDisplay();
         }
-
         return members.length;
     }
-
-    // Check if member exists (by phone or email)
     static memberExists(phone, email) {
         const stored = localStorage.getItem('verifiedMembers');
         const members = stored ? JSON.parse(stored) : [];
-
         return {
             phoneExists: members.some(m => m.phone === phone),
             emailExists: members.some(m => m.email === email)
         };
     }
-
-    // Get all members (for admin preview)
     static getAllMembers() {
         const stored = localStorage.getItem('verifiedMembers');
         return stored ? JSON.parse(stored) : [];
     }
-
-    // Reset all (admin only)
     static resetAll() {
         localStorage.removeItem('verifiedMembers');
         if (window.membersCounter) {
@@ -184,17 +132,12 @@ class ContactForm {
         this.phonePrefix = document.getElementById('phonePrefix');
         this.email = document.getElementById('email');
         this.whatsappSection = document.getElementById('whatsappSection');
-        this.whatsappBtn = document.getElementById('whatsappBtn');
-
         this.init();
     }
-
     init() {
         this.populateCountries();
         this.setupEventListeners();
-        this.setupPhoneValidation();
     }
-
     populateCountries() {
         const countries = [
             { code: '+93', name: 'Afghanistan 🇦🇫' },
@@ -386,64 +329,36 @@ class ContactForm {
             { code: '+260', name: 'Zambia 🇿🇲' },
             { code: '+263', name: 'Zimbabwe 🇿🇼' }
         ];
-
         countries.forEach(country => {
             const option = document.createElement('option');
             option.value = country.code;
-            option.textContent = `${country.name} (${country.code})`;
+            option.textContent = country.name + ' (' + country.code + ')';
             this.countryCode.appendChild(option);
         });
     }
-
     setupEventListeners() {
         this.countryCode.addEventListener('change', () => {
             const code = this.countryCode.value;
             this.phonePrefix.textContent = code || '+';
             this.phoneNumber.disabled = !code;
-            if (code) {
-                this.phoneNumber.focus();
-            }
+            if (code) { this.phoneNumber.focus(); }
         });
-
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     }
-
-    setupPhoneValidation() {
-        this.phoneNumber.addEventListener('input', () => {
-            const code = this.countryCode.value;
-            const phone = this.phoneNumber.value;
-
-            if (code && phone && !phone.startsWith(code.replace('+', ''))) {
-                this.phoneNumber.setCustomValidity('Phone must start with country code');
-            } else {
-                this.phoneNumber.setCustomValidity('');
-            }
-        });
-    }
-
     validateForm() {
         let isValid = true;
-
-        // Reset errors
         document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
-
-        // Validate name
         if (!this.fullName.value.trim()) {
             document.getElementById('nameError').classList.add('show');
             isValid = false;
         }
-
-        // Validate country
         if (!this.countryCode.value) {
             document.getElementById('countryError').classList.add('show');
             isValid = false;
         }
-
-        // Validate phone
         const code = this.countryCode.value;
         const phone = this.phoneNumber.value;
         const fullPhone = code + phone;
-
         if (!phone || !/^\d+$/.test(phone)) {
             document.getElementById('phoneError').classList.add('show');
             isValid = false;
@@ -451,73 +366,38 @@ class ContactForm {
             document.getElementById('phoneError').classList.add('show');
             isValid = false;
         }
-
-        // Check duplicates
         const duplicates = MembersCounter.memberExists(fullPhone, this.email.value);
-
         if (duplicates.phoneExists) {
             document.getElementById('duplicateError').classList.add('show');
             isValid = false;
         }
-
         if (duplicates.emailExists) {
             document.getElementById('emailDuplicateError').classList.add('show');
             isValid = false;
         }
-
-        // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(this.email.value)) {
             document.getElementById('emailError').classList.add('show');
             isValid = false;
         }
-
         return isValid;
     }
-
     handleSubmit(e) {
         e.preventDefault();
-
         if (!this.validateForm()) return;
-
         const memberData = {
             name: this.fullName.value.trim(),
             countryCode: this.countryCode.value,
             phone: this.countryCode.value + this.phoneNumber.value,
             email: this.email.value.trim()
         };
-
-        // Add member and get new count
-        const newCount = MembersCounter.addMember(memberData);
-
-        // Show success modal
-        showSuccessModal();
-
-        // Show WhatsApp section
-        this.whatsappSection.classList.add('show');
-
-        // Reset form
+        MembersCounter.addMember(memberData);
+        document.getElementById('successModal').classList.add('show');
+        if (this.whatsappSection) { this.whatsappSection.classList.add('show'); }
         this.form.reset();
         this.phonePrefix.textContent = '+';
         this.phoneNumber.disabled = true;
     }
-}
-
-// ===== MODAL FUNCTIONS =====
-function showSuccessModal() {
-    document.getElementById('successModal').classList.add('show');
-}
-
-function closeModal() {
-    document.getElementById('successModal').classList.remove('show');
-}
-
-function addAnother() {
-    closeModal();
-    document.getElementById('whatsappSection').classList.remove('show');
-    document.getElementById('contactForm').reset();
-    document.getElementById('phonePrefix').textContent = '+';
-    document.getElementById('phoneNumber').disabled = true;
 }
 
 // ===== COUNTDOWN TIMER =====
@@ -527,39 +407,31 @@ class CountdownTimer {
         this.hoursEl = document.getElementById('cdHours');
         this.minsEl = document.getElementById('cdMins');
         this.secsEl = document.getElementById('cdSecs');
-
-        // Set target date (you can adjust this)
         this.targetDate = new Date('2026-06-15T00:00:00').getTime();
-
         this.init();
     }
-
     init() {
         this.update();
         setInterval(() => this.update(), 1000);
     }
-
     update() {
         const now = new Date().getTime();
         const distance = this.targetDate - now;
-
         if (distance < 0) {
-            this.daysEl.textContent = '00';
-            this.hoursEl.textContent = '00';
-            this.minsEl.textContent = '00';
-            this.secsEl.textContent = '00';
+            if (this.daysEl) this.daysEl.textContent = '00';
+            if (this.hoursEl) this.hoursEl.textContent = '00';
+            if (this.minsEl) this.minsEl.textContent = '00';
+            if (this.secsEl) this.secsEl.textContent = '00';
             return;
         }
-
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        this.daysEl.textContent = String(days).padStart(2, '0');
-        this.hoursEl.textContent = String(hours).padStart(2, '0');
-        this.minsEl.textContent = String(minutes).padStart(2, '0');
-        this.secsEl.textContent = String(seconds).padStart(2, '0');
+        if (this.daysEl) this.daysEl.textContent = String(days).padStart(2, '0');
+        if (this.hoursEl) this.hoursEl.textContent = String(hours).padStart(2, '0');
+        if (this.minsEl) this.minsEl.textContent = String(minutes).padStart(2, '0');
+        if (this.secsEl) this.secsEl.textContent = String(seconds).padStart(2, '0');
     }
 }
 
@@ -571,91 +443,83 @@ class StatusBar {
         this.batteryFill = document.getElementById('batteryFill');
         this.batteryPercent = document.getElementById('batteryPercent');
         this.chargingIcon = document.getElementById('chargingIcon');
-
         this.init();
     }
-
     init() {
         this.updateDateTime();
         setInterval(() => this.updateDateTime(), 1000);
         this.updateBattery();
     }
-
     updateDateTime() {
         const now = new Date();
-        this.dateEl.textContent = now.toLocaleDateString('en-GB');
-        this.timeEl.textContent = now.toLocaleTimeString('en-GB');
+        if (this.dateEl) this.dateEl.textContent = now.toLocaleDateString('en-GB');
+        if (this.timeEl) this.timeEl.textContent = now.toLocaleTimeString('en-GB');
     }
-
     async updateBattery() {
         if ('getBattery' in navigator) {
             try {
                 const battery = await navigator.getBattery();
-                this.updateBatteryUI(battery);
-
-                battery.addEventListener('levelchange', () => this.updateBatteryUI(battery));
-                battery.addEventListener('chargingchange', () => this.updateBatteryUI(battery));
+                const render = () => {
+                    const level = Math.round(battery.level * 100);
+                    if (this.batteryFill) this.batteryFill.style.width = level + '%';
+                    if (this.batteryPercent) this.batteryPercent.textContent = level + '%';
+                    if (this.batteryFill) {
+                        this.batteryFill.className = 'battery-fill';
+                        if (level > 60) this.batteryFill.classList.add('high');
+                        else if (level > 20) this.batteryFill.classList.add('medium');
+                        else this.batteryFill.classList.add('low');
+                    }
+                    if (this.chargingIcon) this.chargingIcon.style.display = battery.charging ? 'inline' : 'none';
+                };
+                render();
+                battery.addEventListener('levelchange', render);
+                battery.addEventListener('chargingchange', render);
             } catch (e) {
-                this.batteryPercent.textContent = '--%';
+                if (this.batteryPercent) this.batteryPercent.textContent = '--%';
             }
         } else {
-            this.batteryPercent.textContent = '--%';
+            if (this.batteryPercent) this.batteryPercent.textContent = '--%';
         }
     }
+}
 
-    updateBatteryUI(battery) {
-        const level = Math.round(battery.level * 100);
-        this.batteryFill.style.width = `${level}%`;
-        this.batteryPercent.textContent = `${level}%`;
-        this.chargingIcon.style.display = battery.charging ? 'inline' : 'none';
+// ===== MODAL FUNCTIONS =====
+function addAnother() {
+    document.getElementById('successModal').classList.remove('show');
+    const whatsappSection = document.getElementById('whatsappSection');
+    if (whatsappSection) whatsappSection.classList.remove('show');
+    const form = document.getElementById('contactForm');
+    if (form) form.reset();
+    const phonePrefix = document.getElementById('phonePrefix');
+    if (phonePrefix) phonePrefix.textContent = '+';
+    const phoneNumber = document.getElementById('phoneNumber');
+    if (phoneNumber) phoneNumber.disabled = true;
+}
 
-        this.batteryFill.className = 'battery-fill';
-        if (level > 60) this.batteryFill.classList.add('high');
-        else if (level > 20) this.batteryFill.classList.add('medium');
-        else this.batteryFill.classList.add('low');
-    }
+function closeModal() {
+    document.getElementById('successModal').classList.remove('show');
 }
 
 // ===== PARTICLES =====
 class Particles {
     constructor() {
         this.container = document.getElementById('particles');
-        this.init();
+        if (this.container) this.init();
     }
-
     init() {
         for (let i = 0; i < 30; i++) {
             this.createParticle();
         }
     }
-
     createParticle() {
         const particle = document.createElement('div');
-        particle.style.cssText = `
-            position: absolute;
-            width: ${Math.random() * 4 + 1}px;
-            height: ${Math.random() * 4 + 1}px;
-            background: rgba(16, 185, 129, ${Math.random() * 0.3 + 0.1});
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            animation: floatParticle ${Math.random() * 10 + 10}s linear infinite;
-            pointer-events: none;
-        `;
+        particle.style.cssText = 'position:absolute;width:' + (Math.random() * 4 + 1) + 'px;height:' + (Math.random() * 4 + 1) + 'px;background:rgba(16,185,129,' + (Math.random() * 0.3 + 0.1) + ');border-radius:50%;left:' + Math.random() * 100 + '%;top:' + Math.random() * 100 + '%;animation:floatParticle ' + (Math.random() * 10 + 10) + 's linear infinite;pointer-events:none;';
         this.container.appendChild(particle);
     }
 }
 
-// Add particle animation to CSS dynamically
 const particleStyle = document.createElement('style');
-particleStyle.textContent = `
-    @keyframes floatParticle {
-        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-    }
-`;
+particleStyle.textContent = '@keyframes floatParticle{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-100vh) rotate(360deg);opacity:0}}';
 document.head.appendChild(particleStyle);
 
 // ===== INITIALIZATION =====
