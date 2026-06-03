@@ -13,874 +13,7 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-scroll-behavior:smooth;
-}
-
-:root{
---bg:#000000;
---card:#0a0a0a;
---text:#ffffff;
---muted:#a0a0a0;
---primary:#3b82f6;
---secondary:#8b5cf6;
---border:rgba(255,255,255,0.08);
---glow:0 0 20px rgba(59,130,246,.4);
-}
-
-body.light{
---bg:#ffffff;
---card:#f8f9fa;
---text:#000000;
---muted:#6b7280;
---primary:#2563eb;
---secondary:#7c3aed;
---border:rgba(0,0,0,0.08);
---glow:0 0 15px rgba(37,99,235,.25);
-}
-
-body{
-font-family:'Space Grotesk',sans-serif;
-background:var(--bg);
-color:var(--text);
-overflow-x:hidden;
-transition:.4s;
-position:relative;
-}
-
-/* ======= FLOATING PARTICLES BACKGROUND ======= */
-.bg-particles {
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-pointer-events:none;
-z-index:0;
-overflow:hidden;
-}
-
-.floating-particle {
-position:absolute;
-border-radius:50%;
-background:var(--primary);
-opacity:0.15;
-animation:particleFall linear infinite;
-}
-
-body.light .floating-particle {
-opacity:0.12;
-}
-
-@keyframes particleFall {
-0% {
-  transform:translateY(-10vh) translateX(0);
-  opacity:0;
-}
-5% {
-  opacity:0.15;
-}
-95% {
-  opacity:0.15;
-}
-100% {
-  transform:translateY(110vh) translateX(20px);
-  opacity:0;
-}
-}
-
-/* ======= IMPROVED LOADER ======= */
-
-#loader{
-position:fixed;
-inset:0;
-background:#000000;
-z-index:99999;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-overflow:hidden;
-}
-
-body.light #loader {
-background:#ffffff;
-}
-
-/* Animated gradient background */
-.loader-bg{
-position:absolute;
-inset:0;
-background:
-  radial-gradient(circle at 20% 80%, rgba(59,130,246,0.15) 0%, transparent 50%),
-  radial-gradient(circle at 80% 20%, rgba(139,92,246,0.15) 0%, transparent 50%),
-  radial-gradient(circle at 50% 50%, rgba(16,185,129,0.08) 0%, transparent 60%);
-animation:bgPulse 4s ease-in-out infinite;
-}
-
-body.light .loader-bg {
-background:
-  radial-gradient(circle at 20% 80%, rgba(37,99,235,0.1) 0%, transparent 50%),
-  radial-gradient(circle at 80% 20%, rgba(124,58,237,0.1) 0%, transparent 50%),
-  radial-gradient(circle at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 60%);
-}
-
-@keyframes bgPulse{
-0%,100%{ opacity:0.6; }
-50%{ opacity:1; }
-}
-
-/* Grid overlay */
-.loader-grid{
-position:absolute;
-inset:0;
-background-image:
-  linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
-background-size:50px 50px;
-animation:gridMove 20s linear infinite;
-perspective:500px;
-}
-
-body.light .loader-grid {
-background-image:
-  linear-gradient(rgba(37,99,235,0.02) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(37,99,235,0.02) 1px, transparent 1px);
-}
-
-@keyframes gridMove{
-0%{ transform:translateY(0); }
-100%{ transform:translateY(50px); }
-}
-
-/* Floating particles in loader */
-.particle{
-position:absolute;
-border-radius:50%;
-animation:float linear infinite;
-opacity:0;
-}
-
-@keyframes float{
-0%{
-  transform:translateY(100vh) scale(0);
-  opacity:0;
-}
-10%{
-  opacity:0.8;
-}
-90%{
-  opacity:0.8;
-}
-100%{
-  transform:translateY(-20vh) scale(1);
-  opacity:0;
-}
-}
-
-/* Central holographic ring */
-.holo-ring{
-position:relative;
-width:200px;
-height:200px;
-margin-bottom:40px;
-}
-
-.holo-ring::before,
-.holo-ring::after{
-content:"";
-position:absolute;
-inset:0;
-border-radius:50%;
-border:2px solid transparent;
-}
-
-.holo-ring::before{
-border-top-color:var(--primary);
-border-right-color:var(--secondary);
-animation:spin1 2s linear infinite;
-}
-
-.holo-ring::after{
-inset:15px;
-border-bottom-color:var(--secondary);
-border-left-color:var(--primary);
-animation:spin2 2.5s linear infinite reverse;
-}
-
-@keyframes spin1{
-0%{ transform:rotate(0deg); }
-100%{ transform:rotate(360deg); }
-}
-
-@keyframes spin2{
-0%{ transform:rotate(0deg); }
-100%{ transform:rotate(360deg); }
-}
-
-/* Inner pulsing core */
-.holo-core{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:80px;
-height:80px;
-border-radius:50%;
-background:radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%);
-animation:corePulse 1.5s ease-in-out infinite;
-}
-
-@keyframes corePulse{
-0%,100%{ transform:translate(-50%,-50%) scale(0.8); opacity:0.5; }
-50%{ transform:translate(-50%,-50%) scale(1.2); opacity:1; }
-}
-
-/* Logo icon in center */
-.holo-icon{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:32px;
-color:var(--primary);
-text-shadow:0 0 20px var(--primary);
-z-index:10;
-animation:iconBreathe 2s ease-in-out infinite;
-}
-
-@keyframes iconBreathe{
-0%,100%{ transform:translate(-50%,-50%) scale(1); }
-50%{ transform:translate(-50%,-50%) scale(1.1); }
-}
-
-/* Loading text */
-.loader-title{
-position:relative;
-z-index:10;
-font-family:'Outfit',sans-serif;
-font-weight:700;
-font-size:18px;
-color:var(--text);
-text-align:center;
-padding:20px;
-text-shadow:0 0 15px rgba(59,130,246,0.8);
-letter-spacing:2px;
-text-transform:uppercase;
-}
-
-body.light .loader-title {
-text-shadow:0 0 15px rgba(37,99,235,0.4);
-}
-
-/* Typing effect cursor */
-.loader-title::after{
-content:"|";
-animation:blink 0.7s infinite;
-margin-left:4px;
-}
-
-@keyframes blink{
-0%,100%{ opacity:1; }
-50%{ opacity:0; }
-}
-
-/* Progress bar container */
-.progress-container{
-position:relative;
-z-index:10;
-width:280px;
-height:4px;
-background:rgba(255,255,255,0.1);
-border-radius:10px;
-overflow:hidden;
-margin-top:20px;
-}
-
-body.light .progress-container {
-background:rgba(0,0,0,0.1);
-}
-
-/* Progress fill */
-.progress-fill{
-height:100%;
-width:0%;
-background:linear-gradient(90deg, var(--primary), var(--secondary));
-border-radius:10px;
-box-shadow:0 0 10px var(--primary);
-animation:progressLoad 2.2s ease-out forwards;
-}
-
-@keyframes progressLoad{
-0%{ width:0%; }
-20%{ width:30%; }
-50%{ width:60%; }
-80%{ width:85%; }
-100%{ width:100%; }
-}
-
-/* Progress percentage */
-.progress-text{
-position:relative;
-z-index:10;
-margin-top:12px;
-font-family:'Outfit',sans-serif;
-font-weight:600;
-font-size:12px;
-color:var(--primary);
-letter-spacing:2px;
-}
-
-/* Status messages */
-.loader-status{
-position:relative;
-z-index:10;
-margin-top:15px;
-font-size:11px;
-color:var(--muted);
-font-family:'Space Grotesk',monospace;
-height:20px;
-}
-
-/* Binary rain effect */
-.binary{
-position:absolute;
-top:-100%;
-color:var(--primary);
-font-size:14px;
-font-family:'Space Grotesk',monospace;
-animation:fall linear infinite;
-opacity:.7;
-}
-
-@keyframes fall{
-to{
-transform:translateY(130vh);
-}
-}
-
-/* TOPBAR */
-
-.topbar{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:60px;
-backdrop-filter:blur(12px);
-background:rgba(0,0,0,.65);
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 15px;
-z-index:999;
-border-bottom:1px solid var(--border);
-}
-
-body.light .topbar {
-background:rgba(255,255,255,.75);
-}
-
-.left-top{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.menu-toggle{
-width:48px;
-height:48px;
-border:none;
-border-radius:14px;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-color:white;
-font-size:20px;
-cursor:pointer;
-box-shadow:var(--glow);
-transition:all 0.3s ease;
-position:relative;
-overflow:hidden;
-}
-
-.menu-toggle:hover{
-transform:scale(1.08) rotate(3deg);
-box-shadow:0 0 25px rgba(59,130,246,.6);
-}
-
-.menu-toggle:active{
-transform:scale(0.95);
-}
-
-.menu-toggle::after {
-content:"";
-position:absolute;
-top:-50%;
-left:-50%;
-width:200%;
-height:200%;
-background:linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-transform:rotate(45deg);
-transition:all 0.5s;
-opacity:0;
-}
-
-.menu-toggle:hover::after {
-opacity:1;
-animation:shine 0.5s ease-out;
-}
-
-@keyframes shine {
-0% { transform:translateX(-100%) translateY(-100%) rotate(45deg); }
-100% { transform:translateX(100%) translateY(100%) rotate(45deg); }
-}
-
-.status-area{
-display:flex;
-gap:12px;
-align-items:center;
-flex-wrap:wrap;
-font-size:13px;
-font-weight:500;
-font-family:'Space Grotesk',sans-serif;
-}
-
-.cyber-chip{
-padding:10px 16px;
-border-radius:16px;
-background:rgba(255,255,255,.06);
-border:1px solid var(--border);
-box-shadow:var(--glow);
-font-family:'Space Grotesk',sans-serif;
-transition:all 0.3s ease;
-}
-
-body.light .cyber-chip {
-background:rgba(0,0,0,.04);
-}
-
-.cyber-chip:hover {
-transform:translateY(-2px);
-box-shadow:0 0 20px rgba(59,130,246,.5);
-}
-
-.theme-btn{
-width:48px;
-height:48px;
-border-radius:50%;
-border:none;
-cursor:pointer;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-color:white;
-font-size:20px;
-box-shadow:var(--glow);
-transition:all 0.3s ease;
-position:relative;
-overflow:hidden;
-}
-
-.theme-btn:hover{
-transform:rotate(20deg) scale(1.1);
-box-shadow:0 0 25px rgba(59,130,246,.6);
-}
-
-.theme-btn:active{
-transform:scale(0.95);
-}
-
-.theme-btn::after {
-content:"";
-position:absolute;
-top:-50%;
-left:-50%;
-width:200%;
-height:200%;
-background:linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-transform:rotate(45deg);
-transition:all 0.5s;
-opacity:0;
-}
-
-.theme-btn:hover::after {
-opacity:1;
-animation:shine 0.5s ease-out;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-position:fixed;
-top:60px;
-left:0;
-width:300px;
-height:calc(100vh - 60px);
-overflow-y:auto;
-background:rgba(0,0,0,.97);
-backdrop-filter:blur(18px);
-padding:20px;
-border-right:1px solid var(--border);
-transition:.4s;
-z-index:998;
-}
-
-body.light .sidebar{
-background:rgba(255,255,255,.97);
-}
-
-.sidebar.hide{
-transform:translateX(-110%);
-}
-
-.profile{
-text-align:center;
-margin-bottom:30px;
-}
-
-.profile img{
-width:110px;
-height:110px;
-border-radius:50%;
-border:4px solid var(--primary);
-box-shadow:var(--glow);
-object-fit:cover;
-transition:all 0.4s ease;
-}
-
-.profile img:hover{
-transform:scale(1.08) rotate(3deg);
-box-shadow:0 0 30px rgba(59,130,246,.5);
-}
-
-.profile h2{
-margin-top:15px;
-font-family:'Outfit',sans-serif;
-font-weight:700;
-}
-
-.profile p{
-color:var(--muted);
-font-size:14px;
-font-family:'Space Grotesk',sans-serif;
-}
-
-.nav-item{
-display:flex;
-align-items:center;
-gap:12px;
-padding:14px 16px;
-margin-bottom:12px;
-border-radius:16px;
-text-decoration:none;
-color:var(--text);
-background:rgba(255,255,255,.03);
-border:1px solid transparent;
-transition:all 0.3s ease;
-font-family:'Space Grotesk',sans-serif;
-font-weight:500;
-position:relative;
-overflow:hidden;
-}
-
-body.light .nav-item {
-background:rgba(0,0,0,.02);
-}
-
-.nav-item:hover{
-transform:translateX(8px) scale(1.02);
-border-color:var(--primary);
-box-shadow:var(--glow);
-background:rgba(59,130,246,.08);
-}
-
-.nav-item:active{
-transform:scale(0.98);
-}
-
-.nav-item i{
-color:var(--primary);
-transition:all 0.3s ease;
-}
-
-.nav-item:hover i{
-transform:scale(1.2);
-}
-
-/* MAIN */
-
-.main{
-margin-left:300px;
-padding:90px 25px 40px;
-transition:.4s;
-position:relative;
-z-index:1;
-}
-
-.main.full{
-margin-left:0;
-}
-
-.hero{
-text-align:center;
-padding:40px 10px;
-}
-
-.hero h1{
-font-size:50px;
-font-family:'Outfit',sans-serif;
-font-weight:800;
-margin-bottom:15px;
-background:linear-gradient(90deg,var(--primary),var(--secondary));
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-}
-
-.hero p{
-max-width:800px;
-margin:auto;
-line-height:1.7;
-color:var(--muted);
-font-family:'Space Grotesk',sans-serif;
-font-size:16px;
-}
-
-.section-title{
-margin:50px 0 25px;
-font-size:28px;
-font-family:'Outfit',sans-serif;
-font-weight:700;
-display:flex;
-align-items:center;
-gap:12px;
-}
-
-.section-title::before{
-content:"";
-width:5px;
-height:30px;
-background:linear-gradient(var(--primary),var(--secondary));
-border-radius:10px;
-}
-
-/* SERVICES */
-
-.services{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:20px;
-}
-
-.card{
-background:var(--card);
-border:1px solid var(--border);
-padding:22px;
-border-radius:22px;
-position:relative;
-overflow:hidden;
-transition:all 0.4s ease;
-}
-
-body.light .card {
-box-shadow:0 2px 10px rgba(0,0,0,0.05);
-}
-
-.card::before{
-content:"";
-position:absolute;
-inset:0;
-background:linear-gradient(
-135deg,
-transparent,
-rgba(255,255,255,.04),
-transparent
-);
-pointer-events:none;
-}
-
-.card:hover{
-transform:translateY(-10px) scale(1.02);
-box-shadow:0 10px 40px rgba(59,130,246,.2);
-border-color:rgba(59,130,246,.3);
-}
-
-body.light .card:hover {
-box-shadow:0 10px 40px rgba(37,99,235,.15);
-}
-
-.card-number{
-position:absolute;
-top:15px;
-right:18px;
-font-size:14px;
-color:var(--primary);
-font-family:'Outfit',sans-serif;
-font-weight:700;
-}
-
-.card-icon{
-font-size:40px;
-margin-bottom:15px;
-color:var(--primary);
-text-shadow:var(--glow);
-transition:all 0.4s ease;
-}
-
-.card:hover .card-icon{
-transform:scale(1.2) rotate(8deg);
-}
-
-.card h3{
-margin-bottom:10px;
-font-size:22px;
-font-family:'Outfit',sans-serif;
-font-weight:700;
-}
-
-.card p{
-color:var(--muted);
-line-height:1.6;
-margin-bottom:20px;
-font-family:'Space Grotesk',sans-serif;
-}
-
-/* CYBER BUTTON - ATTRACTIVE & TAP FRIENDLY */
-
-.cyber-btn{
-display:inline-flex;
-align-items:center;
-gap:10px;
-padding:14px 22px;
-border-radius:16px;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-text-decoration:none;
-color:white;
-font-weight:700;
-font-size:15px;
-transition:all 0.3s ease;
-box-shadow:var(--glow);
-border:none;
-cursor:pointer;
-font-family:'Outfit',sans-serif;
-position:relative;
-overflow:hidden;
-min-height:48px;
-}
-
-.cyber-btn::before {
-content:"";
-position:absolute;
-top:0;
-left:-100%;
-width:100%;
-height:100%;
-background:linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-transition:all 0.5s ease;
-}
-
-.cyber-btn:hover::before {
-left:100%;
-}
-
-.cyber-btn:hover{
-transform:translateY(-3px) scale(1.05);
-box-shadow:0 8px 30px rgba(59,130,246,.5);
-}
-
-.cyber-btn:active{
-transform:scale(0.96);
-}
-
-/* FOOTER */
-
-.footer{
-margin-top:60px;
-padding:30px;
-text-align:center;
-border-top:1px solid var(--border);
-color:var(--muted);
-font-family:'Space Grotesk',sans-serif;
-position:relative;
-z-index:1;
-}
-
-/* SCROLLBAR */
-
-::-webkit-scrollbar{
-width:10px;
-}
-
-::-webkit-scrollbar-thumb{
-background:linear-gradient(var(--primary),var(--secondary));
-border-radius:20px;
-}
-
-::-webkit-scrollbar-track{
-background:var(--bg);
-}
-
-/* MOBILE */
-
-@media(max-width:900px){
-
-.sidebar{
-transform:translateX(-110%);
-}
-
-.sidebar.show{
-transform:translateX(0);
-}
-
-.main{
-margin-left:0;
-padding:90px 15px;
-}
-
-.hero h1{
-font-size:34px;
-}
-
-.status-area{
-gap:6px;
-font-size:11px;
-}
-
-.cyber-chip{
-padding:8px 12px;
-}
-
-/* Mobile loader adjustments */
-.holo-ring{
-  width:150px;
-  height:150px;
-}
-
-.holo-icon{
-  font-size:24px;
-}
-
-.loader-title{
-  font-size:14px;
-  letter-spacing:2px;
-}
-
-.progress-container{
-  width:220px;
-}
-
-.cyber-btn {
-  padding:16px 24px;
-  font-size:16px;
-  min-height:52px;
-  width:100%;
-  justify-content:center;
-}
-
-}
-
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -888,915 +21,368 @@ padding:8px 12px;
 <!-- ======= FLOATING PARTICLES BACKGROUND ======= -->
 <div class="bg-particles" id="bgParticles"></div>
 
-<!-- ======= IMPROVED LOADER ======= -->
-
+<!-- ======= LOADER ======= -->
 <div id="loader">
+  <div class="loader-bg"></div>
+  <div class="loader-grid"></div>
+  <div id="particles"></div>
+  <div id="binaryRain"></div>
 
-<!-- Animated background layers -->
-<div class="loader-bg"></div>
-<div class="loader-grid"></div>
+  <div class="holo-ring">
+    <div class="holo-core"></div>
+    <i class="fas fa-microchip holo-icon"></i>
+  </div>
 
-<!-- Floating particles container -->
-<div id="particles"></div>
+  <div class="loader-title" id="loaderText">Confronter System Initializing</div>
 
-<!-- Binary rain (retained) -->
-<div id="binaryRain"></div>
+  <div class="progress-container">
+    <div class="progress-fill"></div>
+  </div>
 
-<!-- Central holographic animation -->
-<div class="holo-ring">
-  <div class="holo-core"></div>
-  <i class="fas fa-microchip holo-icon"></i>
+  <div class="progress-text" id="progressText">0%</div>
+  <div class="loader-status" id="loaderStatus">Confronter System Connecting to neural network...</div>
 </div>
 
-<!-- Loading title with typing effect -->
-<div class="loader-title" id="loaderText">Confronter System Initializing</div>
-
-<!-- Progress bar -->
-<div class="progress-container">
-  <div class="progress-fill"></div>
-</div>
-
-<!-- Progress percentage -->
-<div class="progress-text" id="progressText">0%</div>
-
-<!-- Status messages -->
-<div class="loader-status" id="loaderStatus">Confronter System Connecting to neural network...</div>
-
-</div>
-
-<!-- TOPBAR -->
-
+<!-- ======= TOPBAR ======= -->
 <div class="topbar">
+  <div class="left-top">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
 
-<div class="left-top">
-
-<button class="menu-toggle" onclick="toggleSidebar()">
-<i class="fas fa-bars"></i>
-</button>
-
-<div class="status-area">
-
-<div class="cyber-chip" id="greeting">
-Welcome
-</div>
-
-<div class="cyber-chip" id="time">
-00:00:00
-</div>
-
-
-<div class="cyber-chip" id="battery">
-<i class="fas fa-battery-half"></i> Loading...
-</div>
-
-</div>
-
-</div>
-
-<button class="theme-btn" onclick="toggleTheme()" id="themeIcon">
-<i class="fas fa-moon"></i>
-</button>
-
-</div>
-
-<!-- SIDEBAR -->
-
-<aside class="sidebar" id="sidebar">
-
-<div class="profile">
-
-<img src="https://files.catbox.moe/akw4dk.jpg">
-
-<h2>Confronter</h2>
-
-<p>Tech Wizard & Digital Creator</p>
-
-</div>
-    <a href="https://confronter.top/payments" class="nav-item">
-<i class="fas fa-credit-card"></i>
-<span>Payments Portal</span>
-    </a>
-
-<a href="#home" class="nav-item">
-<i class="fas fa-house"></i>
-<span>Home</span>
-</a>
-
-<a href="#about" class="nav-item" onclick="setActive(this)">
-                        <i class="fas fa-user"></i>
-                        <span>About</span>    
-
-<a href="#services" class="nav-item">
-<i class="fas fa-rocket"></i>
-<span>Services</span>
-</a>
-
-<a href="https://confronter.top/calculator" class="nav-item">
-<i class="fas fa-calculator"></i>
-<span>Premium Calculator</span>
-</a>
-  <a href="https://confronter.top/Vcf1" class="nav-item">
-<i class="fas fa-vcard"></i>
-<span>Vcf Gains🚀</span>
-  </a>
-
-</a>
-  <a href="https://confronter.top/Vcf" class="nav-item">
-<i class="fas fa-vcard"></i>
-<span>Vcf Prefix King</span>
-  </a>
-
- <a href="https://confronter.top/Torch" class="nav-item">
-<i class="fas fa-fire"></i>
-<span>Premium Torch</span>
- </a>
-
-<a href="https://confronter.top/downloaders" target="_blank" class="nav-item">
-<i class="fas fa-download"></i>
-<span>Premium Downloaders</span>
-</a>
-
-<a href="https://confronter.top/payments" class="nav-item">
-<i class="fas fa-credit-card"></i>
-<span>Payments</span>
-</a>
-
-
-<a href="https://t.me/+gJJbcOWV0F1lNjQ0" target="_blank" class="nav-item">
-<i class="fas fa-film"></i>
-<span>18+ HD Movies</span>
-</a>
-
-<a href="https://t.me/addlist/pkCTYyLp2kgzNGE0" target="_blank" class="nav-item">
-<i class="fas fa-video"></i>
-<span>DJ Afro HD Movies</span>
-</a>
-
-<a href="https://t.me/+egJTW6hYbEMyOTJk" target="_blank" class="nav-item">
-<i class="fas fa-sim-card"></i>
-<span>Foreign Numbers</span>
-</a>
-
-<a href="https://t.me/confronter" target="_blank" class="nav-item">
-<i class="fab fa-telegram"></i>
-<span>Telegram</span>
-</a>
-    <div class="nav-section">
-                    <div class="nav-section-title">Confronter quick Access</div>
-                    <a href="https://wa.link/7ob8u4" class="nav-item">
-                        <i class="fab fa-whatsapp"></i>
-                        <span>WhatsApp Bot</span>
-                    </a>
-                    <a href="https://wa.link/5gne0r" class="nav-item" onclick="showAlert('Social Media Gains')">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Social Boost</span>
-                    </a>
-                    <a href="https://wa.link/262o7n" class="nav-item" onclick="showAlert('Web Development')">
-                        <i class="fas fa-code"></i>
-                        <span>Web Dev</span>
-                    </a>
+    <div class="status-area">
+      <div class="cyber-chip" id="greeting">Welcome</div>
+      <div class="cyber-chip" id="time">00:00:00</div>
+      <div class="cyber-chip" id="battery">
+        <i class="fas fa-battery-half"></i> Loading...
+      </div>
     </div>
-    <div class="social-links">
-                <a href="https://wa.link/a4gigg" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                <a href="https://t.me/confronter" title="Telegram"><i class="fab fa-telegram"></i></a>
-                <a href="mailto:confrontermfisa@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
-                <a href="https://github.com/confronter5" title="GitHub"><i class="fab fa-github"></i></a>
-                                                   </div>
+  </div>
 
+  <button class="theme-btn" onclick="toggleTheme()" id="themeIcon">
+    <i class="fas fa-moon"></i>
+  </button>
+</div>
+
+<!-- ======= SIDEBAR ======= -->
+<aside class="sidebar" id="sidebar">
+  <div class="profile">
+    <img src="https://files.catbox.moe/akw4dk.jpg" alt="Confronter Profile">
+    <h2>Confronter</h2>
+    <p>Tech Wizard & Digital Creator</p>
+  </div>
+
+  <a href="https://confronter.top/payments" class="nav-item">
+    <i class="fas fa-credit-card"></i>
+    <span>Payments Portal</span>
+  </a>
+
+  <a href="#home" class="nav-item">
+    <i class="fas fa-house"></i>
+    <span>Home</span>
+  </a>
+
+  <a href="#about" class="nav-item" onclick="setActive(this)">
+    <i class="fas fa-user"></i>
+    <span>About</span>
+  </a>
+
+  <a href="#services" class="nav-item">
+    <i class="fas fa-rocket"></i>
+    <span>Services</span>
+  </a>
+
+  <a href="https://confronter.top/calculator" class="nav-item">
+    <i class="fas fa-calculator"></i>
+    <span>Premium Calculator</span>
+  </a>
+
+  <a href="https://confronter.top/Vcf1" class="nav-item">
+    <i class="fas fa-vcard"></i>
+    <span>Vcf Gains🚀</span>
+  </a>
+
+  <a href="https://confronter.top/Vcf" class="nav-item">
+    <i class="fas fa-vcard"></i>
+    <span>Vcf Prefix King</span>
+  </a>
+
+  <a href="https://confronter.top/Torch" class="nav-item">
+    <i class="fas fa-fire"></i>
+    <span>Premium Torch</span>
+  </a>
+
+  <a href="https://confronter.top/downloaders" target="_blank" class="nav-item">
+    <i class="fas fa-download"></i>
+    <span>Premium Downloaders</span>
+  </a>
+
+  <a href="https://confronter.top/payments" class="nav-item">
+    <i class="fas fa-credit-card"></i>
+    <span>Payments</span>
+  </a>
+
+  <a href="https://t.me/+gJJbcOWV0F1lNjQ0" target="_blank" class="nav-item">
+    <i class="fas fa-film"></i>
+    <span>18+ HD Movies</span>
+  </a>
+
+  <a href="https://t.me/addlist/pkCTYyLp2kgzNGE0" target="_blank" class="nav-item">
+    <i class="fas fa-video"></i>
+    <span>DJ Afro HD Movies</span>
+  </a>
+
+  <a href="https://t.me/+egJTW6hYbEMyOTJk" target="_blank" class="nav-item">
+    <i class="fas fa-sim-card"></i>
+    <span>Foreign Numbers</span>
+  </a>
+
+  <a href="https://t.me/confronter" target="_blank" class="nav-item">
+    <i class="fab fa-telegram"></i>
+    <span>Telegram</span>
+  </a>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Confronter Quick Access</div>
+    <a href="https://wa.link/7ob8u4" class="nav-item">
+      <i class="fab fa-whatsapp"></i>
+      <span>WhatsApp Bot</span>
+    </a>
+    <a href="https://wa.link/5gne0r" class="nav-item" onclick="showAlert('Social Media Gains')">
+      <i class="fas fa-chart-line"></i>
+      <span>Social Boost</span>
+    </a>
+    <a href="https://wa.link/262o7n" class="nav-item" onclick="showAlert('Web Development')">
+      <i class="fas fa-code"></i>
+      <span>Web Dev</span>
+    </a>
+  </div>
+
+  <div class="social-links">
+    <a href="https://wa.link/a4gigg" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://t.me/confronter" title="Telegram"><i class="fab fa-telegram"></i></a>
+    <a href="mailto:confrontermfisa@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+    <a href="https://github.com/confronter5" title="GitHub"><i class="fab fa-github"></i></a>
+  </div>
 </aside>
 
-<!-- MAIN -->
-
+<!-- ======= MAIN ======= -->
 <div class="main" id="main">
 
-<!-- HERO -->
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <h1>Confronter Tech Wizard</h1>
+    <p>
+      Enjoy free premium downloads and explore premium digital services.
+      Professional websites, bots, social media growth, streaming apps, VPNs,
+      developer lessons and much more.
+    </p>
+  </section>
 
-<section class="hero" id="home">
+  <!-- SERVICES -->
+  <h2 class="section-title" id="services">All Services</h2>
 
-<h1>Confronter Tech Wizard</h1>
+  <div class="services">
+    <!-- 01 -->
+    <div class="card">
+      <div class="card-number">01</div>
+      <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+      <h3>Social Media Gains</h3>
+      <p>TikTok, Instagram followers, likes and engagement packages.</p>
+      <a href="https://confronterboost.top/" target="_blank" class="cyber-btn">
+        <i class="fas fa-bolt"></i> Open Gains Hub
+      </a>
+    </div>
 
-<p>
-Enjoy free premium downloads and explore premium digital services.
-Professional websites, bots, social media growth, streaming apps, VPNs,
-developer lessons and much more.
-</p>
+    <!-- 02 -->
+    <div class="card">
+      <div class="card-number">02</div>
+      <div class="card-icon"><i class="fas fa-sim-card"></i></div>
+      <h3>Foreign Numbers</h3>
+      <p>Verified USA and international virtual numbers.</p>
+      <a href="https://wa.link/pnaqyw" target="_blank" class="cyber-btn">
+        <i class="fas fa-phone"></i> Get Number
+      </a>
+    </div>
 
-</section>
+    <!-- 03 -->
+    <div class="card">
+      <div class="card-number">03</div>
+      <div class="card-icon"><i class="fas fa-robot"></i></div>
+      <h3>WhatsApp Bots</h3>
+      <p>Automation bots and smart messaging systems.</p>
+      <a href="https://wa.link/7ob8u4" target="_blank" class="cyber-btn">
+        <i class="fas fa-microchip"></i> Get Bot
+      </a>
+    </div>
 
-<!-- SERVICES -->
+    <!-- 04 -->
+    <div class="card">
+      <div class="card-number">04</div>
+      <div class="card-icon"><i class="fas fa-credit-card"></i></div>
+      <h3>Heroku Billing</h3>
+      <p>Cloud hosting billing and deployment support.</p>
+      <a href="https://wa.link/nkk3oz" target="_blank" class="cyber-btn">
+        <i class="fas fa-cloud"></i> Billing Access
+      </a>
+    </div>
 
-<h2 class="section-title" id="services">
-All Services
-</h2>
+    <!-- 05 -->
+    <div class="card">
+      <div class="card-number">05</div>
+      <div class="card-icon"><i class="fas fa-code"></i></div>
+      <h3>Web Development</h3>
+      <p>Professional websites and futuristic UI design.</p>
+      <a href="https://wa.link/262o7n" target="_blank" class="cyber-btn">
+        <i class="fas fa-globe"></i> Reach Developer
+      </a>
+    </div>
 
-<div class="services">
+    <!-- 06 -->
+    <div class="card">
+      <div class="card-number">06</div>
+      <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+      <h3>Account Recovery</h3>
+      <p>Recover Facebook, Instagram, TikTok and Telegram accounts.</p>
+      <a href="https://wa.link/hxsjvz" target="_blank" class="cyber-btn">
+        <i class="fas fa-unlock"></i> Recover Account
+      </a>
+    </div>
 
-<!-- 1 -->
+    <!-- 07 -->
+    <div class="card">
+      <div class="card-number">07</div>
+      <div class="card-icon"><i class="fas fa-laptop-code"></i></div>
+      <h3>Developer Training</h3>
+      <p>Learn deployment, coding and modern development.</p>
+      <a href="https://wa.link/1zwwrz" target="_blank" class="cyber-btn">
+        <i class="fas fa-graduation-cap"></i> Start Lessons
+      </a>
+    </div>
 
-<div class="card">
+    <!-- 08 -->
+    <div class="card">
+      <div class="card-number">08</div>
+      <div class="card-icon"><i class="fas fa-tv"></i></div>
+      <h3>Premium Streaming</h3>
+      <p>Netflix Premium, Prime Video and premium apps access.</p>
+      <a href="https://wa.link/xu6nwu" target="_blank" class="cyber-btn">
+        <i class="fas fa-play"></i> Get Apps
+      </a>
+    </div>
 
-<div class="card-number">01</div>
+    <!-- 09 -->
+    <div class="card">
+      <div class="card-number">09</div>
+      <div class="card-icon"><i class="fas fa-user-secret"></i></div>
+      <h3>Hidden Hack Tricks</h3>
+      <p>Advanced cyber tricks and hidden digital methods.</p>
+      <a href="https://wa.link/ucqpjw" target="_blank" class="cyber-btn">
+        <i class="fas fa-eye"></i> Learn Tricks
+      </a>
+    </div>
 
-<div class="card-icon">
-<i class="fas fa-chart-line"></i>
+    <!-- 10 -->
+    <div class="card">
+      <div class="card-number">10</div>
+      <div class="card-icon"><i class="fas fa-wifi"></i></div>
+      <h3>VPN/Proxies & Free Net</h3>
+      <p>VPN configurations and unlimited internet solutions.</p>
+      <a href="https://wa.link/fqotgr" target="_blank" class="cyber-btn">
+        <i class="fas fa-satellite"></i> Open VPN/Proxie
+      </a>
+    </div>
+
+    <!-- 11 -->
+    <div class="card">
+      <div class="card-number">11</div>
+      <div class="card-icon"><i class="fas fa-money-check"></i></div>
+      <h3>Billing Classes</h3>
+      <p>Billing methods and premium financial classes.</p>
+      <a href="https://wa.link/nkk3oz" target="_blank" class="cyber-btn">
+        <i class="fas fa-wallet"></i> Billing Classes
+      </a>
+    </div>
+
+    <!-- 12 -->
+    <div class="card">
+      <div class="card-number">12</div>
+      <div class="card-icon"><i class="fas fa-credit-card"></i></div>
+      <h3>Payments</h3>
+      <p>Easy & secure payments instantly at zero cost. Fast, reliable, and built for you.</p>
+      <a href="https://confronter.top/payments" class="cyber-btn">
+        <i class="fas fa-bolt"></i> Pay now Here
+      </a>
+    </div>
+
+    <!-- 13 -->
+    <div class="card">
+      <div class="card-number">13</div>
+      <div class="card-icon"><i class="fas fa-infinity"></i></div>
+      <h3>Many More Services</h3>
+      <p>Custom requests and many premium digital services.</p>
+      <a href="https://wa.me/254796283064" target="_blank" class="cyber-btn">
+        <i class="fas fa-arrow-right"></i> Explore More
+      </a>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="hero" id="about">
+    <h2 class="section-title">About Me</h2>
+
+    <div class="card" style="max-width:900px;margin:auto;text-align:left;">
+      <div style="display:flex;gap:25px;align-items:center;flex-wrap:wrap;">
+        <img src="https://files.catbox.moe/4b12eq.jpg"
+          style="width:140px;height:140px;border-radius:50%;object-fit:cover;border:4px solid var(--primary);box-shadow:var(--glow);"
+          alt="Confronter Profile">
+
+        <div style="flex:1;">
+          <h2 style="font-family:'Outfit',sans-serif;font-weight:800;margin-bottom:15px;font-size:30px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+            Confronter From Kenya
+          </h2>
+
+          <p style="line-height:1.8;color:var(--muted);margin-bottom:20px;font-family:'Space Grotesk',sans-serif;">
+            I'm a passionate digital creator, web designer and futuristic developer focused on building powerful websites, automation systems, premium tools and advanced digital experiences.
+            I help users worldwide with websites, deployment, bots, streaming setups, social media growth, developer mentorship and creative online solutions.
+            My mission is to make technology powerful, futuristic and accessible for everyone.
+          </p>
+
+          <div style="display:flex;gap:15px;flex-wrap:wrap;">
+            <a href="https://wa.link/pnaqyw" target="_blank" class="cyber-btn">
+              <i class="fab fa-whatsapp"></i> Chat Me
+            </a>
+            <a href="mailto:confrontermfisa@gmail.com" class="cyber-btn">
+              <i class="fas fa-envelope"></i> Send Email
+            </a>
+            <a href="https://t.me/confronter" target="_blank" class="cyber-btn">
+              <i class="fab fa-telegram"></i> Telegram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-bottom:20px;">
+      <a href="https://t.me/confronter" target="_blank" class="nav-item">
+        <i class="fab fa-telegram"></i> <span>Telegram</span>
+      </a>
+      <a href="https://wa.link/a4gigg" target="_blank" class="nav-item">
+        <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+      </a>
+      <a href="https://confronter.top/downloaders" target="_blank" class="nav-item">
+        <i class="fas fa-download"></i> <span>Downloaders</span>
+      </a>
+    </div>
+
+    <p>&copy; 2024-2026 Confronter Tech Wizard. All rights reserved.</p>
+    <p style="margin-top:10px;">Premium Digital Services &bull; Secure &bull; Confidential &bull; 24/7 Support</p>
+  </footer>
 </div>
 
-<h3>Social Media Gains</h3>
-
-<p>
-TikTok, Instagram followers, likes and engagement packages.
-</p>
-
-<a href="https://confronterboost.top/" target="_blank" class="cyber-btn">
-<i class="fas fa-bolt"></i>
-Open Gains Hub
-</a>
-
-</div>
-
-<!-- 2 -->
-
-<div class="card">
-
-<div class="card-number">02</div>
-
-<div class="card-icon">
-<i class="fas fa-sim-card"></i>
-</div>
-
-<h3>Foreign Numbers</h3>
-
-<p>
-Verified USA and international virtual numbers.
-</p>
-
-<a href="https://wa.link/pnaqyw" target="_blank" class="cyber-btn">
-<i class="fas fa-phone"></i>
-Get Number
-</a>
-
-</div>
-
-<!-- 3 -->
-
-<div class="card">
-
-<div class="card-number">03</div>
-
-<div class="card-icon">
-<i class="fas fa-robot"></i>
-</div>
-
-<h3>WhatsApp Bots</h3>
-
-<p>
-Automation bots and smart messaging systems.
-</p>
-
-<a href="https://wa.link/7ob8u4" target="_blank" class="cyber-btn">
-<i class="fas fa-microchip"></i>
-Get Bot
-</a>
-
-</div>
-
-<!-- 4 -->
-
-<div class="card">
-
-<div class="card-number">04</div>
-
-<div class="card-icon">
-<i class="fas fa-credit-card"></i>
-</div>
-
-<h3>Heroku Billing</h3>
-
-<p>
-Cloud hosting billing and deployment support.
-</p>
-
-<a href="https://wa.link/nkk3oz" target="_blank" class="cyber-btn">
-<i class="fas fa-cloud"></i>
-Billing Access
-</a>
-
-</div>
-
-<!-- 5 -->
-
-<div class="card">
-
-<div class="card-number">05</div>
-
-<div class="card-icon">
-<i class="fas fa-code"></i>
-</div>
-
-<h3>Web Development</h3>
-
-<p>
-Professional websites and futuristic UI design.
-</p>
-
-<a href="https://wa.link/262o7n" target="_blank" class="cyber-btn">
-<i class="fas fa-globe"></i>
-Reach Developer
-</a>
-
-</div>
-
-<!-- 6 -->
-
-<div class="card">
-
-<div class="card-number">06</div>
-
-<div class="card-icon">
-<i class="fas fa-user-shield"></i>
-</div>
-
-<h3>Account Recovery</h3>
-
-<p>
-Recover Facebook, Instagram, TikTok and Telegram accounts.
-</p>
-
-<a href="https://wa.link/hxsjvz" target="_blank" class="cyber-btn">
-<i class="fas fa-unlock"></i>
-Recover Account
-</a>
-
-</div>
-
-<!-- 7 -->
-
-<div class="card">
-
-<div class="card-number">07</div>
-
-<div class="card-icon">
-<i class="fas fa-laptop-code"></i>
-</div>
-
-<h3>Developer Training</h3>
-
-<p>
-Learn deployment, coding and modern development.
-</p>
-
-<a href="https://wa.link/1zwwrz" target="_blank" class="cyber-btn">
-<i class="fas fa-graduation-cap"></i>
-Start Lessons
-</a>
-
-</div>
-
-<!-- 8 -->
-
-<div class="card">
-
-<div class="card-number">08</div>
-
-<div class="card-icon">
-<i class="fas fa-tv"></i>
-</div>
-
-<h3>Premium Streaming</h3>
-
-<p>
-Netflix Premium, Prime Video and premium apps access.
-</p>
-
-<a href="https://wa.link/xu6nwu" target="_blank" class="cyber-btn">
-<i class="fas fa-play"></i>
-Get Apps
-</a>
-
-</div>
-
-<!-- 9 -->
-
-<div class="card">
-
-<div class="card-number">09</div>
-
-<div class="card-icon">
-<i class="fas fa-user-secret"></i>
-</div>
-
-<h3>Hidden Hack Tricks</h3>
-
-<p>
-Advanced cyber tricks and hidden digital methods.
-</p>
-
-<a href="https://wa.link/ucqpjw" target="_blank" class="cyber-btn">
-<i class="fas fa-eye"></i>
-Learn Tricks
-</a>
-
-</div>
-
-<!-- 10 -->
-
-<div class="card">
-
-<div class="card-number">10</div>
-
-<div class="card-icon">
-<i class="fas fa-wifi"></i>
-</div>
-
-<h3>VPN/Proxies & Free Net</h3>
-
-<p>
-VPN configurations and unlimited internet solutions.
-</p>
-
-<a href="https://wa.link/fqotgr" target="_blank" class="cyber-btn">
-<i class="fas fa-satellite"></i>
-Open VPN/Proxie
-</a>
-
-</div>
-
-<!-- 11 -->
-
-<div class="card">
-
-<div class="card-number">11</div>
-
-<div class="card-icon">
-<i class="fas fa-money-check"></i>
-</div>
-
-<h3>Billing Classes</h3>
-
-<p>
-Billing methods and premium financial classes.
-</p>
-
-<a href="https://wa.link/nkk3oz" target="_blank" class="cyber-btn">
-<i class="fas fa-wallet"></i>
-Billing Classes
-</a>
-
-</div>
-
-<!-- 13 -->
-
-<div class="card">
-
-<div class="card-number">12</div>
-
-<div class="card-icon">
-<i class="fas fa-credit-card"></i>
-</div>
-
-<h3>Payments</h3>
-
-<p>
-Easy & secure payments instantly at zero cost. Fast, reliable, and built for you.
-</p>
-
-<a href="https://confronter.top/payments" class="cyber-btn">
-<i class="fas fa-bolt"></i>
-Pay now Here 
-</a>
-
-</div>
-
-<!-- 12 -->
-
-<div class="card">
-
-<div class="card-number">13</div>
-
-<div class="card-icon">
-<i class="fas fa-infinity"></i>
-</div>
-
-<h3>Many More Services</h3>
-
-<p>
-Custom requests and many premium digital services.
-</p>
-
-<a href="https://wa.me/254796283064" target="_blank" class="cyber-btn">
-<i class="fas fa-arrow-right"></i>
-Explore More
-</a>
-
-</div>
-
-</div>
-
-<!-- PAYMENTS SECTION -->
-
-
-
-
-
-<!-- ABOUT -->
-
-<section class="hero" id="about">
-
-<h2 class="section-title">
-About Me
-</h2>
-
-<div class="card" style="max-width:900px;margin:auto;text-align:left;">
-
-<div style="display:flex;gap:25px;align-items:center;flex-wrap:wrap;">
-
-<img src="https://files.catbox.moe/4b12eq.jpg"
-style="
-width:140px;
-height:140px;
-border-radius:50%;
-object-fit:cover;
-border:4px solid var(--primary);
-box-shadow:var(--glow);
-">
-
-<div style="flex:1;">
-
-<h2 style="
-font-family:'Outfit',sans-serif;
-font-weight:800;
-margin-bottom:15px;
-font-size:30px;
-background:linear-gradient(90deg,var(--primary),var(--secondary));
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-">
-Confronter From Kenya
-</h2>
-
-<p style="line-height:1.8;color:var(--muted);margin-bottom:20px;font-family:'Space Grotesk',sans-serif;">
-
-I'm a passionate digital creator,  web designer and futuristic developer focused on building powerful websites, automation systems, premium tools and advanced digital experiences.
-
-I help users worldwide with websites, deployment, bots, streaming setups, social media growth, developer mentorship and creative online solutions.
-
-My mission is to make technology powerful, futuristic and accessible for everyone.
-
-</p>
-
-<div style="display:flex;gap:15px;flex-wrap:wrap;">
-
-<a href="https://wa.link/pnaqyw" target="_blank" class="cyber-btn">
-<i class="fab fa-whatsapp"></i>
-Chat Me
-</a>
-
-<a href="mailto:confrontermfisa@gmail.com" class="cyber-btn">
-<i class="fas fa-envelope"></i>
-Send Email
-</a>
-
-<a href="https://t.me/confronter" target="_blank" class="cyber-btn">
-<i class="fab fa-telegram"></i>
-Telegram
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- FOOTER -->
-
-<footer class="footer">
-
-<div style="
-display:flex;
-justify-content:center;
-gap:20px;
-flex-wrap:wrap;
-margin-bottom:20px;
-">
-
-<a href="https://t.me/confronter" target="_blank" class="nav-item">
-<i class="fab fa-telegram"></i>
-<span>Telegram</span>
-</a>
-
-<a href="https://wa.link/a4gigg" target="_blank" class="nav-item">
-<i class="fab fa-whatsapp"></i>
-<span>WhatsApp</span>
-</a>
-
-<a href="https://confronter.top/downloaders" target="_blank" class="nav-item">
-<i class="fas fa-download"></i>
-<span>Downloaders</span>
-</a>
-
-</div>
-
-<p>
-&copy; 2024-2026 Confronter Tech Wizard. All rights reserved.
-</p>
-
-<p style="margin-top:10px;">
-Premium Digital Services &bull; Secure &bull; Confidential &bull; 24/7 Support
-</p>
-
-</footer>
-
-</div>
-
-<script>
-
-/* ======= FLOATING PARTICLES BACKGROUND ======= */
-function createFloatingParticles() {
-  const container = document.getElementById('bgParticles');
-  const particleCount = 40;
-
-  for (let i = 0; i < particleCount; i++) {
-    let particle = document.createElement('div');
-    particle.className = 'floating-particle';
-    const size = Math.random() * 3 + 1;
-    particle.style.width = size + 'px';
-    particle.style.height = size + 'px';
-    particle.style.left = Math.random() * 100 + 'vw';
-    particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
-    particle.style.animationDelay = (Math.random() * 10) + 's';
-
-    const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#06b6d4', '#f59e0b'];
-    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-
-    container.appendChild(particle);
-  }
-}
-
-createFloatingParticles();
-
-/* ======= IMPROVED LOADER ======= */
-
-const loader = document.getElementById("loader");
-const loaderText = document.getElementById("loaderText");
-const progressText = document.getElementById("progressText");
-const loaderStatus = document.getElementById("loaderStatus");
-
-// Typing messages
-const messages = [
-  "System Initializing",
-  "Loading Neural Network",
-  "Synchronizing Data",
-  "Establishing Connection",
-  "Access Granted"
-];
-
-const statusMessages = [
-  "Connecting to neural network...",
-  "Parsing binary sequences...",
-  "Decrypting secure channels...",
-  "Optimizing performance...",
-  "Welcome to Confronter Tech Wizard"
-];
-
-let msgIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-let typingSpeed = 80;
-
-function typeWriter() {
-  const currentMsg = messages[msgIndex];
-
-  if (isDeleting) {
-    loaderText.textContent = currentMsg.substring(0, charIndex - 1);
-    charIndex--;
-    typingSpeed = 40;
-  } else {
-    loaderText.textContent = currentMsg.substring(0, charIndex + 1);
-    charIndex++;
-    typingSpeed = 80;
-  }
-
-  if (!isDeleting && charIndex === currentMsg.length) {
-    isDeleting = true;
-    typingSpeed = 1500; // Pause at end
-  } else if (isDeleting && charIndex === 0) {
-    isDeleting = false;
-    msgIndex = (msgIndex + 1) % messages.length;
-    typingSpeed = 500; // Pause before new word
-  }
-
-  // Update status message based on progress
-  const progress = Math.min((msgIndex / messages.length) * 100 + (charIndex / currentMsg.length) * 20, 100);
-  const statusIndex = Math.floor((progress / 100) * statusMessages.length);
-  if (loaderStatus && statusIndex < statusMessages.length) {
-    loaderStatus.textContent = statusMessages[statusIndex];
-  }
-
-  // Update percentage
-  if (progressText) {
-    progressText.textContent = Math.floor(progress) + "%";
-  }
-
-  setTimeout(typeWriter, typingSpeed);
-}
-
-// Start typing effect
-typeWriter();
-
-// Create floating particles in loader
-const particlesContainer = document.getElementById("particles");
-for (let i = 0; i < 30; i++) {
-  let particle = document.createElement("div");
-  particle.className = "particle";
-  const size = Math.random() * 4 + 2;
-  particle.style.width = size + "px";
-  particle.style.height = size + "px";
-  particle.style.left = Math.random() * 100 + "vw";
-  particle.style.background = [
-    "#3b82f6", "#8b5cf6", "#10b981", "#06b6d4", "#f59e0b"
-  ][Math.floor(Math.random() * 5)];
-  particle.style.boxShadow = "0 0 " + (size * 3) + "px currentColor";
-  particle.style.animationDuration = (Math.random() * 5 + 3) + "s";
-  particle.style.animationDelay = (Math.random() * 5) + "s";
-  particlesContainer.appendChild(particle);
-}
-
-// Binary rain (retained and enhanced)
-const binaryRain = document.getElementById("binaryRain");
-for (let i = 0; i < 80; i++) {
-  let span = document.createElement("span");
-  span.className = "binary";
-  span.innerText = Math.random() > 0.5 ? "101010" : "010101";
-  span.style.left = Math.random() * 100 + "vw";
-  span.style.animationDuration = (Math.random() * 4 + 2) + "s";
-  span.style.color = [
-    "#3b82f6", "#8b5cf6", "#10b981", "#06b6d4", "#f59e0b"
-  ][Math.floor(Math.random() * 5)];
-  span.style.fontSize = (Math.random() * 12 + 8) + "px";
-  span.style.animationDelay = (Math.random() * 3) + "s";
-  binaryRain.appendChild(span);
-}
-
-// Hide loader after animation
-setTimeout(() => {
-  loader.style.opacity = "0";
-  loader.style.transition = "opacity 0.8s ease-out";
-
-  setTimeout(() => {
-    loader.style.display = "none";
-  }, 800);
-}, 3200);
-
-/* SIDEBAR */
-
-function toggleSidebar(){
-
-const sidebar=document.getElementById("sidebar");
-const main=document.getElementById("main");
-
-sidebar.classList.toggle("show");
-
-if(window.innerWidth > 900){
-
-sidebar.classList.toggle("hide");
-
-main.classList.toggle("full");
-
-}
-
-}
-
-/* TIME */
-
-function updateClock(){
-
-const now=new Date();
-
-document.getElementById("time").innerHTML=
-'<i class="fas fa-clock"></i> '+
-now.toLocaleTimeString();
-
-let hour=now.getHours();
-
-let greet="Good Evening";
-
-if(hour<12){
-greet="Good Morning";
-}
-else if(hour<17){
-greet="Good Afternoon";
-}
-
-document.getElementById("greeting").innerHTML=
-'<i class="fas fa-bolt"></i> '+greet;
-
-}
-
-setInterval(updateClock,1000);
-
-updateClock();
-
-/* BATTERY */
-
-async function batteryInfo(){
-
-if(navigator.getBattery){
-
-const battery=await navigator.getBattery();
-
-function updateBattery(){
-
-let level=Math.floor(battery.level*100);
-
-let charging=battery.charging?"Charging":"Not Charging";
-
-document.getElementById("battery").innerHTML=
-'<i class="fas fa-battery-three-quarters"></i> ' + level + '% - ' + charging;
-
-}
-
-updateBattery();
-
-battery.addEventListener("chargingchange",updateBattery);
-
-battery.addEventListener("levelchange",updateBattery);
-
-}
-
-}
-
-batteryInfo();
-
-/* THEME */
-
-function toggleTheme(){
-
-document.body.classList.toggle("light");
-
-let icon=document.getElementById("themeIcon");
-
-if(document.body.classList.contains("light")){
-
-icon.innerHTML='<i class="fas fa-sun"></i>';
-
-}else{
-
-icon.innerHTML='<i class="fas fa-moon"></i>';
-
-}
-
-}
-
-/* AUTO CLOSE MOBILE SIDEBAR */
-
-document.querySelectorAll(".nav-item").forEach(item=>{
-
-item.addEventListener("click",()=>{
-
-if(window.innerWidth < 900){
-
-document.getElementById("sidebar").classList.remove("show");
-
-}
-
-});
-
-});
-
-
-
-/* PAYMENTS CLOCK & GREETING */
-
-function updatePaymentsClock(){
-
-const now=new Date();
-
-const h=now.getHours();
-
-let g = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : h < 21 ? 'Good Evening' : 'Good Night';
-
-const paymentsGreetingEl=document.getElementById("paymentsGreeting");
-const paymentsClockEl=document.getElementById("paymentsClock");
-
-if(paymentsGreetingEl){
-paymentsGreetingEl.textContent=g+'!';
-}
-
-if(paymentsClockEl){
-paymentsClockEl.textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
-}
-
-}
-
-setInterval(updatePaymentsClock,1000);
-
-updatePaymentsClock();
-
-</script>
-
+<script src="app.js"></script>
 </body>
-  </html>
+</html>
