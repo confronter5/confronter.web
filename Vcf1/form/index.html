@@ -4,140 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confronter TechWizard Vcf</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://files.catbox.moe/5e39uh.png">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* ===== CIRCULAR VERIFIED MEMBERS COUNTER ===== */
-        .members-counter-circle {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .counter-ring {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 3px solid rgba(16, 185, 129, 0.15);
-        }
-
-        .counter-ring-fill {
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: #10b981;
-            border-right-color: #06b6d4;
-            animation: ringSpin 3s linear infinite;
-        }
-
-        @keyframes ringSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .counter-circle-content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-        }
-
-        .counter-circle-number {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #10b981, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            letter-spacing: -1px;
-            transition: all 0.3s ease;
-        }
-
-        .counter-circle-number.updating {
-            transform: scale(1.15);
-            filter: brightness(1.5);
-        }
-
-        .counter-circle-label {
-            font-family: 'Outfit', sans-serif;
-            font-size: 8px;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 3px;
-        }
-
-        .counter-circle-pulse {
-            position: absolute;
-            bottom: 6px;
-            right: 6px;
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: livePulse 2s ease infinite;
-            box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
-        }
-
-        .counter-circle-pulse::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 50%;
-            border: 1px solid #10b981;
-            animation: ripple 2s ease infinite;
-        }
-
-        @keyframes livePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        @keyframes ripple {
-            0% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(2.5); opacity: 0; }
-        }
-
-        /* Dark mode default */
-        body.dark-mode {
-            background: #0a0a0f;
-            color: #ffffff;
-        }
-
-        /* Minimized font sizes for main page */
-        .header-card h1 { font-size: 22px; }
-        .header-card p { font-size: 12px; }
-        .countdown-unit .num { font-size: 28px; }
-        .countdown-unit .lbl { font-size: 9px; }
-        .form-group label { font-size: 12px; }
-        .form-group input, .form-group select { font-size: 13px; padding: 12px 14px; }
-        .hint { font-size: 10px; }
-        .error-msg { font-size: 10px; }
-        .btn-submit { font-size: 13px; padding: 14px; }
-        .whatsapp-card h3 { font-size: 18px; }
-        .whatsapp-card p { font-size: 12px; }
-        .footer a { font-size: 11px; }
-
-        /* Country select with flags */
-        .country-select option {
-            font-size: 13px;
-            padding: 4px;
-        }
-    </style>
 </head>
-<body class="dark-mode">
+<body>
     <div class="bg-particles" id="particles"></div>
 
     <div class="container">
@@ -185,18 +59,6 @@
             <p>Add your contact details to receive the group VCF file when it's ready</p>
         </div>
 
-        <!-- Verified Members Counter -->
-        <div class="members-counter-circle" id="membersCounter">
-            <div class="counter-ring">
-                <div class="counter-ring-fill"></div>
-            </div>
-            <div class="counter-circle-content">
-                <div class="counter-circle-number" id="verifiedCount">0</div>
-                <div class="counter-circle-label">Verified</div>
-            </div>
-            <div class="counter-circle-pulse"></div>
-        </div>
-
         <!-- Countdown -->
         <div class="countdown-card">
             <div class="label">⏳ VCF Release Countdown</div>
@@ -233,7 +95,7 @@
                         <span class="phone-prefix" id="phonePrefix">+</span>
                         <input type="tel" id="phoneNumber" placeholder="793908671" autocomplete="tel" disabled>
                     </div>
-                    <div class="hint">Must start with the country code you selected above (e.g.For Kenya 🇰🇪 254793908671)</div>
+                    <div class="hint">Must start with the country code you selected above (e.g. For Kenya 🇰🇪 254793908671)</div>
                     <div class="error-msg" id="phoneError">⚠ Phone must start with the selected country code and contain only digits</div>
                     <div class="error-msg" id="duplicateError">⚠ This phone number is already registered</div>
                 </div>
