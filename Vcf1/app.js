@@ -1,3 +1,125 @@
+// Verified Members Counter
+class MembersCounter {
+    constructor() {
+        this.count = 0;
+        this.targetCount = 0;
+        this.element = document.getElementById('verifiedCount');
+        this.progressElement = document.getElementById('memberProgress');
+        this.isAdmin = false;
+        this.maxMembers = 1000; // Adjust based on your expected max
+        
+        this.init();
+    }
+    
+    init() {
+        // Check if user is admin (you can implement your own auth check)
+        this.checkAdminStatus();
+        
+        // Initial fetch
+        this.fetchCount();
+        
+        // Update every 30 seconds
+        setInterval(() => this.fetchCount(), 30000);
+        
+        // Animate on load
+        this.animateEntrance();
+    }
+    
+    checkAdminStatus() {
+        // Simple admin check - replace with your actual auth logic
+        const urlParams = new URLSearchParams(window.location.search);
+        const adminToken = urlParams.get('admin');
+        
+        // If admin token present, mark as admin (for preview access)
+        if (adminToken === 'confronter2026') {
+            this.isAdmin = true;
+            document.body.classList.add('admin-mode');
+        }
+    }
+    
+    async fetchCount() {
+        try {
+            // Replace with your actual API endpoint
+            // For demo, using localStorage to simulate persistent storage
+            const stored = localStorage.getItem('verifiedMembers');
+            const members = stored ? JSON.parse(stored) : [];
+            this.targetCount = members.length || Math.floor(Math.random() * 500) + 50; // Fallback demo
+            
+            this.updateDisplay();
+        } catch (error) {
+            console.error('Failed to fetch member count:', error);
+        }
+    }
+    
+    updateDisplay() {
+        if (this.count === this.targetCount) return;
+        
+        const diff = this.targetCount - this.count;
+        const step = Math.ceil(diff / 20); // Smooth animation steps
+        
+        const animate = () => {
+            if (Math.abs(this.targetCount - this.count) <= step) {
+                this.count = this.targetCount;
+                this.render();
+                return;
+            }
+            
+            this.count += step;
+            this.render();
+            requestAnimationFrame(animate);
+        };
+        
+        animate();
+    }
+    
+    render() {
+        this.element.textContent = this.count.toLocaleString();
+        this.element.classList.add('updating');
+        
+        setTimeout(() => {
+            this.element.classList.remove('updating');
+        }, 300);
+        
+        // Update progress bar (assuming max goal)
+        const progress = Math.min((this.count / this.maxMembers) * 100, 100);
+        this.progressElement.style.width = `${progress}%`;
+    }
+    
+    animateEntrance() {
+        const card = document.querySelector('.members-counter-card');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 200);
+    }
+    
+    // Call this when a new member is verified
+    static increment() {
+        const stored = localStorage.getItem('verifiedMembers');
+        const members = stored ? JSON.parse(stored) : [];
+        // Add new member logic here
+        localStorage.setItem('verifiedMembers', JSON.stringify(members));
+        
+        // Trigger update
+        if (window.membersCounter) {
+            window.membersCounter.fetchCount();
+        }
+    }
+}
+
+// Initialize counter
+window.membersCounter = new MembersCounter();
+
+// Update counter when form submits successfully
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    // After successful validation and storage:
+    MembersCounter.increment();
+});
+
 // ==================== CONFIG ====================
 const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1";
 const VCF_RELEASE_DATE = new Date(2026, 5, 15, 23, 59);
