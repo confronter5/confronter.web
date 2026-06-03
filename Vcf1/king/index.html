@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>Admin Panel - Confronter TechWizard Vcf</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://files.catbox.moe/5e39uh.png">
     <style>
         :root {
             --bg: #000000;
@@ -162,6 +163,69 @@
         .stat-card h3 { font-family: 'Space Grotesk', monospace; font-size: 22px; font-weight: 700; line-height: 1; }
         .stat-card p { font-size: 9px; opacity: 0.85; margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
 
+        /* Verified Members Counter - Admin Style */
+        .members-counter-admin {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 20px; margin-bottom: 12px; display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+            position: relative; overflow: hidden;
+        }
+        .members-counter-admin::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--success), #00bcd4, var(--success));
+            background-size: 200% 100%; animation: shimmer 3s infinite;
+            border-radius: 16px 16px 0 0;
+        }
+        .counter-admin-left { display: flex; align-items: center; gap: 16px; }
+        .counter-admin-icon {
+            width: 48px; height: 48px; background: linear-gradient(135deg, var(--success), #00bcd4);
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; box-shadow: 0 4px 20px rgba(0,230,118,0.15);
+            animation: bounce 2s ease infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .counter-admin-stats h2 {
+            font-family: 'Space Grotesk', monospace; font-size: 32px; font-weight: 700;
+            background: linear-gradient(135deg, var(--success), #00bcd4);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            line-height: 1;
+        }
+        .counter-admin-stats p {
+            font-size: 10px; color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 1.5px; margin-top: 4px;
+        }
+        .counter-admin-right { display: flex; align-items: center; gap: 12px; }
+        .counter-admin-pulse {
+            width: 12px; height: 12px; background: var(--success); border-radius: 50%;
+            position: relative; animation: livePulse 2s ease infinite;
+        }
+        .counter-admin-pulse::before {
+            content: ''; position: absolute; inset: -4px; border-radius: 50%;
+            border: 2px solid var(--success); animation: ripple 2s ease infinite;
+        }
+        @keyframes livePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        @keyframes ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
+        .counter-admin-bar {
+            width: 100%; height: 4px; background: var(--bg-input); border-radius: 2px;
+            margin-top: 16px; overflow: hidden; position: relative;
+        }
+        .counter-admin-progress {
+            height: 100%; background: linear-gradient(90deg, var(--success), #00bcd4);
+            border-radius: 2px; transition: width 1s ease; position: relative;
+        }
+        .counter-admin-progress::after {
+            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 20px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+            animation: shimmer 2s ease infinite;
+        }
+        .counter-admin-sub {
+            font-size: 10px; color: var(--text-muted); margin-top: 10px;
+            text-align: center; text-transform: uppercase; letter-spacing: 1px;
+        }
+
         /* Actions */
         .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
         .btn {
@@ -251,6 +315,7 @@
             .dash-header h1 { font-size: 14px; }
             .stat-card { padding: 8px 14px; min-width: 70px; }
             .stat-card h3 { font-size: 18px; }
+            .counter-admin-stats h2 { font-size: 24px; }
         }
     </style>
 </head>
@@ -299,12 +364,32 @@
 
         <div class="dash-header">
             <div>
-                <h1>📇 VCF Admin Panel</h1>
-                <p class="sub">Manage contacts and generate VCF files</p>
+                <h1>📇 Confronter TechWizard VCF</h1>
+                <p class="sub">Admin Panel - Manage verified members</p>
             </div>
             <div class="stats">
                 <div class="stat-card"><h3 id="totalContacts">0</h3><p>Total</p></div>
                 <div class="stat-card" style="background:linear-gradient(135deg,#25d366,#128c7e)"><h3 id="todayContacts">0</h3><p>Today</p></div>
+            </div>
+        </div>
+
+        <!-- Verified Members Counter -->
+        <div class="members-counter-admin" id="membersCounter">
+            <div class="counter-admin-left">
+                <div class="counter-admin-icon">👥</div>
+                <div class="counter-admin-stats">
+                    <h2 id="verifiedCount">0</h2>
+                    <p>Verified Members</p>
+                </div>
+            </div>
+            <div class="counter-admin-right">
+                <div class="counter-admin-pulse"></div>
+            </div>
+            <div style="width:100%;">
+                <div class="counter-admin-bar">
+                    <div class="counter-admin-progress" id="memberProgress" style="width:0%"></div>
+                </div>
+                <div class="counter-admin-sub">Real-time member count from form submissions</div>
             </div>
         </div>
 
@@ -350,18 +435,15 @@
         let contacts = [], selectedContacts = new Set();
 
         // ========== PHONE NUMBER FORMATTING ==========
-        // Adds + sign to phone number for display/export
         function formatPhone(phone) {
             if (!phone) return '';
             phone = String(phone).trim();
-            // Add + if not already present
             if (phone.charAt(0) !== '+') {
                 return '+' + phone;
             }
             return phone;
         }
 
-        // Removes + sign for storage consistency (optional helper)
         function stripPhone(phone) {
             if (!phone) return '';
             return String(phone).replace(/^\+/, '').trim();
@@ -440,25 +522,55 @@
             document.getElementById('loginError').style.display = 'none';
         }
 
+        // ========== VERIFIED MEMBERS COUNTER ==========
+        function updateMembersCounter() {
+            const count = contacts.length;
+            const countEl = document.getElementById('verifiedCount');
+            const progressEl = document.getElementById('memberProgress');
+            const maxMembers = 1000;
+
+            // Animate the number
+            let current = 0;
+            const step = Math.max(1, Math.ceil(count / 20));
+            const animate = () => {
+                if (current >= count) {
+                    current = count;
+                    countEl.textContent = current.toLocaleString();
+                    return;
+                }
+                current += step;
+                if (current > count) current = count;
+                countEl.textContent = current.toLocaleString();
+                requestAnimationFrame(animate);
+            };
+            animate();
+
+            // Update progress bar
+            const progress = Math.min((count / maxMembers) * 100, 100);
+            progressEl.style.width = progress + '%';
+        }
+
         // Data
         function loadContacts() {
-            contacts = JSON.parse(localStorage.getItem('vcf_contacts') || '[]');
-            updateStats(); renderContacts();
+            contacts = JSON.parse(localStorage.getItem('verifiedMembers') || '[]');
+            updateStats();
+            updateMembersCounter();
+            renderContacts();
         }
         function updateStats() {
             document.getElementById('totalContacts').textContent = contacts.length;
             const today = new Date().toDateString();
-            document.getElementById('todayContacts').textContent = contacts.filter(c => new Date(c.timestamp).toDateString()===today).length;
+            document.getElementById('todayContacts').textContent = contacts.filter(c => new Date(c.verifiedAt).toDateString()===today).length;
         }
 
         function getFiltered() {
             const s = document.getElementById('searchInput').value.toLowerCase();
             return contacts.filter(c => {
-                const phoneWithPlus = formatPhone(c.phoneNumber).toLowerCase();
-                const phoneWithoutPlus = stripPhone(c.phoneNumber).toLowerCase();
-                return c.fullName.toLowerCase().includes(s) || 
-                       phoneWithPlus.includes(s) || 
-                       phoneWithoutPlus.includes(s) || 
+                const phoneWithPlus = formatPhone(c.phone).toLowerCase();
+                const phoneWithoutPlus = stripPhone(c.phone).toLowerCase();
+                return c.name.toLowerCase().includes(s) ||
+                       phoneWithPlus.includes(s) ||
+                       phoneWithoutPlus.includes(s) ||
                        c.email.toLowerCase().includes(s);
             });
         }
@@ -472,15 +584,15 @@
             }
             const today = new Date().toDateString();
             tbody.innerHTML = filtered.map(c => {
-                const isToday = new Date(c.timestamp).toDateString() === today;
-                const displayPhone = formatPhone(c.phoneNumber); // +254793908671
+                const isToday = new Date(c.verifiedAt).toDateString() === today;
+                const displayPhone = formatPhone(c.phone);
                 return `<tr>
-                    <td class="checkbox-col"><input type="checkbox" ${selectedContacts.has(c.id)?'checked':''} onchange="toggleSelect(${c.id})"></td>
-                    <td class="name-cell">${escapeHtml(c.fullName)}</td>
+                    <td class="checkbox-col"><input type="checkbox" ${selectedContacts.has(c.id)?'checked':''} onchange="toggleSelect('${c.id}')"></td>
+                    <td class="name-cell">${escapeHtml(c.name)}</td>
                     <td class="phone-cell">${escapeHtml(displayPhone)}</td>
                     <td>${escapeHtml(c.email)}</td>
-                    <td><span class="badge ${isToday?'badge-today':'badge-old'}">${isToday?'Today':formatDate(c.timestamp)}</span></td>
-                    <td><button class="btn-del" onclick="deleteContact(${c.id})">Delete</button></td>
+                    <td><span class="badge ${isToday?'badge-today':'badge-old'}">${isToday?'Today':formatDate(c.verifiedAt)}</span></td>
+                    <td><button class="btn-del" onclick="deleteContact('${c.id}')">Delete</button></td>
                 </tr>`;
             }).join('');
         }
@@ -499,14 +611,18 @@
             if (!confirm('Delete this contact?')) return;
             contacts = contacts.filter(c => c.id !== id);
             selectedContacts.delete(id);
-            localStorage.setItem('vcf_contacts', JSON.stringify(contacts));
-            updateStats(); renderContacts();
+            localStorage.setItem('verifiedMembers', JSON.stringify(contacts));
+            updateStats();
+            updateMembersCounter();
+            renderContacts();
         }
         function clearAll() {
             if (!confirm('Delete ALL contacts? This cannot be undone!')) return;
             contacts = []; selectedContacts.clear();
-            localStorage.removeItem('vcf_contacts');
-            updateStats(); renderContacts();
+            localStorage.removeItem('verifiedMembers');
+            updateStats();
+            updateMembersCounter();
+            renderContacts();
         }
 
         function generateVCFContent(selOnly=false) {
@@ -514,8 +630,16 @@
             if (target.length===0) return '';
             let vcf = '';
             target.forEach(c => {
-                const phoneWithPlus = formatPhone(c.phoneNumber); // +254793908671
-                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${c.fullName}\nN:${c.fullName.split(' ').reverse().join(';')};;;\nTEL;TYPE=CELL:${phoneWithPlus}\nEMAIL:${c.email}\nNOTE:Added ${new Date(c.timestamp).toLocaleString()}\nEND:VCARD\n`;
+                const phoneWithPlus = formatPhone(c.phone);
+                vcf += `BEGIN:VCARD
+VERSION:3.0
+FN:${c.name}
+N:${c.name.split(' ').reverse().join(';')};;;
+TEL;TYPE=CELL:${phoneWithPlus}
+EMAIL:${c.email}
+NOTE:Verified ${new Date(c.verifiedAt).toLocaleString()}
+END:VCARD
+`;
             });
             return vcf;
         }
@@ -537,10 +661,12 @@
 
         function exportCSV() {
             if (contacts.length===0) { alert('No contacts to export!'); return; }
-            let csv = 'Name,Phone,Email,Date Added\n';
+            let csv = 'Name,Country Code,Phone,Email,Date Verified
+';
             contacts.forEach(c => {
-                const phoneWithPlus = formatPhone(c.phoneNumber); // +254793908671
-                csv += `"${c.fullName}","${phoneWithPlus}","${c.email}","${new Date(c.timestamp).toLocaleString()}"\n`;
+                const phoneWithPlus = formatPhone(c.phone);
+                csv += `"${c.name}","${c.countryCode}","${phoneWithPlus}","${c.email}","${new Date(c.verifiedAt).toLocaleString()}"
+`;
             });
             downloadFile(csv, 'contacts.csv', 'text/csv');
         }
