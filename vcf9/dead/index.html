@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Confronter Tech Wizard VCF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --bg-input: #16162a;
+            --text-primary: #e0e0ff;
+            --text-secondary: #8888aa;
+            --accent: #00d4ff;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --success: #00ff88;
+            --error: #ff3366;
+            --warning: #ffaa00;
+            --border: rgba(0, 212, 255, 0.15);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --font-main: 'Rajdhani', sans-serif;
+            --font-display: 'Orbitron', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            font-size: 13px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .admin-header h1 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            background: linear-gradient(135deg, var(--accent), #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .admin-header p {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #7b2ff7);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error), #cc0033);
+            color: #fff;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #cc8800);
+            color: #000;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 15px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        thead {
+            background: var(--bg-secondary);
+        }
+
+        th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 15px;
+            border-top: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .phone-cell {
+            font-family: var(--font-display);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .country-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            font-size: 10px;
+            color: var(--accent);
+        }
+
+        .timestamp {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn.view { background: rgba(0, 212, 255, 0.15); color: var(--accent); }
+        .action-btn.delete { background: rgba(255, 51, 102, 0.15); color: var(--error); }
+        .action-btn.whatsapp { background: rgba(0, 255, 136, 0.15); color: var(--success); }
+        .action-btn:hover { transform: scale(1.1); }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            animation: scaleIn 0.3s ease;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h3 {
+            font-family: var(--font-display);
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-row:last-child { border-bottom: none; }
+
+        .modal-label { color: var(--text-secondary); font-size: 12px; }
+        .modal-value { color: var(--text-primary); font-weight: 600; font-size: 12px; }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            padding: 6px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            th, td { padding: 8px 10px; font-size: 11px; }
+            .admin-header h1 { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-shield-halved"></i> Admin Panel</h1>
+            <p>Confronter Tech Wizard VCF - Verified Contacts Management</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value" id="totalVerified">0</div>
+                <div class="stat-label">Total Verified</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                <div class="stat-value" id="totalCountries">0</div>
+                <div class="stat-label">Countries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-value" id="todayCount">0</div>
+                <div class="stat-label">Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+                <div class="stat-value" id="capacityPercent">0%</div>
+                <div class="stat-label">Capacity Used</div>
+            </div>
+        </div>
+
+        <div class="actions-bar">
+            <button class="btn btn-success" onclick="exportCSV()">
+                <i class="fas fa-file-csv"></i> Export CSV
+            </button>
+            <button class="btn btn-primary" onclick="exportVCF()">
+                <i class="fas fa-download"></i> Export VCF
+            </button>
+            <button class="btn btn-warning" onclick="exportJSON()">
+                <i class="fas fa-file-code"></i> Export JSON
+            </button>
+            <button class="btn btn-danger" onclick="clearAll()">
+                <i class="fas fa-trash"></i> Clear All
+            </button>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search by name, phone, country..." oninput="filterTable()">
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Country</th>
+                        <th>Email</th>
+                        <th>Verified At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="contactsTable">
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No verified contacts yet</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <h3><i class="fas fa-user-circle"></i> Contact Details</h3>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MAX_CAPACITY = 500;
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 15;
+        let filteredData = [];
+
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
+            filteredData = [...data];
+            updateStats(data);
+            renderTable();
+        }
+
+        function updateStats(data) {
+            document.getElementById('totalVerified').textContent = data.length;
+
+            const countries = new Set(data.map(d => d.country));
+            document.getElementById('totalCountries').textContent = countries.size;
+
+            const today = new Date().toDateString();
+            const todayCount = data.filter(d => new Date(d.timestamp).toDateString() === today).length;
+            document.getElementById('todayCount').textContent = todayCount;
+
+            const percent = Math.min(100, Math.round((data.length / MAX_CAPACITY) * 100));
+            document.getElementById('capacityPercent').textContent = percent + '%';
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('contactsTable');
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No verified contacts yet</p>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map((item, index) => `
+                <tr>
+                    <td>${start + index + 1}</td>
+                    <td><strong>${escapeHtml(item.name)}</strong></td>
+                    <td class="phone-cell">${item.dialCode} ${item.phone}</td>
+                    <td><span class="country-badge"><i class="fas fa-flag"></i> ${item.country}</span></td>
+                    <td>${item.email ? escapeHtml(item.email) : '-'}</td>
+                    <td class="timestamp">${formatDate(item.timestamp)}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn view" onclick="viewContact(${item.id})" title="View"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn whatsapp" onclick="openWhatsApp('${item.dialCode}', '${item.phone}')" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                            <button class="action-btn delete" onclick="deleteContact(${item.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span style="color: var(--text-secondary); padding: 0 5px;">...</span>`;
+                }
+            }
+
+            html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
+            pagination.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+
+        function filterTable() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const allData = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
+
+            filteredData = allData.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.phone.includes(query) ||
+                item.country.toLowerCase().includes(query) ||
+                (item.email && item.email.toLowerCase().includes(query))
+            );
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        function viewContact(id) {
+            const data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
+            const contact = data.find(c => c.id === id);
+            if (!contact) return;
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="modal-row"><span class="modal-label">Name</span><span class="modal-value">${escapeHtml(contact.name)}</span></div>
+                <div class="modal-row"><span class="modal-label">Phone</span><span class="modal-value">${contact.dialCode} ${contact.phone}</span></div>
+                <div class="modal-row"><span class="modal-label">Country</span><span class="modal-value">${contact.country}</span></div>
+                <div class="modal-row"><span class="modal-label">Email</span><span class="modal-value">${contact.email || 'N/A'}</span></div>
+                <div class="modal-row"><span class="modal-label">Bio/Note</span><span class="modal-value">${contact.bio || 'N/A'}</span></div>
+                <div class="modal-row"><span class="modal-label">Verified At</span><span class="modal-value">${formatDate(contact.timestamp)}</span></div>
+                <div class="modal-row"><span class="modal-label">Contact ID</span><span class="modal-value">${contact.id}</span></div>
+            `;
+            document.getElementById('viewModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('viewModal').classList.remove('active');
+        }
+
+        function deleteContact(id) {
+            if (!confirm('Are you sure you want to delete this contact?')) return;
+
+            let data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
+            data = data.filter(c => c.id !== id);
+            localStorage.setItem('vcfVerifications', JSON.stringify(data));
+
+            loadData();
+        }
+
+        function openWhatsApp(dialCode, phone) {
+            const fullNumber = dialCode.replace(/\D/g, '') + phone;
+            window.open(`https://wa.me/${fullNumber}`, '_blank');
+        }
+
+        function clearAll() {
+            if (!confirm('WARNING: This will delete ALL verified contacts. Are you sure?')) return;
+            localStorage.removeItem('vcfVerifications');
+            loadData();
+        }
+
+        function exportCSV() {
+            const data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
+            if (data.length === 0) { alert('No data to export!'); return; }
+
+            let csv = 'ID,Name,Phone,Country,Email,Bio,Verified At\n';
+            data.forEach(d => {
+                csv += `${d.id},"${d.name}","${d.dialCode}${d.phone}","${d.country}","${d.email || ''}","${(d.bio || '').replace(/"/g, '""')}","${d.timestamp}"\n`;
+            });
+
+            downloadFile(csv, 'confronter_contacts.csv', 'text/csv');
+        }
+
+        function exportVCF() {
+            const data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
+            if (data.length === 0) { alert('No data to export!'); return; }
+
+            let vcf = '';
+            data.forEach(d => {
+                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${d.name}\n`;
+                vcf += `TEL;TYPE=CELL:${d.dialCode}${d.phone}\n`;
+                if (d.email) vcf += `EMAIL:${d.email}\n`;
+                if (d.bio) vcf += `NOTE:${d.bio}\n`;
+                vcf += `ADR;TYPE=HOME:;;${d.country};;;;\n`;
+                vcf += `REV:${d.timestamp}\nEND:VCARD\n`;
+            });
+
+            downloadFile(vcf, 'confronter_contacts.vcf', 'text/vcard');
+        }
+
+        function exportJSON() {
+            const data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
+            if (data.length === 0) { alert('No data to export!'); return; }
+
+            const json = JSON.stringify(data, null, 2);
+            downloadFile(json, 'confronter_contacts.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+  </html>
