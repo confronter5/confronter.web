@@ -339,7 +339,7 @@
             color: #fff;
         }
 
-        .btn-export, .btn-download, .btn-toggle {
+        .btn-export, .btn-download, .btn-toggle, .btn-upload {
             padding: 10px 18px;
             border-radius: 12px;
             border: none;
@@ -395,7 +395,18 @@
             box-shadow: 0 6px 20px rgba(107,114,128,0.4);
         }
 
-        .download-area {
+        .btn-upload {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(139,92,246,0.3);
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139,92,246,0.4);
+        }
+
+        .download-area, .upload-area {
             background: var(--bg-card);
             border-radius: 16px;
             padding: 20px;
@@ -404,7 +415,7 @@
             margin-bottom: 24px;
         }
 
-        .download-area h3 {
+        .download-area h3, .upload-area h3 {
             font-size: 14px;
             font-weight: 700;
             margin-bottom: 14px;
@@ -413,14 +424,61 @@
             gap: 8px;
         }
 
-        .download-area h3 i {
+        .download-area h3 i, .upload-area h3 i {
             color: var(--accent);
         }
 
-        .download-buttons {
+        .download-buttons, .upload-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            align-items: center;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-name {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-left: 8px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .upload-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .upload-status.uploaded {
+            background: rgba(16,185,129,0.15);
+            color: var(--success);
+        }
+
+        .upload-status.empty {
+            background: rgba(239,68,68,0.15);
+            color: var(--danger);
         }
 
         .toggle-status {
@@ -589,10 +647,10 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            .download-buttons {
+            .download-buttons, .upload-buttons {
                 flex-direction: column;
             }
-            .btn-export, .btn-download, .btn-toggle {
+            .btn-export, .btn-download, .btn-toggle, .btn-upload {
                 width: 100%;
                 justify-content: center;
             }
@@ -679,6 +737,21 @@
                 </div>
             </div>
 
+            <!-- VCF Upload Area -->
+            <div class="upload-area">
+                <h3><i class="fas fa-cloud-upload-alt"></i> Upload VCF File</h3>
+                <div class="upload-buttons">
+                    <div class="file-input-wrapper">
+                        <button class="btn-upload"><i class="fas fa-file-upload"></i> Choose VCF File</button>
+                        <input type="file" id="vcfFileInput" accept=".vcf">
+                    </div>
+                    <span class="file-name" id="fileName">No file selected</span>
+                    <button class="btn-export" id="saveVcfBtn"><i class="fas fa-save"></i> Save & Publish</button>
+                    <button class="btn-delete" id="removeVcfBtn" style="padding:10px 18px;border-radius:12px;"><i class="fas fa-trash"></i> Remove</button>
+                    <span class="upload-status empty" id="uploadStatus"><i class="fas fa-circle"></i> No VCF uploaded</span>
+                </div>
+            </div>
+
             <!-- Download & Toggle Area -->
             <div class="download-area">
                 <h3><i class="fas fa-download"></i> Downloads & Controls</h3>
@@ -735,6 +808,7 @@
             setupExport();
             setupDownloads();
             setupVcfToggle();
+            setupVcfUpload();
         }
 
         // ===================== PASSWORD =====================
@@ -775,6 +849,68 @@
             btn.addEventListener('click', attemptLogin);
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') attemptLogin();
+            });
+        }
+
+        // ===================== VCF UPLOAD =====================
+        function setupVcfUpload() {
+            const fileInput = document.getElementById('vcfFileInput');
+            const fileName = document.getElementById('fileName');
+            const saveBtn = document.getElementById('saveVcfBtn');
+            const removeBtn = document.getElementById('removeVcfBtn');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            let selectedFile = null;
+            let fileContent = localStorage.getItem('adminVcfContent');
+
+            // Check existing upload
+            if (fileContent) {
+                fileName.textContent = 'VCF file saved in storage';
+                uploadStatus.className = 'upload-status uploaded';
+                uploadStatus.innerHTML = '<i class="fas fa-check-circle"></i> VCF uploaded & active';
+            }
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    selectedFile = file;
+                    fileName.textContent = file.name;
+
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        fileContent = event.target.result;
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            saveBtn.addEventListener('click', () => {
+                if (!fileContent) {
+                    alert('Please select a VCF file first!');
+                    return;
+                }
+                localStorage.setItem('adminVcfContent', fileContent);
+                localStorage.setItem('vcfOut', 'true');
+                uploadStatus.className = 'upload-status uploaded';
+                uploadStatus.innerHTML = '<i class="fas fa-check-circle"></i> VCF uploaded & active';
+                alert('VCF file saved and published! Users can now download it.');
+
+                // Update toggle to ON
+                updateToggleUI(true);
+            });
+
+            removeBtn.addEventListener('click', () => {
+                if (!confirm('Remove uploaded VCF? Users will no longer be able to download it.')) return;
+                localStorage.removeItem('adminVcfContent');
+                localStorage.setItem('vcfOut', 'false');
+                fileContent = null;
+                selectedFile = null;
+                fileInput.value = '';
+                fileName.textContent = 'No file selected';
+                uploadStatus.className = 'upload-status empty';
+                uploadStatus.innerHTML = '<i class="fas fa-circle"></i> No VCF uploaded';
+                updateToggleUI(false);
+                alert('VCF file removed.');
             });
         }
 
@@ -859,8 +995,10 @@
 
         // ===================== DOWNLOADS (VCF + DOC) =====================
         function setupDownloads() {
+            // Download admin-uploaded VCF or default
             document.getElementById('downloadVcfBtn').addEventListener('click', () => {
-                const vcfContent = 'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
+                const vcfContent = localStorage.getItem('adminVcfContent') || 
+                    'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
                 const blob = new Blob([vcfContent], { type: 'text/vcard' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -913,19 +1051,21 @@
                 localStorage.setItem('vcfOut', next.toString());
                 updateToggleUI(next);
             });
+        }
 
-            function updateToggleUI(isOn) {
-                if (isOn) {
-                    btn.classList.remove('off');
-                    btn.innerHTML = '<i class="fas fa-toggle-on"></i> VCF Release: <span id="toggleLabel">ON</span>';
-                    status.className = 'toggle-status on';
-                    status.innerHTML = '<i class="fas fa-circle"></i> Showing on Main';
-                } else {
-                    btn.classList.add('off');
-                    btn.innerHTML = '<i class="fas fa-toggle-off"></i> VCF Release: <span id="toggleLabel">OFF</span>';
-                    status.className = 'toggle-status off';
-                    status.innerHTML = '<i class="fas fa-circle"></i> Hidden on Main';
-                }
+        function updateToggleUI(isOn) {
+            const btn = document.getElementById('vcfToggleBtn');
+            const status = document.getElementById('toggleStatus');
+            if (isOn) {
+                btn.classList.remove('off');
+                btn.innerHTML = '<i class="fas fa-toggle-on"></i> VCF Release: <span id="toggleLabel">ON</span>';
+                status.className = 'toggle-status on';
+                status.innerHTML = '<i class="fas fa-circle"></i> Showing on Main';
+            } else {
+                btn.classList.add('off');
+                btn.innerHTML = '<i class="fas fa-toggle-off"></i> VCF Release: <span id="toggleLabel">OFF</span>';
+                status.className = 'toggle-status off';
+                status.innerHTML = '<i class="fas fa-circle"></i> Hidden on Main';
             }
         }
 
@@ -966,4 +1106,4 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
-    </html>
+                </html>
