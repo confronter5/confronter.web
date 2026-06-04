@@ -82,7 +82,7 @@ const countries = [
     { name: "Japan", code: "JP", dial: "+81", regex: /^[0-9]{10}$/ },
     { name: "Jordan", code: "JO", dial: "+962", regex: /^[0-9]{9}$/ },
     { name: "Kazakhstan", code: "KZ", dial: "+7", regex: /^[0-9]{10}$/ },
-    { name: "Kenya", code: "KE", dial: "+254", regex: /^[0-9]{9}$/ },
+    { name: "Kenya", code: "KE", dial: "+254", regex: /^[1|7][0-9]{8}$/ },
     { name: "Kiribati", code: "KI", dial: "+686", regex: /^[0-9]{5}$/ },
     { name: "Kuwait", code: "KW", dial: "+965", regex: /^[0-9]{8}$/ },
     { name: "Kyrgyzstan", code: "KG", dial: "+996", regex: /^[0-9]{9}$/ },
@@ -236,10 +236,11 @@ function init() {
     setupEmailValidation();
 }
 
-// Check if admin toggled VCF download ON
+// Check if admin toggled VCF download ON or uploaded VCF
 function checkAdminVcfToggle() {
     const vcfOut = localStorage.getItem('vcfOut') === 'true';
-    if (vcfOut) {
+    const adminVcf = localStorage.getItem('adminVcfContent');
+    if (vcfOut || adminVcf) {
         countdownTimer.textContent = 'VCF IS OUT!';
         downloadVcfBtn.classList.remove('hidden');
     }
@@ -304,7 +305,11 @@ phoneNumber.addEventListener('input', () => {
         phoneHint.className = 'hint success';
     } else {
         const expected = selectedCountry.regex.toString().match(/\d+/)[0];
-        phoneHint.textContent = 'Expected ' + expected + ' digits, got ' + val.length;
+        if (selectedCountry.code === 'KE') {
+            phoneHint.textContent = 'Kenya number must start with 7 or 1 (e.g. 793906753 or 193906753)';
+        } else {
+            phoneHint.textContent = 'Expected ' + expected + ' digits, got ' + val.length;
+        }
         phoneHint.className = 'hint error';
     }
 });
@@ -331,7 +336,11 @@ vcfForm.addEventListener('submit', (e) => {
 
     const rawNum = phoneNumber.value.replace(/\D/g, '');
     if (!selectedCountry.regex.test(rawNum)) {
-        phoneHint.textContent = 'Invalid phone number for selected country';
+        if (selectedCountry.code === 'KE') {
+            phoneHint.textContent = 'Kenya number must start with 7 or 1 (e.g. 793906753 or 193906753)';
+        } else {
+            phoneHint.textContent = 'Invalid phone number for selected country';
+        }
         phoneHint.className = 'hint error';
         return;
     }
@@ -505,8 +514,9 @@ function startCountdown() {
         const now = new Date();
         const diff = VCF_RELEASE_DATE - now;
         const vcfOut = localStorage.getItem('vcfOut') === 'true';
+        const adminVcf = localStorage.getItem('adminVcfContent');
 
-        if (vcfOut) {
+        if (vcfOut || adminVcf) {
             countdownTimer.textContent = 'VCF IS OUT!';
             downloadVcfBtn.classList.remove('hidden');
             return;
@@ -530,9 +540,14 @@ function startCountdown() {
     setInterval(update, 1000);
 }
 
-downloadVcfBtn.addEventListener('click', () => {
-    const vcfContent = 'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
+// Download admin-uploaded VCF or default
+function getVcfContent() {
+    return localStorage.getItem('adminVcfContent') || 
+        'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
+}
 
+downloadVcfBtn.addEventListener('click', () => {
+    const vcfContent = getVcfContent();
     const blob = new Blob([vcfContent], { type: 'text/vcard' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -570,9 +585,10 @@ function setupEventListeners() {
             verifiedMembers = parseInt(e.newValue || '0');
             updateStats();
         }
-        if (e.key === 'vcfOut') {
-            const vcfOut = e.newValue === 'true';
-            if (vcfOut) {
+        if (e.key === 'vcfOut' || e.key === 'adminVcfContent') {
+            const vcfOut = localStorage.getItem('vcfOut') === 'true';
+            const adminVcf = localStorage.getItem('adminVcfContent');
+            if (vcfOut || adminVcf) {
                 countdownTimer.textContent = 'VCF IS OUT!';
                 downloadVcfBtn.classList.remove('hidden');
             }
