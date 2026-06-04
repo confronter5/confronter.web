@@ -271,6 +271,7 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
             overflow-x: auto;
+            margin-bottom: 24px;
         }
 
         table {
@@ -338,9 +339,7 @@
             color: #fff;
         }
 
-        .btn-export {
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: #fff;
+        .btn-export, .btn-download, .btn-toggle {
             padding: 10px 18px;
             border-radius: 12px;
             border: none;
@@ -355,9 +354,94 @@
             box-shadow: 0 4px 16px rgba(99,102,241,0.3);
         }
 
+        .btn-export {
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: #fff;
+        }
+
         .btn-export:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+        }
+
+        .btn-toggle {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(245,158,11,0.3);
+        }
+
+        .btn-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245,158,11,0.4);
+        }
+
+        .btn-toggle.off {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            box-shadow: 0 4px 16px rgba(107,114,128,0.3);
+        }
+
+        .btn-toggle.off:hover {
+            box-shadow: 0 6px 20px rgba(107,114,128,0.4);
+        }
+
+        .download-area {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .download-area h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-area h3 i {
+            color: var(--accent);
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toggle-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .toggle-status.on {
+            background: rgba(16,185,129,0.15);
+            color: var(--success);
+        }
+
+        .toggle-status.off {
+            background: rgba(239,68,68,0.15);
+            color: var(--danger);
         }
 
         .empty-state {
@@ -385,6 +469,103 @@
             justify-content: center;
         }
 
+        /* Password Overlay */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .password-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .password-card i {
+            font-size: 48px;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .password-card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .password-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .password-card input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .password-card input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+
+        .password-card .error-msg {
+            color: var(--danger);
+            font-size: 11px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .password-card .error-msg.show {
+            display: block;
+        }
+
+        .password-card button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        }
+
+        .password-card button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px rgba(99,102,241,0.4);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -408,11 +589,30 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+            .download-buttons {
+                flex-direction: column;
+            }
+            .btn-export, .btn-download, .btn-toggle {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-wrapper">
+    <!-- Password Overlay -->
+    <div class="password-overlay" id="passwordOverlay">
+        <div class="password-card">
+            <i class="fas fa-lock"></i>
+            <h2>Admin Access</h2>
+            <p>Enter your password to access the admin panel</p>
+            <input type="password" id="adminPassword" placeholder="Enter password...">
+            <div class="error-msg" id="passwordError"><i class="fas fa-circle-exclamation"></i> Incorrect password</div>
+            <button id="loginBtn"><i class="fas fa-arrow-right"></i> Login</button>
+        </div>
+    </div>
+
+    <div class="admin-wrapper hidden" id="adminWrapper">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <i class="fas fa-shield-halved"></i>
@@ -439,11 +639,11 @@
                     <h1><i class="fas fa-chart-pie" style="color:var(--accent);margin-right:8px;"></i>Dashboard</h1>
                 </div>
                 <div class="topbar-actions">
-                    <button class="btn-export" id="exportBtn"><i class="fas fa-file-export"></i> Export CSV</button>
                     <button class="theme-toggle" id="themeToggle"><i class="fas fa-sun" id="themeIcon"></i></button>
                 </div>
             </div>
 
+            <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-header">
@@ -479,6 +679,19 @@
                 </div>
             </div>
 
+            <!-- Download & Toggle Area -->
+            <div class="download-area">
+                <h3><i class="fas fa-download"></i> Downloads & Controls</h3>
+                <div class="download-buttons">
+                    <button class="btn-export" id="exportBtn"><i class="fas fa-file-csv"></i> Export CSV</button>
+                    <button class="btn-download" id="downloadVcfBtn"><i class="fas fa-address-card"></i> Download VCF</button>
+                    <button class="btn-download" id="downloadDocBtn" style="background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 4px 16px rgba(59,130,246,0.3);"><i class="fas fa-file-word"></i> Export Document</button>
+                    <button class="btn-toggle" id="vcfToggleBtn"><i class="fas fa-toggle-on"></i> VCF Release: <span id="toggleLabel">OFF</span></button>
+                    <span class="toggle-status off" id="toggleStatus"><i class="fas fa-circle"></i> Hidden on Main</span>
+                </div>
+            </div>
+
+            <!-- Users Table -->
             <div class="section-title"><i class="fas fa-list"></i> Verified Users</div>
             <div class="table-card">
                 <table>
@@ -486,6 +699,7 @@
                         <tr>
                             <th>#</th>
                             <th>Name</th>
+                            <th>Email</th>
                             <th>Country</th>
                             <th>Phone</th>
                             <th>Date</th>
@@ -495,7 +709,7 @@
                     </thead>
                     <tbody id="usersTableBody">
                         <tr>
-                            <td colspan="7">
+                            <td colspan="8">
                                 <div class="empty-state">
                                     <i class="fas fa-inbox"></i>
                                     <p>No verified users yet</p>
@@ -510,21 +724,67 @@
 
     <script>
         const MAX_MEMBERS = 100;
+        const ADMIN_PASSWORD = 'confronter2025'; // Change this password
 
         function init() {
+            setupPassword();
             loadUsers();
             updateStats();
             setupTheme();
             setupMobileMenu();
             setupExport();
+            setupDownloads();
+            setupVcfToggle();
         }
 
+        // ===================== PASSWORD =====================
+        function setupPassword() {
+            const overlay = document.getElementById('passwordOverlay');
+            const wrapper = document.getElementById('adminWrapper');
+            const input = document.getElementById('adminPassword');
+            const btn = document.getElementById('loginBtn');
+            const error = document.getElementById('passwordError');
+
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                overlay.classList.add('hidden');
+                wrapper.classList.remove('hidden');
+                return;
+            }
+
+            function attemptLogin() {
+                if (input.value === ADMIN_PASSWORD) {
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                    overlay.style.opacity = '0';
+                    overlay.style.transition = 'opacity 0.4s ease';
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                        wrapper.classList.remove('hidden');
+                    }, 400);
+                } else {
+                    error.classList.add('show');
+                    input.style.borderColor = 'var(--danger)';
+                    input.value = '';
+                    input.focus();
+                    setTimeout(() => {
+                        error.classList.remove('show');
+                        input.style.borderColor = '';
+                    }, 3000);
+                }
+            }
+
+            btn.addEventListener('click', attemptLogin);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') attemptLogin();
+            });
+        }
+
+        // ===================== USERS TABLE =====================
         function loadUsers() {
             const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
             const tbody = document.getElementById('usersTableBody');
 
             if (submissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><p>No verified users yet</p></div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fas fa-inbox"></i><p>No verified users yet</p></div></td></tr>';
                 return;
             }
 
@@ -535,6 +795,7 @@
                 return '<tr>' +
                     '<td>' + (i + 1) + '</td>' +
                     '<td style="font-weight:600;color:var(--text-primary);">' + escapeHtml(s.name) + '</td>' +
+                    '<td style="font-size:11px;">' + escapeHtml(s.email || '-') + '</td>' +
                     '<td>' + escapeHtml(s.country) + '</td>' +
                     '<td style="font-family:monospace;">' + escapeHtml(s.phone) + '</td>' +
                     '<td>' + dateStr + '<br><small style="color:var(--text-muted);">' + timeStr + '</small></td>' +
@@ -572,6 +833,7 @@
             return div.innerHTML;
         }
 
+        // ===================== EXPORT CSV =====================
         function setupExport() {
             document.getElementById('exportBtn').addEventListener('click', () => {
                 const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
@@ -579,9 +841,9 @@
                     alert('No data to export!');
                     return;
                 }
-                let csv = 'Name,Country,Phone,Timestamp\n';
+                let csv = 'Name,Email,Country,Phone,Timestamp\n';
                 submissions.forEach(s => {
-                    csv += '"' + s.name + '","' + s.country + '","' + s.phone + '","' + s.timestamp + '"\n';
+                    csv += '"' + s.name + '","' + (s.email || '') + '","' + s.country + '","' + s.phone + '","' + s.timestamp + '"\n';
                 });
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = URL.createObjectURL(blob);
@@ -595,6 +857,79 @@
             });
         }
 
+        // ===================== DOWNLOADS (VCF + DOC) =====================
+        function setupDownloads() {
+            document.getElementById('downloadVcfBtn').addEventListener('click', () => {
+                const vcfContent = 'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
+                const blob = new Blob([vcfContent], { type: 'text/vcard' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Confronter_Tech_Wizard.vcf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('downloadDocBtn').addEventListener('click', () => {
+                const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
+                if (submissions.length === 0) {
+                    alert('No data to export!');
+                    return;
+                }
+                let html = '<html><head><title>Verified Users</title><style>body{font-family:Arial;padding:40px;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;border:1px solid #ddd;text-align:left;}th{background:#6366f1;color:#fff;}</style></head><body>';
+                html += '<h1>Confronter Tech Wizard - Verified Users</h1>';
+                html += '<p>Generated: ' + new Date().toLocaleString() + '</p>';
+                html += '<table><tr><th>#</th><th>Name</th><th>Email</th><th>Country</th><th>Phone</th><th>Date</th></tr>';
+                submissions.forEach((s, i) => {
+                    html += '<tr><td>' + (i+1) + '</td><td>' + s.name + '</td><td>' + (s.email || '-') + '</td><td>' + s.country + '</td><td>' + s.phone + '</td><td>' + new Date(s.timestamp).toLocaleString() + '</td></tr>';
+                });
+                html += '</table></body></html>';
+                const blob = new Blob([html], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'verified_users.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // ===================== VCF TOGGLE =====================
+        function setupVcfToggle() {
+            const btn = document.getElementById('vcfToggleBtn');
+            const label = document.getElementById('toggleLabel');
+            const status = document.getElementById('toggleStatus');
+
+            const vcfOut = localStorage.getItem('vcfOut') === 'true';
+            updateToggleUI(vcfOut);
+
+            btn.addEventListener('click', () => {
+                const current = localStorage.getItem('vcfOut') === 'true';
+                const next = !current;
+                localStorage.setItem('vcfOut', next.toString());
+                updateToggleUI(next);
+            });
+
+            function updateToggleUI(isOn) {
+                if (isOn) {
+                    btn.classList.remove('off');
+                    btn.innerHTML = '<i class="fas fa-toggle-on"></i> VCF Release: <span id="toggleLabel">ON</span>';
+                    status.className = 'toggle-status on';
+                    status.innerHTML = '<i class="fas fa-circle"></i> Showing on Main';
+                } else {
+                    btn.classList.add('off');
+                    btn.innerHTML = '<i class="fas fa-toggle-off"></i> VCF Release: <span id="toggleLabel">OFF</span>';
+                    status.className = 'toggle-status off';
+                    status.innerHTML = '<i class="fas fa-circle"></i> Hidden on Main';
+                }
+            }
+        }
+
+        // ===================== THEME =====================
         function setupTheme() {
             const saved = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', saved);
@@ -613,6 +948,7 @@
             document.getElementById('themeIcon').className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
         }
 
+        // ===================== MOBILE MENU =====================
         function setupMobileMenu() {
             const btn = document.getElementById('mobileMenuBtn');
             const sidebar = document.getElementById('sidebar');
@@ -621,6 +957,7 @@
             });
         }
 
+        // ===================== STORAGE LISTENER =====================
         window.addEventListener('storage', () => {
             loadUsers();
             updateStats();
@@ -629,4 +966,4 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
-</html>
+    </html>
