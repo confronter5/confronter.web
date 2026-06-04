@@ -192,6 +192,8 @@ const countrySelect = document.getElementById('countrySelect');
 const countryCode = document.getElementById('countryCode');
 const phoneNumber = document.getElementById('phoneNumber');
 const phoneHint = document.getElementById('phoneHint');
+const emailInput = document.getElementById('email');
+const emailHint = document.getElementById('emailHint');
 const vcfForm = document.getElementById('vcfForm');
 const successOverlay = document.getElementById('successOverlay');
 const redirectCount = document.getElementById('redirectCount');
@@ -212,8 +214,11 @@ const countdownTimer = document.getElementById('countdownTimer');
 const downloadVcfBtn = document.getElementById('downloadVcfBtn');
 
 const MAX_MEMBERS = 100;
-const VCF_RELEASE_DATE = new Date('2025-12-31T00:00:00');
 const WHATSAPP_GROUP = 'https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1';
+
+// 30 days from now
+const now = new Date();
+const VCF_RELEASE_DATE = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
 let selectedCountry = null;
 let verifiedMembers = parseInt(localStorage.getItem('verifiedCount') || '0');
@@ -227,6 +232,38 @@ function init() {
     setupTheme();
     setupBattery();
     setupEventListeners();
+    checkAdminVcfToggle();
+    setupEmailValidation();
+}
+
+// Check if admin toggled VCF download ON
+function checkAdminVcfToggle() {
+    const vcfOut = localStorage.getItem('vcfOut') === 'true';
+    if (vcfOut) {
+        countdownTimer.textContent = 'VCF IS OUT!';
+        downloadVcfBtn.classList.remove('hidden');
+    }
+}
+
+// ===================== EMAIL VALIDATION =====================
+function setupEmailValidation() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    emailInput.addEventListener('input', () => {
+        const val = emailInput.value.trim();
+        if (val === '') {
+            emailHint.textContent = 'Enter a valid email address';
+            emailHint.className = 'hint';
+            return;
+        }
+        if (emailRegex.test(val)) {
+            emailHint.textContent = 'Valid email address';
+            emailHint.className = 'hint success';
+        } else {
+            emailHint.textContent = 'Invalid email format (e.g. name@email.com)';
+            emailHint.className = 'hint error';
+        }
+    });
 }
 
 // ===================== COUNTRIES =====================
@@ -276,6 +313,16 @@ phoneNumber.addEventListener('input', () => {
 vcfForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailVal = emailInput.value.trim();
+    if (!emailRegex.test(emailVal)) {
+        emailHint.textContent = 'Please enter a valid email address';
+        emailHint.className = 'hint error';
+        emailInput.focus();
+        return;
+    }
+
     if (!selectedCountry) {
         phoneHint.textContent = 'Please select a country';
         phoneHint.className = 'hint error';
@@ -292,6 +339,13 @@ vcfForm.addEventListener('submit', (e) => {
     const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
     const fullPhone = selectedCountry.dial + rawNum;
 
+    // Check for duplicate email
+    if (submissions.some(s => s.email === emailVal)) {
+        emailHint.textContent = 'This email is already verified!';
+        emailHint.className = 'hint error';
+        return;
+    }
+
     if (submissions.some(s => s.phone === fullPhone)) {
         phoneHint.textContent = 'This number is already verified!';
         phoneHint.className = 'hint error';
@@ -300,6 +354,7 @@ vcfForm.addEventListener('submit', (e) => {
 
     submissions.push({
         name: document.getElementById('fullName').value,
+        email: emailVal,
         country: selectedCountry.name,
         phone: fullPhone,
         timestamp: new Date().toISOString()
@@ -381,6 +436,8 @@ addAnotherBtn.addEventListener('click', () => {
         countryCode.textContent = '+';
         phoneHint.textContent = 'Select a country first';
         phoneHint.className = 'hint';
+        emailHint.textContent = 'Enter a valid email address';
+        emailHint.className = 'hint';
         selectedCountry = null;
     }, 400);
 });
@@ -389,7 +446,7 @@ addAnotherBtn.addEventListener('click', () => {
 function updateStats() {
     const verified = Math.min(verifiedMembers, MAX_MEMBERS);
     const remaining = Math.max(0, MAX_MEMBERS - verified);
-    const percent = (verified / MAX_MEMBERS) * 1000;
+    const percent = (verified / MAX_MEMBERS) * 100;
 
     verifiedCount.textContent = verified;
     verifiedLabel.textContent = verified;
@@ -442,11 +499,18 @@ function setupBattery() {
     }
 }
 
-// ===================== COUNTDOWN =====================
+// ===================== COUNTDOWN (30 DAYS) =====================
 function startCountdown() {
     function update() {
         const now = new Date();
-        const diff = 23 - now;
+        const diff = VCF_RELEASE_DATE - now;
+        const vcfOut = localStorage.getItem('vcfOut') === 'true';
+
+        if (vcfOut) {
+            countdownTimer.textContent = 'VCF IS OUT!';
+            downloadVcfBtn.classList.remove('hidden');
+            return;
+        }
 
         if (diff <= 0) {
             countdownTimer.textContent = 'VCF IS OUT!';
@@ -505,6 +569,13 @@ function setupEventListeners() {
         if (e.key === 'verifiedCount') {
             verifiedMembers = parseInt(e.newValue || '0');
             updateStats();
+        }
+        if (e.key === 'vcfOut') {
+            const vcfOut = e.newValue === 'true';
+            if (vcfOut) {
+                countdownTimer.textContent = 'VCF IS OUT!';
+                downloadVcfBtn.classList.remove('hidden');
+            }
         }
     });
 }
