@@ -214,6 +214,7 @@ function init() {
     startCountdown();
     loadStats();
     setupTheme();
+    setupPhoneInput();
 }
 
 // ===== POPULATE COUNTRIES =====
@@ -222,9 +223,18 @@ function populateCountries() {
     countryData.forEach(country => {
         const option = document.createElement('option');
         option.value = country.code;
-        option.textContent = `${country.name} (${country.dial})`;
+        option.textContent = `${getFlagEmoji(country.code)} ${country.name} (${country.dial})`;
         countrySelect.appendChild(option);
     });
+}
+
+// ===== GET FLAG EMOJI =====
+function getFlagEmoji(countryCode) {
+    const codePoints = countryCode
+        .toUpperCase()
+        .split('')
+        .map(char => 127397 + char.charCodeAt());
+    return String.fromCodePoint(...codePoints);
 }
 
 // ===== COUNTRY CHANGE HANDLER =====
@@ -238,6 +248,37 @@ countrySelect.addEventListener('change', function() {
         phoneNumber.focus();
     }
 });
+
+// ===== PHONE INPUT SETUP =====
+function setupPhoneInput() {
+    phoneNumber.addEventListener('input', function(e) {
+        const selected = countryData.find(c => c.code === countrySelect.value);
+        if (!selected) return;
+
+        // Remove non-digits
+        let value = this.value.replace(/\D/g, '');
+
+        // Limit to max digits based on country format
+        const maxDigits = getMaxDigits(selected.format);
+        if (value.length > maxDigits) {
+            value = value.substring(0, maxDigits);
+        }
+
+        this.value = value;
+        validationMsg.textContent = '';
+        validationMsg.className = 'validation-msg';
+    });
+}
+
+// ===== GET MAX DIGITS FROM FORMAT =====
+function getMaxDigits(format) {
+    const formatStr = format.toString();
+    const match = formatStr.match(/\d\{(\d+)(?:,(\d+))?\}/);
+    if (match) {
+        return match[2] ? parseInt(match[2]) : parseInt(match[1]);
+    }
+    return 15; // default fallback
+}
 
 // ===== PHONE VALIDATION =====
 function validatePhone() {
@@ -263,14 +304,23 @@ function validatePhone() {
 }
 
 phoneNumber.addEventListener('blur', validatePhone);
-phoneNumber.addEventListener('input', function() {
-    validationMsg.textContent = '';
-    validationMsg.className = 'validation-msg';
-});
 
 function showValidation(msg, type) {
     validationMsg.textContent = msg;
     validationMsg.className = `validation-msg ${type}`;
+}
+
+// ===== NAME VALIDATION =====
+function validateName(name) {
+    // Only letters, spaces, hyphens, apostrophes - no emojis or special characters
+    const nameRegex = /^[a-zA-Z\s\-\'\.]+$/;
+    return nameRegex.test(name) && name.trim().length >= 2;
+}
+
+// ===== EMAIL VALIDATION =====
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }
 
 // ===== FORM SUBMISSION =====
@@ -280,6 +330,22 @@ vcfForm.addEventListener('submit', function(e) {
     const fullName = document.getElementById('fullName').value.trim();
     if (!fullName) {
         showValidation('Please enter your full name', 'error');
+        return;
+    }
+
+    if (!validateName(fullName)) {
+        showValidation('Name must contain only letters, spaces, hyphens, or apostrophes (no emojis or special characters)', 'error');
+        return;
+    }
+
+    const email = document.getElementById('email').value.trim();
+    if (!email) {
+        showValidation('Email is required', 'error');
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        showValidation('Please enter a valid email address', 'error');
         return;
     }
 
@@ -384,7 +450,6 @@ function saveVerification() {
         dialCode: selected.dial,
         phone: phoneNumber.value.replace(/\D/g, ''),
         email: document.getElementById('email').value.trim(),
-        bio: document.getElementById('bio').value.trim(),
         timestamp: new Date().toISOString()
     };
 
@@ -552,7 +617,6 @@ function downloadVCF() {
         vcfContent += `FN:${v.name}\n`;
         vcfContent += `TEL;TYPE=CELL:${v.dialCode}${v.phone}\n`;
         if (v.email) vcfContent += `EMAIL:${v.email}\n`;
-        if (v.bio) vcfContent += `NOTE:${v.bio}\n`;
         vcfContent += `ADR;TYPE=HOME:;;${v.country};;;;\n`;
         vcfContent += `REV:${v.timestamp}\n`;
         vcfContent += `END:VCARD\n`;
@@ -571,4 +635,3 @@ function downloadVCF() {
 
 // ===== INIT ON LOAD =====
 document.addEventListener('DOMContentLoaded', init);
-
