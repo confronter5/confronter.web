@@ -8,21 +8,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: #1a1a2e;
-            --bg-input: #16162a;
-            --text-primary: #e0e0ff;
-            --text-secondary: #8888aa;
-            --accent: #00d4ff;
-            --accent-glow: rgba(0, 212, 255, 0.3);
-            --success: #00ff88;
-            --error: #ff3366;
-            --warning: #ffaa00;
-            --border: rgba(0, 212, 255, 0.15);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-card: #111111;
+            --bg-input: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --accent: #1a73e8;
+            --accent-glow: rgba(26, 115, 232, 0.3);
+            --success: #34a853;
+            --error: #ea4335;
+            --warning: #fbbc04;
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             --font-main: 'Rajdhani', sans-serif;
             --font-display: 'Orbitron', sans-serif;
+        }
+
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-card: #ffffff;
+            --bg-input: #f0f0f0;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --accent: #1a73e8;
+            --accent-glow: rgba(26, 115, 232, 0.2);
+            --border: rgba(0, 0, 0, 0.1);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -34,11 +47,138 @@
             color: var(--text-primary);
             min-height: 100vh;
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
+        /* ===== LOGIN SCREEN ===== */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            transition: all 0.3s ease;
+        }
+
+        .login-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent), #0d47a1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .login-logo i {
+            font-size: 32px;
+            color: #fff;
+        }
+
+        .login-box h2 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .login-box p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent), #0d47a1);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--accent-glow);
+        }
+
+        .login-error {
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 10px;
+            font-weight: 600;
+            min-height: 18px;
+        }
+
+        .login-shake {
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* ===== ADMIN PANEL ===== */
         .admin-container {
             max-width: 1200px;
             margin: 0 auto;
+            display: none;
+        }
+
+        .admin-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
         }
 
         .admin-header {
@@ -53,9 +193,7 @@
         .admin-header h1 {
             font-family: var(--font-display);
             font-size: 20px;
-            background: linear-gradient(135deg, var(--accent), #7b2ff7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
             margin-bottom: 5px;
         }
 
@@ -88,6 +226,7 @@
         .stat-icon {
             font-size: 24px;
             margin-bottom: 10px;
+            color: var(--accent);
         }
 
         .stat-value {
@@ -127,22 +266,22 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #7b2ff7);
+            background: linear-gradient(135deg, var(--accent), #0d47a1);
             color: #fff;
         }
 
         .btn-success {
-            background: linear-gradient(135deg, var(--success), #00cc66);
-            color: #000;
+            background: linear-gradient(135deg, var(--success), #2e7d32);
+            color: #fff;
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, var(--error), #cc0033);
+            background: linear-gradient(135deg, var(--error), #b71c1c);
             color: #fff;
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #cc8800);
+            background: linear-gradient(135deg, var(--warning), #f57f17);
             color: #000;
         }
 
@@ -209,7 +348,7 @@
         }
 
         tr:hover td {
-            background: rgba(0, 212, 255, 0.05);
+            background: rgba(26, 115, 232, 0.05);
         }
 
         .phone-cell {
@@ -223,7 +362,7 @@
             align-items: center;
             gap: 4px;
             padding: 3px 8px;
-            background: rgba(0, 212, 255, 0.1);
+            background: rgba(26, 115, 232, 0.1);
             border: 1px solid var(--accent);
             border-radius: 12px;
             font-size: 10px;
@@ -253,9 +392,9 @@
             transition: all 0.2s ease;
         }
 
-        .action-btn.view { background: rgba(0, 212, 255, 0.15); color: var(--accent); }
-        .action-btn.delete { background: rgba(255, 51, 102, 0.15); color: var(--error); }
-        .action-btn.whatsapp { background: rgba(0, 255, 136, 0.15); color: var(--success); }
+        .action-btn.view { background: rgba(26, 115, 232, 0.15); color: var(--accent); }
+        .action-btn.delete { background: rgba(234, 67, 53, 0.15); color: var(--error); }
+        .action-btn.whatsapp { background: rgba(52, 168, 83, 0.15); color: var(--success); }
         .action-btn:hover { transform: scale(1.1); }
 
         .empty-state {
@@ -348,93 +487,145 @@
 
         .page-btn:hover, .page-btn.active {
             background: var(--accent);
-            color: #000;
+            color: #fff;
             border-color: var(--accent);
         }
 
         .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
+        .theme-toggle-admin {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle-admin:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .theme-toggle-admin i {
+            font-size: 16px;
+            color: var(--accent);
+        }
+
         @media (max-width: 768px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             th, td { padding: 8px 10px; font-size: 11px; }
             .admin-header h1 { font-size: 16px; }
+            .login-box { padding: 25px; }
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <div class="admin-header">
-            <h1><i class="fas fa-shield-halved"></i> Admin Panel</h1>
-            <p>Confronter Tech Wizard VCF - Verified Contacts Management</p>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-value" id="totalVerified">0</div>
-                <div class="stat-label">Total Verified</div>
+    <!-- Login Screen -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box" id="loginBox">
+            <div class="login-logo">
+                <i class="fas fa-address-card"></i>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-globe"></i></div>
-                <div class="stat-value" id="totalCountries">0</div>
-                <div class="stat-label">Countries</div>
+            <h2>Admin Login</h2>
+            <p>Confronter Tech Wizard VCF - Admin Panel</p>
+            <input type="password" class="login-input" id="passwordInput" placeholder="Enter admin password" onkeypress="if(event.key==='Enter')login()">
+            <button class="login-btn" onclick="login()">
+                <i class="fas fa-lock"></i> Login
+            </button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-container" id="adminPanel">
+        <div class="theme-toggle-admin" id="themeToggle" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </div>
+
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1><i class="fas fa-address-card"></i> Admin Panel</h1>
+                <p>Confronter Tech Wizard VCF - Verified Contacts Management</p>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                <div class="stat-value" id="todayCount">0</div>
-                <div class="stat-label">Today</div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value" id="totalVerified">0</div>
+                    <div class="stat-label">Total Verified</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stat-value" id="totalCountries">0</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-value" id="todayCount">0</div>
+                    <div class="stat-label">Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+                    <div class="stat-value" id="capacityPercent">0%</div>
+                    <div class="stat-label">Capacity Used</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-percentage"></i></div>
-                <div class="stat-value" id="capacityPercent">0%</div>
-                <div class="stat-label">Capacity Used</div>
+
+            <div class="actions-bar">
+                <button class="btn btn-success" onclick="exportCSV()">
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </button>
+                <button class="btn btn-primary" onclick="exportVCF()">
+                    <i class="fas fa-download"></i> Export VCF
+                </button>
+                <button class="btn btn-warning" onclick="exportJSON()">
+                    <i class="fas fa-file-code"></i> Export JSON
+                </button>
+                <button class="btn btn-danger" onclick="clearAll()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
             </div>
-        </div>
 
-        <div class="actions-bar">
-            <button class="btn btn-success" onclick="exportCSV()">
-                <i class="fas fa-file-csv"></i> Export CSV
-            </button>
-            <button class="btn btn-primary" onclick="exportVCF()">
-                <i class="fas fa-download"></i> Export VCF
-            </button>
-            <button class="btn btn-warning" onclick="exportJSON()">
-                <i class="fas fa-file-code"></i> Export JSON
-            </button>
-            <button class="btn btn-danger" onclick="clearAll()">
-                <i class="fas fa-trash"></i> Clear All
-            </button>
-        </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by name, phone, country..." oninput="filterTable()">
+            </div>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search by name, phone, country..." oninput="filterTable()">
-        </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Country</th>
+                            <th>Email</th>
+                            <th>Verified At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactsTable">
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>No verified contacts yet</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Country</th>
-                        <th>Email</th>
-                        <th>Verified At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="contactsTable">
-                    <tr>
-                        <td colspan="7" class="empty-state">
-                            <i class="fas fa-inbox"></i>
-                            <p>No verified contacts yet</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="pagination" id="pagination"></div>
         </div>
-
-        <div class="pagination" id="pagination"></div>
     </div>
 
     <!-- View Modal -->
@@ -449,10 +640,59 @@
     </div>
 
     <script>
+        // ===== ADMIN PASSWORD =====
+        const ADMIN_PASSWORD = 'confronter2024';
+
         const MAX_CAPACITY = 500;
         let currentPage = 1;
         const ITEMS_PER_PAGE = 15;
         let filteredData = [];
+
+        // ===== LOGIN FUNCTION =====
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            const loginBox = document.getElementById('loginBox');
+            const loginError = document.getElementById('loginError');
+
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                loadData();
+                setupTheme();
+            } else {
+                loginError.textContent = 'Wrong password! Access denied.';
+                loginBox.classList.add('login-shake');
+                setTimeout(() => {
+                    loginBox.classList.remove('login-shake');
+                }, 500);
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        // ===== THEME TOGGLE =====
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const themeIcon = document.getElementById('themeIcon');
+            if (document.body.classList.contains('light-mode')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('adminTheme', 'light');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('adminTheme', 'dark');
+            }
+        }
+
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('adminTheme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').classList.remove('fa-moon');
+                document.getElementById('themeIcon').classList.add('fa-sun');
+            }
+        }
 
         function loadData() {
             const data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
@@ -572,7 +812,6 @@
                 <div class="modal-row"><span class="modal-label">Phone</span><span class="modal-value">${contact.dialCode} ${contact.phone}</span></div>
                 <div class="modal-row"><span class="modal-label">Country</span><span class="modal-value">${contact.country}</span></div>
                 <div class="modal-row"><span class="modal-label">Email</span><span class="modal-value">${contact.email || 'N/A'}</span></div>
-                <div class="modal-row"><span class="modal-label">Bio/Note</span><span class="modal-value">${contact.bio || 'N/A'}</span></div>
                 <div class="modal-row"><span class="modal-label">Verified At</span><span class="modal-value">${formatDate(contact.timestamp)}</span></div>
                 <div class="modal-row"><span class="modal-label">Contact ID</span><span class="modal-value">${contact.id}</span></div>
             `;
@@ -608,9 +847,9 @@
             const data = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
             if (data.length === 0) { alert('No data to export!'); return; }
 
-            let csv = 'ID,Name,Phone,Country,Email,Bio,Verified At\n';
+            let csv = 'ID,Name,Phone,Country,Email,Verified At\n';
             data.forEach(d => {
-                csv += `${d.id},"${d.name}","${d.dialCode}${d.phone}","${d.country}","${d.email || ''}","${(d.bio || '').replace(/"/g, '""')}","${d.timestamp}"\n`;
+                csv += `${d.id},"${d.name}","${d.dialCode}${d.phone}","${d.country}","${d.email || ''}","${d.timestamp}"\n`;
             });
 
             downloadFile(csv, 'confronter_contacts.csv', 'text/csv');
@@ -625,7 +864,6 @@
                 vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${d.name}\n`;
                 vcf += `TEL;TYPE=CELL:${d.dialCode}${d.phone}\n`;
                 if (d.email) vcf += `EMAIL:${d.email}\n`;
-                if (d.bio) vcf += `NOTE:${d.bio}\n`;
                 vcf += `ADR;TYPE=HOME:;;${d.country};;;;\n`;
                 vcf += `REV:${d.timestamp}\nEND:VCARD\n`;
             });
@@ -667,7 +905,15 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', loadData);
+        // Check if already logged in (session)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                loadData();
+                setupTheme();
+            }
+        });
     </script>
 </body>
-  </html>
+</html>
