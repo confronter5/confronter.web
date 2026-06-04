@@ -1,586 +1,455 @@
-// ===== COUNTRY DATA WITH PHONE FORMATS =====
-const countryData = [
-    { code: "AF", name: "Afghanistan", dial: "+93", format: /^\d{9}$/, hint: "9 digits (e.g., 701234567)" },
-    { code: "AL", name: "Albania", dial: "+355", format: /^\d{9}$/, hint: "9 digits (e.g., 661234567)" },
-    { code: "DZ", name: "Algeria", dial: "+213", format: /^\d{9}$/, hint: "9 digits (e.g., 551234567)" },
-    { code: "AD", name: "Andorra", dial: "+376", format: /^\d{6}$/, hint: "6 digits (e.g., 312345)" },
-    { code: "AO", name: "Angola", dial: "+244", format: /^\d{9}$/, hint: "9 digits (e.g., 923456789)" },
-    { code: "AR", name: "Argentina", dial: "+54", format: /^\d{10}$/, hint: "10 digits (e.g., 91123456789)" },
-    { code: "AM", name: "Armenia", dial: "+374", format: /^\d{8}$/, hint: "8 digits (e.g., 77123456)" },
-    { code: "AU", name: "Australia", dial: "+61", format: /^\d{9}$/, hint: "9 digits (e.g., 412345678)" },
-    { code: "AT", name: "Austria", dial: "+43", format: /^\d{10,11}$/, hint: "10-11 digits (e.g., 664123456)" },
-    { code: "AZ", name: "Azerbaijan", dial: "+994", format: /^\d{9}$/, hint: "9 digits (e.g., 401234567)" },
-    { code: "BS", name: "Bahamas", dial: "+1-242", format: /^\d{7}$/, hint: "7 digits (e.g., 3591234)" },
-    { code: "BH", name: "Bahrain", dial: "+973", format: /^\d{8}$/, hint: "8 digits (e.g., 36001234)" },
-    { code: "BD", name: "Bangladesh", dial: "+880", format: /^\d{10}$/, hint: "10 digits (e.g., 1712345678)" },
-    { code: "BY", name: "Belarus", dial: "+375", format: /^\d{9}$/, hint: "9 digits (e.g., 291234567)" },
-    { code: "BE", name: "Belgium", dial: "+32", format: /^\d{9}$/, hint: "9 digits (e.g., 470123456)" },
-    { code: "BZ", name: "Belize", dial: "+501", format: /^\d{7}$/, hint: "7 digits (e.g., 6101234)" },
-    { code: "BJ", name: "Benin", dial: "+229", format: /^\d{8}$/, hint: "8 digits (e.g., 90123456)" },
-    { code: "BT", name: "Bhutan", dial: "+975", format: /^\d{8}$/, hint: "8 digits (e.g., 17123456)" },
-    { code: "BO", name: "Bolivia", dial: "+591", format: /^\d{8}$/, hint: "8 digits (e.g., 71234567)" },
-    { code: "BA", name: "Bosnia and Herzegovina", dial: "+387", format: /^\d{8}$/, hint: "8 digits (e.g., 61123456)" },
-    { code: "BW", name: "Botswana", dial: "+267", format: /^\d{8}$/, hint: "8 digits (e.g., 74123456)" },
-    { code: "BR", name: "Brazil", dial: "+55", format: /^\d{11}$/, hint: "11 digits (e.g., 11912345678)" },
-    { code: "BN", name: "Brunei", dial: "+673", format: /^\d{7}$/, hint: "7 digits (e.g., 7123456)" },
-    { code: "BG", name: "Bulgaria", dial: "+359", format: /^\d{9}$/, hint: "9 digits (e.g., 871234567)" },
-    { code: "BF", name: "Burkina Faso", dial: "+226", format: /^\d{8}$/, hint: "8 digits (e.g., 70123456)" },
-    { code: "BI", name: "Burundi", dial: "+257", format: /^\d{8}$/, hint: "8 digits (e.g., 79123456)" },
-    { code: "KH", name: "Cambodia", dial: "+855", format: /^\d{8,9}$/, hint: "8-9 digits (e.g., 91234567)" },
-    { code: "CM", name: "Cameroon", dial: "+237", format: /^\d{9}$/, hint: "9 digits (e.g., 671234567)" },
-    { code: "CA", name: "Canada", dial: "+1", format: /^\d{10}$/, hint: "10 digits (e.g., 4161234567)" },
-    { code: "CV", name: "Cape Verde", dial: "+238", format: /^\d{7}$/, hint: "7 digits (e.g., 9123456)" },
-    { code: "CF", name: "Central African Republic", dial: "+236", format: /^\d{8}$/, hint: "8 digits (e.g., 70123456)" },
-    { code: "TD", name: "Chad", dial: "+235", format: /^\d{8}$/, hint: "8 digits (e.g., 63123456)" },
-    { code: "CL", name: "Chile", dial: "+56", format: /^\d{9}$/, hint: "9 digits (e.g., 912345678)" },
-    { code: "CN", name: "China", dial: "+86", format: /^\d{11}$/, hint: "11 digits (e.g., 13800138000)" },
-    { code: "CO", name: "Colombia", dial: "+57", format: /^\d{10}$/, hint: "10 digits (e.g., 3123456789)" },
-    { code: "KM", name: "Comoros", dial: "+269", format: /^\d{7}$/, hint: "7 digits (e.g., 3212345)" },
-    { code: "CG", name: "Congo", dial: "+242", format: /^\d{9}$/, hint: "9 digits (e.g., 055123456)" },
-    { code: "CD", name: "Congo (DRC)", dial: "+243", format: /^\d{9}$/, hint: "9 digits (e.g., 812345678)" },
-    { code: "CR", name: "Costa Rica", dial: "+506", format: /^\d{8}$/, hint: "8 digits (e.g., 83123456)" },
-    { code: "HR", name: "Croatia", dial: "+385", format: /^\d{9}$/, hint: "9 digits (e.g., 911234567)" },
-    { code: "CU", name: "Cuba", dial: "+53", format: /^\d{8}$/, hint: "8 digits (e.g., 51234567)" },
-    { code: "CY", name: "Cyprus", dial: "+357", format: /^\d{8}$/, hint: "8 digits (e.g., 96123456)" },
-    { code: "CZ", name: "Czech Republic", dial: "+420", format: /^\d{9}$/, hint: "9 digits (e.g., 601123456)" },
-    { code: "DK", name: "Denmark", dial: "+45", format: /^\d{8}$/, hint: "8 digits (e.g., 20123456)" },
-    { code: "DJ", name: "Djibouti", dial: "+253", format: /^\d{8}$/, hint: "8 digits (e.g., 77123456)" },
-    { code: "DO", name: "Dominican Republic", dial: "+1-809", format: /^\d{10}$/, hint: "10 digits (e.g., 8091234567)" },
-    { code: "EC", name: "Ecuador", dial: "+593", format: /^\d{9}$/, hint: "9 digits (e.g., 991234567)" },
-    { code: "EG", name: "Egypt", dial: "+20", format: /^\d{10}$/, hint: "10 digits (e.g., 1012345678)" },
-    { code: "SV", name: "El Salvador", dial: "+503", format: /^\d{8}$/, hint: "8 digits (e.g., 70123456)" },
-    { code: "GQ", name: "Equatorial Guinea", dial: "+240", format: /^\d{9}$/, hint: "9 digits (e.g., 222123456)" },
-    { code: "ER", name: "Eritrea", dial: "+291", format: /^\d{7}$/, hint: "7 digits (e.g., 7123456)" },
-    { code: "EE", name: "Estonia", dial: "+372", format: /^\d{7,8}$/, hint: "7-8 digits (e.g., 5123456)" },
-    { code: "ET", name: "Ethiopia", dial: "+251", format: /^\d{9}$/, hint: "9 digits (e.g., 911234567)" },
-    { code: "FJ", name: "Fiji", dial: "+679", format: /^\d{7}$/, hint: "7 digits (e.g., 7012345)" },
-    { code: "FI", name: "Finland", dial: "+358", format: /^\d{9,10}$/, hint: "9-10 digits (e.g., 401234567)" },
-    { code: "FR", name: "France", dial: "+33", format: /^\d{9}$/, hint: "9 digits (e.g., 612345678)" },
-    { code: "GA", name: "Gabon", dial: "+241", format: /^\d{8}$/, hint: "8 digits (e.g., 06123456)" },
-    { code: "GM", name: "Gambia", dial: "+220", format: /^\d{7}$/, hint: "7 digits (e.g., 3012345)" },
-    { code: "GE", name: "Georgia", dial: "+995", format: /^\d{9}$/, hint: "9 digits (e.g., 555123456)" },
-    { code: "DE", name: "Germany", dial: "+49", format: /^\d{10,11}$/, hint: "10-11 digits (e.g., 15123456789)" },
-    { code: "GH", name: "Ghana", dial: "+233", format: /^\d{9}$/, hint: "9 digits (e.g., 241234567)" },
-    { code: "GR", name: "Greece", dial: "+30", format: /^\d{10}$/, hint: "10 digits (e.g., 6912345678)" },
-    { code: "GT", name: "Guatemala", dial: "+502", format: /^\d{8}$/, hint: "8 digits (e.g., 51234567)" },
-    { code: "GN", name: "Guinea", dial: "+224", format: /^\d{9}$/, hint: "9 digits (e.g., 621123456)" },
-    { code: "GW", name: "Guinea-Bissau", dial: "+245", format: /^\d{7}$/, hint: "7 digits (e.g., 9551234)" },
-    { code: "GY", name: "Guyana", dial: "+592", format: /^\d{7}$/, hint: "7 digits (e.g., 6091234)" },
-    { code: "HT", name: "Haiti", dial: "+509", format: /^\d{8}$/, hint: "8 digits (e.g., 34123456)" },
-    { code: "HN", name: "Honduras", dial: "+504", format: /^\d{8}$/, hint: "8 digits (e.g., 91234567)" },
-    { code: "HK", name: "Hong Kong", dial: "+852", format: /^\d{8}$/, hint: "8 digits (e.g., 91234567)" },
-    { code: "HU", name: "Hungary", dial: "+36", format: /^\d{9}$/, hint: "9 digits (e.g., 201234567)" },
-    { code: "IS", name: "Iceland", dial: "+354", format: /^\d{7}$/, hint: "7 digits (e.g., 6123456)" },
-    { code: "IN", name: "India", dial: "+91", format: /^\d{10}$/, hint: "10 digits (e.g., 9876543210)" },
-    { code: "ID", name: "Indonesia", dial: "+62", format: /^\d{10,12}$/, hint: "10-12 digits (e.g., 8123456789)" },
-    { code: "IR", name: "Iran", dial: "+98", format: /^\d{10}$/, hint: "10 digits (e.g., 9123456789)" },
-    { code: "IQ", name: "Iraq", dial: "+964", format: /^\d{10}$/, hint: "10 digits (e.g., 7701234567)" },
-    { code: "IE", name: "Ireland", dial: "+353", format: /^\d{9}$/, hint: "9 digits (e.g., 851234567)" },
-    { code: "IL", name: "Israel", dial: "+972", format: /^\d{9}$/, hint: "9 digits (e.g., 501234567)" },
-    { code: "IT", name: "Italy", dial: "+39", format: /^\d{10}$/, hint: "10 digits (e.g., 3123456789)" },
-    { code: "JM", name: "Jamaica", dial: "+1-876", format: /^\d{7}$/, hint: "7 digits (e.g., 3012345)" },
-    { code: "JP", name: "Japan", dial: "+81", format: /^\d{10}$/, hint: "10 digits (e.g., 9012345678)" },
-    { code: "JO", name: "Jordan", dial: "+962", format: /^\d{9}$/, hint: "9 digits (e.g., 791234567)" },
-    { code: "KZ", name: "Kazakhstan", dial: "+7", format: /^\d{10}$/, hint: "10 digits (e.g., 7012345678)" },
-    { code: "KE", name: "Kenya", dial: "+254", format: /^\d{9}$/, hint: "9 digits (e.g., 712345678 or 793908671)" },
-    { code: "KI", name: "Kiribati", dial: "+686", format: /^\d{5}$/, hint: "5 digits (e.g., 12345)" },
-    { code: "KW", name: "Kuwait", dial: "+965", format: /^\d{8}$/, hint: "8 digits (e.g., 51234567)" },
-    { code: "KG", name: "Kyrgyzstan", dial: "+996", format: /^\d{9}$/, hint: "9 digits (e.g., 700123456)" },
-    { code: "LA", name: "Laos", dial: "+856", format: /^\d{10}$/, hint: "10 digits (e.g., 2023456789)" },
-    { code: "LV", name: "Latvia", dial: "+371", format: /^\d{8}$/, hint: "8 digits (e.g., 21234567)" },
-    { code: "LB", name: "Lebanon", dial: "+961", format: /^\d{7,8}$/, hint: "7-8 digits (e.g., 3123456)" },
-    { code: "LS", name: "Lesotho", dial: "+266", format: /^\d{8}$/, hint: "8 digits (e.g., 59123456)" },
-    { code: "LR", name: "Liberia", dial: "+231", format: /^\d{7,8}$/, hint: "7-8 digits (e.g., 77012345)" },
-    { code: "LY", name: "Libya", dial: "+218", format: /^\d{9,10}$/, hint: "9-10 digits (e.g., 912345678)" },
-    { code: "LI", name: "Liechtenstein", dial: "+423", format: /^\d{7}$/, hint: "7 digits (e.g., 2345678)" },
-    { code: "LT", name: "Lithuania", dial: "+370", format: /^\d{8}$/, hint: "8 digits (e.g., 61234567)" },
-    { code: "LU", name: "Luxembourg", dial: "+352", format: /^\d{9}$/, hint: "9 digits (e.g., 621123456)" },
-    { code: "MO", name: "Macau", dial: "+853", format: /^\d{8}$/, hint: "8 digits (e.g., 66123456)" },
-    { code: "MG", name: "Madagascar", dial: "+261", format: /^\d{9}$/, hint: "9 digits (e.g., 321234567)" },
-    { code: "MW", name: "Malawi", dial: "+265", format: /^\d{9}$/, hint: "9 digits (e.g., 881234567)" },
-    { code: "MY", name: "Malaysia", dial: "+60", format: /^\d{9,10}$/, hint: "9-10 digits (e.g., 123456789)" },
-    { code: "MV", name: "Maldives", dial: "+960", format: /^\d{7}$/, hint: "7 digits (e.g., 7712345)" },
-    { code: "ML", name: "Mali", dial: "+223", format: /^\d{8}$/, hint: "8 digits (e.g., 70123456)" },
-    { code: "MT", name: "Malta", dial: "+356", format: /^\d{8}$/, hint: "8 digits (e.g., 77123456)" },
-    { code: "MR", name: "Mauritania", dial: "+222", format: /^\d{8}$/, hint: "8 digits (e.g., 22123456)" },
-    { code: "MU", name: "Mauritius", dial: "+230", format: /^\d{8}$/, hint: "8 digits (e.g., 51234567)" },
-    { code: "MX", name: "Mexico", dial: "+52", format: /^\d{10}$/, hint: "10 digits (e.g., 5512345678)" },
-    { code: "MD", name: "Moldova", dial: "+373", format: /^\d{8}$/, hint: "8 digits (e.g., 60123456)" },
-    { code: "MC", name: "Monaco", dial: "+377", format: /^\d{8,9}$/, hint: "8-9 digits (e.g., 61234567)" },
-    { code: "MN", name: "Mongolia", dial: "+976", format: /^\d{8}$/, hint: "8 digits (e.g., 88123456)" },
-    { code: "ME", name: "Montenegro", dial: "+382", format: /^\d{8}$/, hint: "8 digits (e.g., 67123456)" },
-    { code: "MA", name: "Morocco", dial: "+212", format: /^\d{9}$/, hint: "9 digits (e.g., 612345678)" },
-    { code: "MZ", name: "Mozambique", dial: "+258", format: /^\d{9}$/, hint: "9 digits (e.g., 841234567)" },
-    { code: "MM", name: "Myanmar", dial: "+95", format: /^\d{8,10}$/, hint: "8-10 digits (e.g., 91234567)" },
-    { code: "NA", name: "Namibia", dial: "+264", format: /^\d{9}$/, hint: "9 digits (e.g., 811234567)" },
-    { code: "NR", name: "Nauru", dial: "+674", format: /^\d{7}$/, hint: "7 digits (e.g., 5551234)" },
-    { code: "NP", name: "Nepal", dial: "+977", format: /^\d{10}$/, hint: "10 digits (e.g., 9801234567)" },
-    { code: "NL", name: "Netherlands", dial: "+31", format: /^\d{9}$/, hint: "9 digits (e.g., 612345678)" },
-    { code: "NZ", name: "New Zealand", dial: "+64", format: /^\d{8,10}$/, hint: "8-10 digits (e.g., 21234567)" },
-    { code: "NI", name: "Nicaragua", dial: "+505", format: /^\d{8}$/, hint: "8 digits (e.g., 81234567)" },
-    { code: "NE", name: "Niger", dial: "+227", format: /^\d{8}$/, hint: "8 digits (e.g., 90123456)" },
-    { code: "NG", name: "Nigeria", dial: "+234", format: /^\d{10}$/, hint: "10 digits (e.g., 8012345678)" },
-    { code: "KP", name: "North Korea", dial: "+850", format: /^\d{8,10}$/, hint: "8-10 digits" },
-    { code: "MK", name: "North Macedonia", dial: "+389", format: /^\d{8}$/, hint: "8 digits (e.g., 70123456)" },
-    { code: "NO", name: "Norway", dial: "+47", format: /^\d{8}$/, hint: "8 digits (e.g., 41234567)" },
-    { code: "OM", name: "Oman", dial: "+968", format: /^\d{8}$/, hint: "8 digits (e.g., 90123456)" },
-    { code: "PK", name: "Pakistan", dial: "+92", format: /^\d{10}$/, hint: "10 digits (e.g., 3012345678)" },
-    { code: "PW", name: "Palau", dial: "+680", format: /^\d{7}$/, hint: "7 digits (e.g., 7751234)" },
-    { code: "PS", name: "Palestine", dial: "+970", format: /^\d{9}$/, hint: "9 digits (e.g., 591234567)" },
-    { code: "PA", name: "Panama", dial: "+507", format: /^\d{8}$/, hint: "8 digits (e.g., 61234567)" },
-    { code: "PG", name: "Papua New Guinea", dial: "+675", format: /^\d{8}$/, hint: "8 digits (e.g., 70123456)" },
-    { code: "PY", name: "Paraguay", dial: "+595", format: /^\d{9}$/, hint: "9 digits (e.g., 961234567)" },
-    { code: "PE", name: "Peru", dial: "+51", format: /^\d{9}$/, hint: "9 digits (e.g., 912345678)" },
-    { code: "PH", name: "Philippines", dial: "+63", format: /^\d{10}$/, hint: "10 digits (e.g., 9123456789)" },
-    { code: "PL", name: "Poland", dial: "+48", format: /^\d{9}$/, hint: "9 digits (e.g., 512345678)" },
-    { code: "PT", name: "Portugal", dial: "+351", format: /^\d{9}$/, hint: "9 digits (e.g., 912345678)" },
-    { code: "PR", name: "Puerto Rico", dial: "+1-787", format: /^\d{10}$/, hint: "10 digits" },
-    { code: "QA", name: "Qatar", dial: "+974", format: /^\d{8}$/, hint: "8 digits (e.g., 33123456)" },
-    { code: "RO", name: "Romania", dial: "+40", format: /^\d{9}$/, hint: "9 digits (e.g., 712345678)" },
-    { code: "RU", name: "Russia", dial: "+7", format: /^\d{10}$/, hint: "10 digits (e.g., 9123456789)" },
-    { code: "RW", name: "Rwanda", dial: "+250", format: /^\d{9}$/, hint: "9 digits (e.g., 781234567)" },
-    { code: "SA", name: "Saudi Arabia", dial: "+966", format: /^\d{9}$/, hint: "9 digits (e.g., 512345678)" },
-    { code: "SN", name: "Senegal", dial: "+221", format: /^\d{9}$/, hint: "9 digits (e.g., 701234567)" },
-    { code: "RS", name: "Serbia", dial: "+381", format: /^\d{8,9}$/, hint: "8-9 digits (e.g., 64123456)" },
-    { code: "SG", name: "Singapore", dial: "+65", format: /^\d{8}$/, hint: "8 digits (e.g., 81234567)" },
-    { code: "SK", name: "Slovakia", dial: "+421", format: /^\d{9}$/, hint: "9 digits (e.g., 901234567)" },
-    { code: "SI", name: "Slovenia", dial: "+386", format: /^\d{8}$/, hint: "8 digits (e.g., 40123456)" },
-    { code: "SO", name: "Somalia", dial: "+252", format: /^\d{8,9}$/, hint: "8-9 digits (e.g., 61234567)" },
-    { code: "ZA", name: "South Africa", dial: "+27", format: /^\d{9}$/, hint: "9 digits (e.g., 831234567)" },
-    { code: "KR", name: "South Korea", dial: "+82", format: /^\d{9,10}$/, hint: "9-10 digits (e.g., 1012345678)" },
-    { code: "SS", name: "South Sudan", dial: "+211", format: /^\d{9}$/, hint: "9 digits (e.g., 912345678)" },
-    { code: "ES", name: "Spain", dial: "+34", format: /^\d{9}$/, hint: "9 digits (e.g., 612345678)" },
-    { code: "LK", name: "Sri Lanka", dial: "+94", format: /^\d{9}$/, hint: "9 digits (e.g., 712345678)" },
-    { code: "SD", name: "Sudan", dial: "+249", format: /^\d{9}$/, hint: "9 digits (e.g., 911234567)" },
-    { code: "SR", name: "Suriname", dial: "+597", format: /^\d{7}$/, hint: "7 digits (e.g., 7412345)" },
-    { code: "SE", name: "Sweden", dial: "+46", format: /^\d{9}$/, hint: "9 digits (e.g., 701234567)" },
-    { code: "CH", name: "Switzerland", dial: "+41", format: /^\d{9}$/, hint: "9 digits (e.g., 791234567)" },
-    { code: "SY", name: "Syria", dial: "+963", format: /^\d{9}$/, hint: "9 digits (e.g., 933123456)" },
-    { code: "TW", name: "Taiwan", dial: "+886", format: /^\d{9}$/, hint: "9 digits (e.g., 912345678)" },
-    { code: "TJ", name: "Tajikistan", dial: "+992", format: /^\d{9}$/, hint: "9 digits (e.g., 917123456)" },
-    { code: "TZ", name: "Tanzania", dial: "+255", format: /^\d{9}$/, hint: "9 digits (e.g., 712345678)" },
-    { code: "TH", name: "Thailand", dial: "+66", format: /^\d{9}$/, hint: "9 digits (e.g., 812345678)" },
-    { code: "TG", name: "Togo", dial: "+228", format: /^\d{8}$/, hint: "8 digits (e.g., 90123456)" },
-    { code: "TT", name: "Trinidad and Tobago", dial: "+1-868", format: /^\d{7}$/, hint: "7 digits (e.g., 6123456)" },
-    { code: "TN", name: "Tunisia", dial: "+216", format: /^\d{8}$/, hint: "8 digits (e.g., 20123456)" },
-    { code: "TR", name: "Turkey", dial: "+90", format: /^\d{10}$/, hint: "10 digits (e.g., 5321234567)" },
-    { code: "TM", name: "Turkmenistan", dial: "+993", format: /^\d{8}$/, hint: "8 digits (e.g., 65123456)" },
-    { code: "UG", name: "Uganda", dial: "+256", format: /^\d{9}$/, hint: "9 digits (e.g., 701234567)" },
-    { code: "UA", name: "Ukraine", dial: "+380", format: /^\d{9}$/, hint: "9 digits (e.g., 671234567)" },
-    { code: "AE", name: "United Arab Emirates", dial: "+971", format: /^\d{9}$/, hint: "9 digits (e.g., 501234567)" },
-    { code: "GB", name: "United Kingdom", dial: "+44", format: /^\d{10}$/, hint: "10 digits (e.g., 7712345678)" },
-    { code: "US", name: "United States", dial: "+1", format: /^\d{10}$/, hint: "10 digits (e.g., 2125550123)" },
-    { code: "UY", name: "Uruguay", dial: "+598", format: /^\d{8}$/, hint: "8 digits (e.g., 94123456)" },
-    { code: "UZ", name: "Uzbekistan", dial: "+998", format: /^\d{9}$/, hint: "9 digits (e.g., 901234567)" },
-    { code: "VE", name: "Venezuela", dial: "+58", format: /^\d{10}$/, hint: "10 digits (e.g., 4121234567)" },
-    { code: "VN", name: "Vietnam", dial: "+84", format: /^\d{9,10}$/, hint: "9-10 digits (e.g., 912345678)" },
-    { code: "YE", name: "Yemen", dial: "+967", format: /^\d{9}$/, hint: "9 digits (e.g., 711234567)" },
-    { code: "ZM", name: "Zambia", dial: "+260", format: /^\d{9}$/, hint: "9 digits (e.g., 971234567)" },
-    { code: "ZW", name: "Zimbabwe", dial: "+263", format: /^\d{9}$/, hint: "9 digits (e.g., 771234567)" }
+// ===================== COUNTRIES DATA =====================
+const countries = [
+    { name: "Afghanistan", code: "AF", dial: "+93", regex: /^[0-9]{9}$/ },
+    { name: "Albania", code: "AL", dial: "+355", regex: /^[0-9]{9}$/ },
+    { name: "Algeria", code: "DZ", dial: "+213", regex: /^[0-9]{9}$/ },
+    { name: "Andorra", code: "AD", dial: "+376", regex: /^[0-9]{6}$/ },
+    { name: "Angola", code: "AO", dial: "+244", regex: /^[0-9]{9}$/ },
+    { name: "Argentina", code: "AR", dial: "+54", regex: /^[0-9]{10,11}$/ },
+    { name: "Armenia", code: "AM", dial: "+374", regex: /^[0-9]{8}$/ },
+    { name: "Australia", code: "AU", dial: "+61", regex: /^[0-9]{9}$/ },
+    { name: "Austria", code: "AT", dial: "+43", regex: /^[0-9]{10,13}$/ },
+    { name: "Azerbaijan", code: "AZ", dial: "+994", regex: /^[0-9]{9}$/ },
+    { name: "Bahamas", code: "BS", dial: "+1-242", regex: /^[0-9]{10}$/ },
+    { name: "Bahrain", code: "BH", dial: "+973", regex: /^[0-9]{8}$/ },
+    { name: "Bangladesh", code: "BD", dial: "+880", regex: /^[0-9]{10}$/ },
+    { name: "Belarus", code: "BY", dial: "+375", regex: /^[0-9]{9}$/ },
+    { name: "Belgium", code: "BE", dial: "+32", regex: /^[0-9]{9,10}$/ },
+    { name: "Belize", code: "BZ", dial: "+501", regex: /^[0-9]{7}$/ },
+    { name: "Benin", code: "BJ", dial: "+229", regex: /^[0-9]{8}$/ },
+    { name: "Bhutan", code: "BT", dial: "+975", regex: /^[0-9]{8}$/ },
+    { name: "Bolivia", code: "BO", dial: "+591", regex: /^[0-9]{8}$/ },
+    { name: "Bosnia and Herzegovina", code: "BA", dial: "+387", regex: /^[0-9]{8}$/ },
+    { name: "Botswana", code: "BW", dial: "+267", regex: /^[0-9]{8}$/ },
+    { name: "Brazil", code: "BR", dial: "+55", regex: /^[0-9]{10,11}$/ },
+    { name: "Brunei", code: "BN", dial: "+673", regex: /^[0-9]{7}$/ },
+    { name: "Bulgaria", code: "BG", dial: "+359", regex: /^[0-9]{9}$/ },
+    { name: "Burkina Faso", code: "BF", dial: "+226", regex: /^[0-9]{8}$/ },
+    { name: "Burundi", code: "BI", dial: "+257", regex: /^[0-9]{8}$/ },
+    { name: "Cambodia", code: "KH", dial: "+855", regex: /^[0-9]{8,9}$/ },
+    { name: "Cameroon", code: "CM", dial: "+237", regex: /^[0-9]{9}$/ },
+    { name: "Canada", code: "CA", dial: "+1", regex: /^[0-9]{10}$/ },
+    { name: "Cape Verde", code: "CV", dial: "+238", regex: /^[0-9]{7}$/ },
+    { name: "Central African Republic", code: "CF", dial: "+236", regex: /^[0-9]{8}$/ },
+    { name: "Chad", code: "TD", dial: "+235", regex: /^[0-9]{8}$/ },
+    { name: "Chile", code: "CL", dial: "+56", regex: /^[0-9]{9}$/ },
+    { name: "China", code: "CN", dial: "+86", regex: /^[0-9]{11}$/ },
+    { name: "Colombia", code: "CO", dial: "+57", regex: /^[0-9]{10}$/ },
+    { name: "Comoros", code: "KM", dial: "+269", regex: /^[0-9]{7}$/ },
+    { name: "Congo", code: "CG", dial: "+242", regex: /^[0-9]{9}$/ },
+    { name: "Costa Rica", code: "CR", dial: "+506", regex: /^[0-9]{8}$/ },
+    { name: "Croatia", code: "HR", dial: "+385", regex: /^[0-9]{9}$/ },
+    { name: "Cuba", code: "CU", dial: "+53", regex: /^[0-9]{8}$/ },
+    { name: "Cyprus", code: "CY", dial: "+357", regex: /^[0-9]{8}$/ },
+    { name: "Czech Republic", code: "CZ", dial: "+420", regex: /^[0-9]{9}$/ },
+    { name: "Denmark", code: "DK", dial: "+45", regex: /^[0-9]{8}$/ },
+    { name: "Djibouti", code: "DJ", dial: "+253", regex: /^[0-9]{8}$/ },
+    { name: "Dominica", code: "DM", dial: "+1-767", regex: /^[0-9]{10}$/ },
+    { name: "Dominican Republic", code: "DO", dial: "+1-809", regex: /^[0-9]{10}$/ },
+    { name: "Ecuador", code: "EC", dial: "+593", regex: /^[0-9]{9}$/ },
+    { name: "Egypt", code: "EG", dial: "+20", regex: /^[0-9]{10}$/ },
+    { name: "El Salvador", code: "SV", dial: "+503", regex: /^[0-9]{8}$/ },
+    { name: "Equatorial Guinea", code: "GQ", dial: "+240", regex: /^[0-9]{9}$/ },
+    { name: "Eritrea", code: "ER", dial: "+291", regex: /^[0-9]{7}$/ },
+    { name: "Estonia", code: "EE", dial: "+372", regex: /^[0-9]{7,8}$/ },
+    { name: "Eswatini", code: "SZ", dial: "+268", regex: /^[0-9]{8}$/ },
+    { name: "Ethiopia", code: "ET", dial: "+251", regex: /^[0-9]{9}$/ },
+    { name: "Fiji", code: "FJ", dial: "+679", regex: /^[0-9]{7}$/ },
+    { name: "Finland", code: "FI", dial: "+358", regex: /^[0-9]{9}$/ },
+    { name: "France", code: "FR", dial: "+33", regex: /^[0-9]{9}$/ },
+    { name: "Gabon", code: "GA", dial: "+241", regex: /^[0-9]{7,8}$/ },
+    { name: "Gambia", code: "GM", dial: "+220", regex: /^[0-9]{7}$/ },
+    { name: "Georgia", code: "GE", dial: "+995", regex: /^[0-9]{9}$/ },
+    { name: "Germany", code: "DE", dial: "+49", regex: /^[0-9]{10,11}$/ },
+    { name: "Ghana", code: "GH", dial: "+233", regex: /^[0-9]{9}$/ },
+    { name: "Greece", code: "GR", dial: "+30", regex: /^[0-9]{10}$/ },
+    { name: "Guatemala", code: "GT", dial: "+502", regex: /^[0-9]{8}$/ },
+    { name: "Guinea", code: "GN", dial: "+224", regex: /^[0-9]{9}$/ },
+    { name: "Guinea-Bissau", code: "GW", dial: "+245", regex: /^[0-9]{7}$/ },
+    { name: "Guyana", code: "GY", dial: "+592", regex: /^[0-9]{7}$/ },
+    { name: "Haiti", code: "HT", dial: "+509", regex: /^[0-9]{8}$/ },
+    { name: "Honduras", code: "HN", dial: "+504", regex: /^[0-9]{8}$/ },
+    { name: "Hungary", code: "HU", dial: "+36", regex: /^[0-9]{9}$/ },
+    { name: "Iceland", code: "IS", dial: "+354", regex: /^[0-9]{7}$/ },
+    { name: "India", code: "IN", dial: "+91", regex: /^[0-9]{10}$/ },
+    { name: "Indonesia", code: "ID", dial: "+62", regex: /^[0-9]{10,12}$/ },
+    { name: "Iran", code: "IR", dial: "+98", regex: /^[0-9]{10}$/ },
+    { name: "Iraq", code: "IQ", dial: "+964", regex: /^[0-9]{10}$/ },
+    { name: "Ireland", code: "IE", dial: "+353", regex: /^[0-9]{9}$/ },
+    { name: "Israel", code: "IL", dial: "+972", regex: /^[0-9]{9}$/ },
+    { name: "Italy", code: "IT", dial: "+39", regex: /^[0-9]{9,10}$/ },
+    { name: "Jamaica", code: "JM", dial: "+1-876", regex: /^[0-9]{10}$/ },
+    { name: "Japan", code: "JP", dial: "+81", regex: /^[0-9]{10}$/ },
+    { name: "Jordan", code: "JO", dial: "+962", regex: /^[0-9]{9}$/ },
+    { name: "Kazakhstan", code: "KZ", dial: "+7", regex: /^[0-9]{10}$/ },
+    { name: "Kenya", code: "KE", dial: "+254", regex: /^[0-9]{9}$/ },
+    { name: "Kiribati", code: "KI", dial: "+686", regex: /^[0-9]{5}$/ },
+    { name: "Kuwait", code: "KW", dial: "+965", regex: /^[0-9]{8}$/ },
+    { name: "Kyrgyzstan", code: "KG", dial: "+996", regex: /^[0-9]{9}$/ },
+    { name: "Laos", code: "LA", dial: "+856", regex: /^[0-9]{9,10}$/ },
+    { name: "Latvia", code: "LV", dial: "+371", regex: /^[0-9]{8}$/ },
+    { name: "Lebanon", code: "LB", dial: "+961", regex: /^[0-9]{7,8}$/ },
+    { name: "Lesotho", code: "LS", dial: "+266", regex: /^[0-9]{8}$/ },
+    { name: "Liberia", code: "LR", dial: "+231", regex: /^[0-9]{7,8}$/ },
+    { name: "Libya", code: "LY", dial: "+218", regex: /^[0-9]{9,10}$/ },
+    { name: "Liechtenstein", code: "LI", dial: "+423", regex: /^[0-9]{7}$/ },
+    { name: "Lithuania", code: "LT", dial: "+370", regex: /^[0-9]{8}$/ },
+    { name: "Luxembourg", code: "LU", dial: "+352", regex: /^[0-9]{9}$/ },
+    { name: "Madagascar", code: "MG", dial: "+261", regex: /^[0-9]{9}$/ },
+    { name: "Malawi", code: "MW", dial: "+265", regex: /^[0-9]{9}$/ },
+    { name: "Malaysia", code: "MY", dial: "+60", regex: /^[0-9]{9,10}$/ },
+    { name: "Maldives", code: "MV", dial: "+960", regex: /^[0-9]{7}$/ },
+    { name: "Mali", code: "ML", dial: "+223", regex: /^[0-9]{8}$/ },
+    { name: "Malta", code: "MT", dial: "+356", regex: /^[0-9]{8}$/ },
+    { name: "Mauritania", code: "MR", dial: "+222", regex: /^[0-9]{8}$/ },
+    { name: "Mauritius", code: "MU", dial: "+230", regex: /^[0-9]{8}$/ },
+    { name: "Mexico", code: "MX", dial: "+52", regex: /^[0-9]{10}$/ },
+    { name: "Moldova", code: "MD", dial: "+373", regex: /^[0-9]{8}$/ },
+    { name: "Monaco", code: "MC", dial: "+377", regex: /^[0-9]{8,9}$/ },
+    { name: "Mongolia", code: "MN", dial: "+976", regex: /^[0-9]{8}$/ },
+    { name: "Montenegro", code: "ME", dial: "+382", regex: /^[0-9]{8}$/ },
+    { name: "Morocco", code: "MA", dial: "+212", regex: /^[0-9]{9}$/ },
+    { name: "Mozambique", code: "MZ", dial: "+258", regex: /^[0-9]{9}$/ },
+    { name: "Myanmar", code: "MM", dial: "+95", regex: /^[0-9]{8,10}$/ },
+    { name: "Namibia", code: "NA", dial: "+264", regex: /^[0-9]{9}$/ },
+    { name: "Nauru", code: "NR", dial: "+674", regex: /^[0-9]{7}$/ },
+    { name: "Nepal", code: "NP", dial: "+977", regex: /^[0-9]{10}$/ },
+    { name: "Netherlands", code: "NL", dial: "+31", regex: /^[0-9]{9}$/ },
+    { name: "New Zealand", code: "NZ", dial: "+64", regex: /^[0-9]{9,10}$/ },
+    { name: "Nicaragua", code: "NI", dial: "+505", regex: /^[0-9]{8}$/ },
+    { name: "Niger", code: "NE", dial: "+227", regex: /^[0-9]{8}$/ },
+    { name: "Nigeria", code: "NG", dial: "+234", regex: /^[0-9]{10}$/ },
+    { name: "North Korea", code: "KP", dial: "+850", regex: /^[0-9]{8,10}$/ },
+    { name: "North Macedonia", code: "MK", dial: "+389", regex: /^[0-9]{8}$/ },
+    { name: "Norway", code: "NO", dial: "+47", regex: /^[0-9]{8}$/ },
+    { name: "Oman", code: "OM", dial: "+968", regex: /^[0-9]{8}$/ },
+    { name: "Pakistan", code: "PK", dial: "+92", regex: /^[0-9]{10}$/ },
+    { name: "Palau", code: "PW", dial: "+680", regex: /^[0-9]{7}$/ },
+    { name: "Panama", code: "PA", dial: "+507", regex: /^[0-9]{8}$/ },
+    { name: "Papua New Guinea", code: "PG", dial: "+675", regex: /^[0-9]{8}$/ },
+    { name: "Paraguay", code: "PY", dial: "+595", regex: /^[0-9]{9}$/ },
+    { name: "Peru", code: "PE", dial: "+51", regex: /^[0-9]{9}$/ },
+    { name: "Philippines", code: "PH", dial: "+63", regex: /^[0-9]{10}$/ },
+    { name: "Poland", code: "PL", dial: "+48", regex: /^[0-9]{9}$/ },
+    { name: "Portugal", code: "PT", dial: "+351", regex: /^[0-9]{9}$/ },
+    { name: "Qatar", code: "QA", dial: "+974", regex: /^[0-9]{8}$/ },
+    { name: "Romania", code: "RO", dial: "+40", regex: /^[0-9]{9}$/ },
+    { name: "Russia", code: "RU", dial: "+7", regex: /^[0-9]{10}$/ },
+    { name: "Rwanda", code: "RW", dial: "+250", regex: /^[0-9]{9}$/ },
+    { name: "Saint Lucia", code: "LC", dial: "+1-758", regex: /^[0-9]{10}$/ },
+    { name: "Samoa", code: "WS", dial: "+685", regex: /^[0-9]{5,7}$/ },
+    { name: "San Marino", code: "SM", dial: "+378", regex: /^[0-9]{6,10}$/ },
+    { name: "Saudi Arabia", code: "SA", dial: "+966", regex: /^[0-9]{9}$/ },
+    { name: "Senegal", code: "SN", dial: "+221", regex: /^[0-9]{9}$/ },
+    { name: "Serbia", code: "RS", dial: "+381", regex: /^[0-9]{8,9}$/ },
+    { name: "Seychelles", code: "SC", dial: "+248", regex: /^[0-9]{7}$/ },
+    { name: "Sierra Leone", code: "SL", dial: "+232", regex: /^[0-9]{8}$/ },
+    { name: "Singapore", code: "SG", dial: "+65", regex: /^[0-9]{8}$/ },
+    { name: "Slovakia", code: "SK", dial: "+421", regex: /^[0-9]{9}$/ },
+    { name: "Slovenia", code: "SI", dial: "+386", regex: /^[0-9]{8}$/ },
+    { name: "Solomon Islands", code: "SB", dial: "+677", regex: /^[0-9]{7}$/ },
+    { name: "Somalia", code: "SO", dial: "+252", regex: /^[0-9]{8,9}$/ },
+    { name: "South Africa", code: "ZA", dial: "+27", regex: /^[0-9]{9}$/ },
+    { name: "South Korea", code: "KR", dial: "+82", regex: /^[0-9]{9,10}$/ },
+    { name: "South Sudan", code: "SS", dial: "+211", regex: /^[0-9]{9}$/ },
+    { name: "Spain", code: "ES", dial: "+34", regex: /^[0-9]{9}$/ },
+    { name: "Sri Lanka", code: "LK", dial: "+94", regex: /^[0-9]{9}$/ },
+    { name: "Sudan", code: "SD", dial: "+249", regex: /^[0-9]{9}$/ },
+    { name: "Suriname", code: "SR", dial: "+597", regex: /^[0-9]{7}$/ },
+    { name: "Sweden", code: "SE", dial: "+46", regex: /^[0-9]{9,10}$/ },
+    { name: "Switzerland", code: "CH", dial: "+41", regex: /^[0-9]{9}$/ },
+    { name: "Syria", code: "SY", dial: "+963", regex: /^[0-9]{9}$/ },
+    { name: "Taiwan", code: "TW", dial: "+886", regex: /^[0-9]{9}$/ },
+    { name: "Tajikistan", code: "TJ", dial: "+992", regex: /^[0-9]{9}$/ },
+    { name: "Tanzania", code: "TZ", dial: "+255", regex: /^[0-9]{9}$/ },
+    { name: "Thailand", code: "TH", dial: "+66", regex: /^[0-9]{9}$/ },
+    { name: "Timor-Leste", code: "TL", dial: "+670", regex: /^[0-9]{7,8}$/ },
+    { name: "Togo", code: "TG", dial: "+228", regex: /^[0-9]{8}$/ },
+    { name: "Tonga", code: "TO", dial: "+676", regex: /^[0-9]{5,7}$/ },
+    { name: "Trinidad and Tobago", code: "TT", dial: "+1-868", regex: /^[0-9]{10}$/ },
+    { name: "Tunisia", code: "TN", dial: "+216", regex: /^[0-9]{8}$/ },
+    { name: "Turkey", code: "TR", dial: "+90", regex: /^[0-9]{10}$/ },
+    { name: "Turkmenistan", code: "TM", dial: "+993", regex: /^[0-9]{8}$/ },
+    { name: "Tuvalu", code: "TV", dial: "+688", regex: /^[0-9]{5,6}$/ },
+    { name: "Uganda", code: "UG", dial: "+256", regex: /^[0-9]{9}$/ },
+    { name: "Ukraine", code: "UA", dial: "+380", regex: /^[0-9]{9}$/ },
+    { name: "United Arab Emirates", code: "AE", dial: "+971", regex: /^[0-9]{9}$/ },
+    { name: "United Kingdom", code: "GB", dial: "+44", regex: /^[0-9]{10}$/ },
+    { name: "United States", code: "US", dial: "+1", regex: /^[0-9]{10}$/ },
+    { name: "Uruguay", code: "UY", dial: "+598", regex: /^[0-9]{8}$/ },
+    { name: "Uzbekistan", code: "UZ", dial: "+998", regex: /^[0-9]{9}$/ },
+    { name: "Vanuatu", code: "VU", dial: "+678", regex: /^[0-9]{7}$/ },
+    { name: "Vatican City", code: "VA", dial: "+39", regex: /^[0-9]{10}$/ },
+    { name: "Venezuela", code: "VE", dial: "+58", regex: /^[0-9]{10}$/ },
+    { name: "Vietnam", code: "VN", dial: "+84", regex: /^[0-9]{9,10}$/ },
+    { name: "Yemen", code: "YE", dial: "+967", regex: /^[0-9]{9}$/ },
+    { name: "Zambia", code: "ZM", dial: "+260", regex: /^[0-9]{9}$/ },
+    { name: "Zimbabwe", code: "ZW", dial: "+263", regex: /^[0-9]{9}$/ }
 ];
 
-// ===== DOM ELEMENTS =====
+// ===================== DOM ELEMENTS =====================
 const countrySelect = document.getElementById('countrySelect');
 const countryCode = document.getElementById('countryCode');
 const phoneNumber = document.getElementById('phoneNumber');
-const formatHint = document.getElementById('formatHint');
+const phoneHint = document.getElementById('phoneHint');
 const vcfForm = document.getElementById('vcfForm');
-const validationMsg = document.getElementById('validationMsg');
 const successOverlay = document.getElementById('successOverlay');
-const redirectSeconds = document.getElementById('redirectSeconds');
+const redirectCount = document.getElementById('redirectCount');
+const goBackBtn = document.getElementById('goBackBtn');
+const addAnotherBtn = document.getElementById('addAnotherBtn');
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = document.getElementById('themeIcon');
+const progressRing = document.getElementById('progressRing');
 const verifiedCount = document.getElementById('verifiedCount');
-const remainingCount = document.getElementById('remainingCount');
+const verifiedLabel = document.getElementById('verifiedLabel');
+const remainingLabel = document.getElementById('remainingLabel');
 const liveTime = document.getElementById('liveTime');
 const liveDate = document.getElementById('liveDate');
-const batteryInfo = document.getElementById('batteryInfo');
+const batteryPercent = document.getElementById('batteryPercent');
+const batteryIcon = document.getElementById('batteryIcon');
 const chargingStatus = document.getElementById('chargingStatus');
-const countdownDisplay = document.getElementById('countdownDisplay');
+const countdownTimer = document.getElementById('countdownTimer');
 const downloadVcfBtn = document.getElementById('downloadVcfBtn');
 
-// ===== WHATSAPP GROUP LINK =====
-const GROUP_LINK = 'https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1';
+const MAX_MEMBERS = 100;
+const VCF_RELEASE_DATE = new Date('2025-12-31T00:00:00');
+const WHATSAPP_GROUP = 'https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1';
 
-// ===== VCF RELEASE DATE =====
-const VCF_RELEASE_DATE = new Date();
-VCF_RELEASE_DATE.setDate(VCF_RELEASE_DATE.getDate() + 30);
+let selectedCountry = null;
+let verifiedMembers = parseInt(localStorage.getItem('verifiedCount') || '0');
 
-// ===== INITIALIZE =====
+// ===================== INITIALIZATION =====================
 function init() {
     populateCountries();
-    startLiveClock();
-    startBatteryMonitor();
+    updateStats();
+    startClock();
     startCountdown();
-    loadStats();
     setupTheme();
-    setupPhoneInput();
+    setupBattery();
+    setupEventListeners();
 }
 
-// ===== POPULATE COUNTRIES =====
+// ===================== COUNTRIES =====================
 function populateCountries() {
-    countryData.sort((a, b) => a.name.localeCompare(b.name));
-    countryData.forEach(country => {
-        const option = document.createElement('option');
-        option.value = country.code;
-        option.textContent = `${getFlagEmoji(country.code)} ${country.name} (${country.dial})`;
-        countrySelect.appendChild(option);
+    countries.sort((a, b) => a.name.localeCompare(b.name));
+    countries.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.code;
+        opt.textContent = c.name + ' (' + c.dial + ')';
+        countrySelect.appendChild(opt);
     });
 }
 
-// ===== GET FLAG EMOJI =====
-function getFlagEmoji(countryCode) {
-    const codePoints = countryCode
-        .toUpperCase()
-        .split('')
-        .map(char => 127397 + char.charCodeAt());
-    return String.fromCodePoint(...codePoints);
-}
-
-// ===== COUNTRY CHANGE HANDLER =====
-countrySelect.addEventListener('change', function() {
-    const selected = countryData.find(c => c.code === this.value);
-    if (selected) {
-        countryCode.textContent = selected.dial;
-        formatHint.textContent = `Format: ${selected.hint}`;
-        phoneNumber.placeholder = selected.hint.split('(')[1]?.replace(')', '') || 'Enter phone number';
+countrySelect.addEventListener('change', () => {
+    selectedCountry = countries.find(c => c.code === countrySelect.value);
+    if (selectedCountry) {
+        countryCode.textContent = selectedCountry.dial;
+        const digits = selectedCountry.regex.toString().match(/\d+/);
+        phoneHint.textContent = 'Enter ' + selectedCountry.dial + ' followed by your number (' + digits + ' digits)';
+        phoneHint.className = 'hint';
         phoneNumber.value = '';
         phoneNumber.focus();
     }
 });
 
-// ===== PHONE INPUT SETUP =====
-function setupPhoneInput() {
-    phoneNumber.addEventListener('input', function(e) {
-        const selected = countryData.find(c => c.code === countrySelect.value);
-        if (!selected) return;
-
-        // Remove non-digits
-        let value = this.value.replace(/\D/g, '');
-
-        // Limit to max digits based on country format
-        const maxDigits = getMaxDigits(selected.format);
-        if (value.length > maxDigits) {
-            value = value.substring(0, maxDigits);
-        }
-
-        this.value = value;
-        validationMsg.textContent = '';
-        validationMsg.className = 'validation-msg';
-    });
-}
-
-// ===== GET MAX DIGITS FROM FORMAT =====
-function getMaxDigits(format) {
-    const formatStr = format.toString();
-    const match = formatStr.match(/\d\{(\d+)(?:,(\d+))?\}/);
-    if (match) {
-        return match[2] ? parseInt(match[2]) : parseInt(match[1]);
-    }
-    return 15; // default fallback
-}
-
-// ===== PHONE VALIDATION =====
-function validatePhone() {
-    const selected = countryData.find(c => c.code === countrySelect.value);
-    if (!selected) {
-        showValidation('Please select a country first', 'error');
-        return false;
-    }
-
-    const rawNumber = phoneNumber.value.replace(/\D/g, '');
-    if (!rawNumber) {
-        showValidation('Please enter a phone number', 'error');
-        return false;
-    }
-
-    if (!selected.format.test(rawNumber)) {
-        showValidation(`Invalid format for ${selected.name}. ${selected.hint}`, 'error');
-        return false;
-    }
-
-    showValidation('Valid phone number format!', 'success');
-    return true;
-}
-
-phoneNumber.addEventListener('blur', validatePhone);
-
-function showValidation(msg, type) {
-    validationMsg.textContent = msg;
-    validationMsg.className = `validation-msg ${type}`;
-}
-
-// ===== NAME VALIDATION =====
-function validateName(name) {
-    // Only letters, spaces, hyphens, apostrophes - no emojis or special characters
-    const nameRegex = /^[a-zA-Z\s\-\'\.]+$/;
-    return nameRegex.test(name) && name.trim().length >= 2;
-}
-
-// ===== EMAIL VALIDATION =====
-function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-// ===== FORM SUBMISSION =====
-vcfForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const fullName = document.getElementById('fullName').value.trim();
-    if (!fullName) {
-        showValidation('Please enter your full name', 'error');
+// ===================== PHONE VALIDATION =====================
+phoneNumber.addEventListener('input', () => {
+    if (!selectedCountry) {
+        phoneHint.textContent = 'Select a country first';
+        phoneHint.className = 'hint error';
         return;
     }
+    const val = phoneNumber.value.replace(/\D/g, '');
+    phoneNumber.value = val;
 
-    if (!validateName(fullName)) {
-        showValidation('Name must contain only letters, spaces, hyphens, or apostrophes (no emojis or special characters)', 'error');
-        return;
+    if (selectedCountry.regex.test(val)) {
+        phoneHint.textContent = 'Valid phone number format';
+        phoneHint.className = 'hint success';
+    } else {
+        const expected = selectedCountry.regex.toString().match(/\d+/)[0];
+        phoneHint.textContent = 'Expected ' + expected + ' digits, got ' + val.length;
+        phoneHint.className = 'hint error';
     }
-
-    const email = document.getElementById('email').value.trim();
-    if (!email) {
-        showValidation('Email is required', 'error');
-        return;
-    }
-
-    if (!validateEmail(email)) {
-        showValidation('Please enter a valid email address', 'error');
-        return;
-    }
-
-    if (!validatePhone()) return;
-
-    // Save to localStorage
-    saveVerification();
-
-    // Play success sound
-    playSuccessSound();
-
-    // Show success overlay
-    successOverlay.classList.remove('hidden');
-
-    // Countdown redirect
-    let seconds = 2;
-    redirectSeconds.textContent = seconds;
-
-    const timer = setInterval(() => {
-        seconds--;
-        redirectSeconds.textContent = seconds;
-        if (seconds <= 0) {
-            clearInterval(timer);
-            window.location.href = GROUP_LINK;
-        }
-    }, 1000);
 });
 
-// ===== SUCCESS SOUND =====
+// ===================== FORM SUBMIT =====================
+vcfForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!selectedCountry) {
+        phoneHint.textContent = 'Please select a country';
+        phoneHint.className = 'hint error';
+        return;
+    }
+
+    const rawNum = phoneNumber.value.replace(/\D/g, '');
+    if (!selectedCountry.regex.test(rawNum)) {
+        phoneHint.textContent = 'Invalid phone number for selected country';
+        phoneHint.className = 'hint error';
+        return;
+    }
+
+    const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
+    const fullPhone = selectedCountry.dial + rawNum;
+
+    if (submissions.some(s => s.phone === fullPhone)) {
+        phoneHint.textContent = 'This number is already verified!';
+        phoneHint.className = 'hint error';
+        return;
+    }
+
+    submissions.push({
+        name: document.getElementById('fullName').value,
+        country: selectedCountry.name,
+        phone: fullPhone,
+        timestamp: new Date().toISOString()
+    });
+
+    localStorage.setItem('vcfSubmissions', JSON.stringify(submissions));
+    verifiedMembers = submissions.length;
+    localStorage.setItem('verifiedCount', verifiedMembers.toString());
+
+    playSuccessSound();
+    showSuccess();
+    updateStats();
+});
+
 function playSuccessSound() {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
 
-        const notes = [
-            { freq: 523.25, duration: 200 },
-            { freq: 659.25, duration: 200 },
-            { freq: 783.99, duration: 300 },
-            { freq: 1046.50, duration: 500 }
-        ];
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
 
-        let currentTime = audioCtx.currentTime;
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15);
+        oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3);
+        oscillator.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45);
 
-        notes.forEach(note => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
 
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.frequency.value = note.freq;
-            osc.type = 'sine';
-
-            gain.gain.setValueAtTime(0.15, currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, currentTime + note.duration / 1000);
-
-            osc.start(currentTime);
-            osc.stop(currentTime + note.duration / 1000);
-
-            currentTime += note.duration / 1000;
-        });
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.8);
 
         if ('speechSynthesis' in window) {
             const utterance = new SpeechSynthesisUtterance('You were verified successfully');
             utterance.rate = 0.9;
-            utterance.pitch = 1.1;
-            utterance.volume = 1;
-            window.speechSynthesis.speak(utterance);
+            utterance.pitch = 1;
+            setTimeout(() => speechSynthesis.speak(utterance), 200);
         }
-    } catch (e) {
+    } catch (err) {
         console.log('Audio not supported');
     }
 }
 
-// ===== GO BACK =====
-function goBack() {
-    successOverlay.classList.add('hidden');
-    vcfForm.reset();
-    countryCode.textContent = '+';
-    formatHint.textContent = 'Select a country to see format';
-    validationMsg.textContent = '';
-    validationMsg.className = 'validation-msg';
-}
+function showSuccess() {
+    successOverlay.classList.remove('hidden');
+    setTimeout(() => successOverlay.classList.add('show'), 10);
 
-// ===== ADD ANOTHER =====
-function addAnother() {
-    successOverlay.classList.add('hidden');
-    vcfForm.reset();
-    countryCode.textContent = '+';
-    formatHint.textContent = 'Select a country to see format';
-    validationMsg.textContent = '';
-    validationMsg.className = 'validation-msg';
-    document.getElementById('fullName').focus();
-}
+    let count = 2;
+    redirectCount.textContent = count;
 
-// ===== SAVE VERIFICATION =====
-function saveVerification() {
-    const selected = countryData.find(c => c.code === countrySelect.value);
-    const verification = {
-        id: Date.now(),
-        name: document.getElementById('fullName').value.trim(),
-        country: selected.name,
-        dialCode: selected.dial,
-        phone: phoneNumber.value.replace(/\D/g, ''),
-        email: document.getElementById('email').value.trim(),
-        timestamp: new Date().toISOString()
-    };
-
-    let verifications = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
-    verifications.push(verification);
-    localStorage.setItem('vcfVerifications', JSON.stringify(verifications));
-
-    loadStats();
-}
-
-// ===== LOAD STATS =====
-function loadStats() {
-    const verifications = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
-    const total = verifications.length;
-    const maxCapacity = 500; // Max capacity
-    const remaining = Math.max(0, maxCapacity - total);
-
-    verifiedCount.textContent = total;
-    remainingCount.textContent = `${remaining} remaining`;
-
-    // Color change based on capacity
-    if (remaining < 50) {
-        remainingCount.style.color = 'var(--error)';
-    } else if (remaining < 150) {
-        remainingCount.style.color = 'var(--warning)';
-    } else {
-        remainingCount.style.color = 'var(--success)';
-    }
-}
-
-// ===== THEME TOGGLE =====
-function setupTheme() {
-    const savedTheme = localStorage.getItem('vcfTheme');
-    if (savedTheme === 'light') {
-        document.body.classList.remove('dark-mode');
-        document.body.classList.add('light-mode');
-        themeIcon.classList.remove('fa-moon');
-        themeIcon.classList.add('fa-sun');
-    }
-
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        document.body.classList.toggle('light-mode');
-
-        if (document.body.classList.contains('light-mode')) {
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-            localStorage.setItem('vcfTheme', 'light');
-        } else {
-            themeIcon.classList.remove('fa-sun');
-            themeIcon.classList.add('fa-moon');
-            localStorage.setItem('vcfTheme', 'dark');
+    const timer = setInterval(() => {
+        count--;
+        redirectCount.textContent = count;
+        if (count <= 0) {
+            clearInterval(timer);
+            window.open(WHATSAPP_GROUP, '_blank');
         }
-    });
+    }, 1000);
+
+    successOverlay.dataset.timer = timer;
 }
 
-// ===== LIVE CLOCK =====
-function startLiveClock() {
-    function updateClock() {
+// ===================== BUTTONS =====================
+goBackBtn.addEventListener('click', () => {
+    if (successOverlay.dataset.timer) clearInterval(parseInt(successOverlay.dataset.timer));
+    successOverlay.classList.remove('show');
+    setTimeout(() => successOverlay.classList.add('hidden'), 400);
+});
+
+addAnotherBtn.addEventListener('click', () => {
+    if (successOverlay.dataset.timer) clearInterval(parseInt(successOverlay.dataset.timer));
+    successOverlay.classList.remove('show');
+    setTimeout(() => {
+        successOverlay.classList.add('hidden');
+        vcfForm.reset();
+        countryCode.textContent = '+';
+        phoneHint.textContent = 'Select a country first';
+        phoneHint.className = 'hint';
+        selectedCountry = null;
+    }, 400);
+});
+
+// ===================== STATS =====================
+function updateStats() {
+    const verified = Math.min(verifiedMembers, MAX_MEMBERS);
+    const remaining = Math.max(0, MAX_MEMBERS - verified);
+    const percent = (verified / MAX_MEMBERS) * 100;
+
+    verifiedCount.textContent = verified;
+    verifiedLabel.textContent = verified;
+    remainingLabel.textContent = remaining;
+
+    const circumference = 2 * Math.PI * 40;
+    const offset = circumference - (percent / 100) * circumference;
+    progressRing.style.strokeDashoffset = offset;
+}
+
+// ===================== CLOCK =====================
+function startClock() {
+    function update() {
         const now = new Date();
-        liveTime.textContent = now.toLocaleTimeString('en-US', { 
-            hour12: false, 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit' 
-        });
+        liveTime.textContent = now.toLocaleTimeString('en-US', { hour12: true });
         liveDate.textContent = now.toLocaleDateString('en-US', { 
-            weekday: 'short', 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
+            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
         });
     }
-    updateClock();
-    setInterval(updateClock, 1000);
+    update();
+    setInterval(update, 1000);
 }
 
-// ===== BATTERY MONITOR =====
-function startBatteryMonitor() {
+// ===================== BATTERY =====================
+function setupBattery() {
     if ('getBattery' in navigator) {
         navigator.getBattery().then(battery => {
-            updateBattery(battery);
+            function updateBattery() {
+                const level = Math.round(battery.level * 100);
+                batteryPercent.textContent = level + '%';
 
-            battery.addEventListener('levelchange', () => updateBattery(battery));
-            battery.addEventListener('chargingchange', () => updateBattery(battery));
+                let icon = 'fa-battery-empty';
+                if (level > 80) icon = 'fa-battery-full';
+                else if (level > 60) icon = 'fa-battery-three-quarters';
+                else if (level > 40) icon = 'fa-battery-half';
+                else if (level > 20) icon = 'fa-battery-quarter';
+
+                batteryIcon.className = 'fas ' + icon;
+                batteryIcon.style.color = level < 20 ? 'var(--danger)' : 'var(--accent)';
+
+                chargingStatus.textContent = battery.charging ? 'Charging' : '';
+            }
+            updateBattery();
+            battery.addEventListener('levelchange', updateBattery);
+            battery.addEventListener('chargingchange', updateBattery);
         });
     } else {
-        batteryInfo.textContent = 'N/A';
+        batteryPercent.textContent = 'N/A';
+        batteryIcon.className = 'fas fa-battery-full';
     }
 }
 
-function updateBattery(battery) {
-    const level = Math.round(battery.level * 100);
-    batteryInfo.textContent = `${level}%`;
-
-    if (battery.charging) {
-        chargingStatus.textContent = '⚡ Charging';
-        chargingStatus.style.color = 'var(--success)';
-    } else {
-        const time = battery.dischargingTime;
-        if (time !== Infinity && !isNaN(time)) {
-            const hours = Math.floor(time / 3600);
-            const mins = Math.floor((time % 3600) / 60);
-            chargingStatus.textContent = `${hours}h ${mins}m left`;
-        } else {
-            chargingStatus.textContent = '';
-        }
-        chargingStatus.style.color = 'var(--text-secondary)';
-    }
-
-    // Color based on level
-    if (level <= 20) {
-        batteryInfo.style.color = 'var(--error)';
-    } else if (level <= 50) {
-        batteryInfo.style.color = 'var(--warning)';
-    } else {
-        batteryInfo.style.color = 'var(--success)';
-    }
-}
-
-// ===== COUNTDOWN =====
+// ===================== COUNTDOWN =====================
 function startCountdown() {
-    function updateCountdown() {
+    function update() {
         const now = new Date();
         const diff = VCF_RELEASE_DATE - now;
 
         if (diff <= 0) {
-            document.getElementById('countdownDays').textContent = '00';
-            document.getElementById('countdownHours').textContent = '00';
-            document.getElementById('countdownMinutes').textContent = '00';
-            document.getElementById('countdownSeconds').textContent = '00';
+            countdownTimer.textContent = 'VCF IS OUT!';
             downloadVcfBtn.classList.remove('hidden');
             return;
         }
@@ -590,48 +459,55 @@ function startCountdown() {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-        document.getElementById('countdownDays').textContent = String(days).padStart(2, '0');
-        document.getElementById('countdownHours').textContent = String(hours).padStart(2, '0');
-        document.getElementById('countdownMinutes').textContent = String(minutes).padStart(2, '0');
-        document.getElementById('countdownSeconds').textContent = String(seconds).padStart(2, '0');
+        countdownTimer.innerHTML = 
+            '<span>' + days + 'd</span> <span>' + hours + 'h</span> <span>' + minutes + 'm</span> <span>' + seconds + 's</span>';
     }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+    update();
+    setInterval(update, 1000);
 }
 
-// ===== DOWNLOAD VCF =====
-function downloadVCF() {
-    const verifications = JSON.parse(localStorage.getItem('vcfVerifications') || '[]');
-
-    if (verifications.length === 0) {
-        alert('No verified contacts to download yet!');
-        return;
-    }
-
-    let vcfContent = '';
-
-    verifications.forEach((v, index) => {
-        vcfContent += `BEGIN:VCARD\n`;
-        vcfContent += `VERSION:3.0\n`;
-        vcfContent += `FN:${v.name}\n`;
-        vcfContent += `TEL;TYPE=CELL:${v.dialCode}${v.phone}\n`;
-        if (v.email) vcfContent += `EMAIL:${v.email}\n`;
-        vcfContent += `ADR;TYPE=HOME:;;${v.country};;;;\n`;
-        vcfContent += `REV:${v.timestamp}\n`;
-        vcfContent += `END:VCARD\n`;
-    });
+downloadVcfBtn.addEventListener('click', () => {
+    const vcfContent = 'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
 
     const blob = new Blob([vcfContent], { type: 'text/vcard' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'confronter_tech_wizard_contacts.vcf';
+    a.download = 'Confronter_Tech_Wizard.vcf';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+});
+
+// ===================== THEME =====================
+function setupTheme() {
+    const saved = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateThemeIcon(saved);
 }
 
-// ===== INIT ON LOAD =====
+themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeIcon(next);
+});
+
+function updateThemeIcon(theme) {
+    themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+}
+
+// ===================== EVENT LISTENERS =====================
+function setupEventListeners() {
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'verifiedCount') {
+            verifiedMembers = parseInt(e.newValue || '0');
+            updateStats();
+        }
+    });
+}
+
+// ===================== START =====================
 document.addEventListener('DOMContentLoaded', init);
