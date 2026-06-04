@@ -389,7 +389,7 @@ addAnotherBtn.addEventListener('click', () => {
 function updateStats() {
     const verified = Math.min(verifiedMembers, MAX_MEMBERS);
     const remaining = Math.max(0, MAX_MEMBERS - verified);
-    const percent = (verified / MAX_MEMBERS) * 100;
+    const percent = (verified / MAX_MEMBERS) * 1000;
 
     verifiedCount.textContent = verified;
     verifiedLabel.textContent = verified;
@@ -446,7 +446,7 @@ function setupBattery() {
 function startCountdown() {
     function update() {
         const now = new Date();
-        const diff = VCF_RELEASE_DATE - now;
+        const diff = 23 - now;
 
         if (diff <= 0) {
             countdownTimer.textContent = 'VCF IS OUT!';
