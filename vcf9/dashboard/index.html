@@ -44,7 +44,7 @@
             <a id="vcf-link" href="#" download="confronter.vcf" class="vcf-btn">📥 Download VCF</a>
         </div>
 
-        <form id="verifyForm" onsubmit="handleSubmit(event)">
+        <form id="verifyForm" onsubmit="return false;">
             <div class="form-group">
                 <label>Name</label>
                 <input type="text" id="name" required placeholder="Full Name">
@@ -68,7 +68,7 @@
                 <small id="phone-hint">Select country first</small>
             </div>
 
-            <button type="submit" class="submit-btn">Verify & Join</button>
+            <button type="button" class="submit-btn" onclick="handleVerify()">Verify & Join</button>
         </form>
 
         <div id="success" class="success-msg" style="display:none;">
