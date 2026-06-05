@@ -13,11 +13,39 @@ const countries = [
     {code: "BD", name: "Bangladesh", dial: "+880", pattern: /^[1-9]\d{9}$/, len: 10, hint: "1XXX XXXXXX"},
     {code: "PK", name: "Pakistan", dial: "+92", pattern: /^[3]\d{9}$/, len: 10, hint: "3XX XXXXXXX"},
     {code: "PH", name: "Philippines", dial: "+63", pattern: /^[9]\d{9}$/, len: 10, hint: "9XX XXX XXXX"},
-    {code: "ID", name: "Indonesia", dial: "+62", pattern: /^[8]\d{9,11}$/, len: 10, hint: "8XX XXX XXXX"}
+    {code: "ID", name: "Indonesia", dial: "+62", pattern: /^[8]\d{9,11}$/, len: 10, hint: "8XX XXX XXXX"},
+    {code: "CA", name: "Canada", dial: "+1", pattern: /^[2-9]\d{9}$/, len: 10, hint: "XXX XXX XXXX"},
+    {code: "AU", name: "Australia", dial: "+61", pattern: /^[4]\d{8}$/, len: 9, hint: "4XX XXX XXX"},
+    {code: "DE", name: "Germany", dial: "+49", pattern: /^[1-9]\d{10}$/, len: 11, hint: "1XX XXXXXXX"},
+    {code: "FR", name: "France", dial: "+33", pattern: /^[6-7]\d{8}$/, len: 9, hint: "6XX XXX XXX"},
+    {code: "BR", name: "Brazil", dial: "+55", pattern: /^[1-9]\d{10}$/, len: 11, hint: "9XXXX XXXXX"},
+    {code: "MX", name: "Mexico", dial: "+52", pattern: /^[1-9]\d{9}$/, len: 10, hint: "1XX XXX XXXX"},
+    {code: "JP", name: "Japan", dial: "+81", pattern: /^[7-9]\d{9}$/, len: 10, hint: "9X XXXX XXXX"},
+    {code: "KR", name: "South Korea", dial: "+82", pattern: /^[1-9]\d{8,9}$/, len: 9, hint: "1X XXXX XXXX"},
+    {code: "CN", name: "China", dial: "+86", pattern: /^[1]\d{10}$/, len: 11, hint: "1XX XXXX XXXX"},
+    {code: "RU", name: "Russia", dial: "+7", pattern: /^[9]\d{9}$/, len: 10, hint: "9XX XXX XXXX"},
+    {code: "TR", name: "Turkey", dial: "+90", pattern: /^[5]\d{9}$/, len: 10, hint: "5XX XXX XXXX"},
+    {code: "SA", name: "Saudi Arabia", dial: "+966", pattern: /^[5]\d{8}$/, len: 9, hint: "5X XXX XXXX"},
+    {code: "AE", name: "UAE", dial: "+971", pattern: /^[5]\d{8}$/, len: 9, hint: "5X XXX XXXX"},
+    {code: "EG", name: "Egypt", dial: "+20", pattern: /^[1]\d{9}$/, len: 10, hint: "1XX XXX XXXX"},
+    {code: "TH", name: "Thailand", dial: "+66", pattern: /^[6-9]\d{8}$/, len: 9, hint: "8X XXX XXXX"},
+    {code: "VN", name: "Vietnam", dial: "+84", pattern: /^[3-9]\d{8}$/, len: 9, hint: "9X XXX XXXX"},
+    {code: "MY", name: "Malaysia", dial: "+60", pattern: /^[1-9]\d{8,9}$/, len: 9, hint: "1X XXX XXXX"},
+    {code: "SG", name: "Singapore", dial: "+65", pattern: /^[8-9]\d{7}$/, len: 8, hint: "8XXX XXXX"},
+    {code: "IT", name: "Italy", dial: "+39", pattern: /^[3]\d{9}$/, len: 10, hint: "3XX XXX XXXX"},
+    {code: "ES", name: "Spain", dial: "+34", pattern: /^[6-7]\d{8}$/, len: 9, hint: "6XX XXX XXX"},
+    {code: "NL", name: "Netherlands", dial: "+31", pattern: /^[6]\d{8}$/, len: 9, hint: "6X XXX XXXX"},
+    {code: "SE", name: "Sweden", dial: "+46", pattern: /^[7]\d{8}$/, len: 9, hint: "7X XXX XXXX"},
+    {code: "NO", name: "Norway", dial: "+47", pattern: /^[4-9]\d{7}$/, len: 8, hint: "9XXX XXXX"},
+    {code: "PL", name: "Poland", dial: "+48", pattern: /^[5-8]\d{8}$/, len: 9, hint: "5XX XXX XXX"},
+    {code: "UA", name: "Ukraine", dial: "+380", pattern: /^[6-9]\d{8}$/, len: 9, hint: "9X XXX XXXX"},
+    {code: "CO", name: "Colombia", dial: "+57", pattern: /^[3]\d{9}$/, len: 10, hint: "3XX XXX XXXX"},
+    {code: "AR", name: "Argentina", dial: "+54", pattern: /^[1-9]\d{9}$/, len: 10, hint: "9XX XXX XXXX"},
+    {code: "CL", name: "Chile", dial: "+56", pattern: /^[9]\d{8}$/, len: 9, hint: "9XXXX XXXX"},
+    {code: "PE", name: "Peru", dial: "+51", pattern: /^[9]\d{8}$/, len: 9, hint: "9XX XXX XXX"}
 ];
 
 const WHATSAPP_GROUP = "https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1";
-const ADMIN_PASS = "confronter1";
 
 let selectedCountry = null;
 
@@ -27,6 +55,7 @@ function init() {
     updateBattery();
     loadStats();
     checkVCF();
+    startCountdown();
     setInterval(updateDateTime, 1000);
     setInterval(loadStats, 5000);
 }
@@ -96,7 +125,14 @@ function validatePhone() {
 
 function handleSubmit(e) {
     e.preventDefault();
-    const email = document.getElementById('email').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const phone = document.getElementById('phone').value.replace(/\s/g, '');
+    
+    if (!name) {
+        alert('Name required');
+        return;
+    }
     
     if (!email || !email.includes('@')) {
         alert('Valid email required');
@@ -113,12 +149,29 @@ function handleSubmit(e) {
         return;
     }
     
-    const phone = document.getElementById('phone').value.replace(/\s/g, '');
     const fullPhone = selectedCountry.dial + phone;
     
-    // Save to localStorage (simulated backend)
+    // Check duplicates
     const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-    verified.push({email, phone: fullPhone, date: new Date().toISOString()});
+    const dupEmail = verified.find(u => u.email === email);
+    const dupPhone = verified.find(u => u.phone === fullPhone);
+    const dupName = verified.find(u => u.name && u.name.toLowerCase() === name.toLowerCase());
+    
+    if (dupEmail) {
+        alert('❌ This email is already registered!');
+        return;
+    }
+    if (dupPhone) {
+        alert('❌ This phone number is already registered!');
+        return;
+    }
+    if (dupName) {
+        alert('❌ This name is already registered!');
+        return;
+    }
+    
+    // Save
+    verified.push({name, email, phone: fullPhone, country: selectedCountry.code, countryName: selectedCountry.name, date: new Date().toISOString()});
     localStorage.setItem('verified', JSON.stringify(verified));
     
     // Play success sound
@@ -160,22 +213,55 @@ function addAnother() {
 
 function updateStats() {
     const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-    const total = 800;
+    const total = 30;
     const count = verified.length;
     const remaining = Math.max(0, total - count);
     
     document.getElementById('verified-count').textContent = count;
     document.getElementById('remaining-count').textContent = remaining;
     
-    // Save for admin
     localStorage.setItem('stats', JSON.stringify({count, remaining, total}));
 }
 
 function loadStats() {
-    const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":800,"total":800}');
+    const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
     document.getElementById('verified-count').textContent = stats.count;
     document.getElementById('remaining-count').textContent = stats.remaining;
-    document.getElementById('days-left').textContent = localStorage.getItem('daysLeft') || '30';
+}
+
+function startCountdown() {
+    function update() {
+        const target = new Date(localStorage.getItem('countdownTarget') || '');
+        if (isNaN(target)) {
+            const days = parseInt(localStorage.getItem('daysLeft') || '30');
+            const now = new Date();
+            const t = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+            localStorage.setItem('countdownTarget', t.toISOString());
+        }
+        
+        const end = new Date(localStorage.getItem('countdownTarget'));
+        const diff = end - new Date();
+        
+        if (diff <= 0) {
+            document.getElementById('days-left').textContent = '00';
+            document.getElementById('hours-left').textContent = '00';
+            document.getElementById('mins-left').textContent = '00';
+            document.getElementById('secs-left').textContent = '00';
+            return;
+        }
+        
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('days-left').textContent = String(d).padStart(2, '0');
+        document.getElementById('hours-left').textContent = String(h).padStart(2, '0');
+        document.getElementById('mins-left').textContent = String(m).padStart(2, '0');
+        document.getElementById('secs-left').textContent = String(s).padStart(2, '0');
+    }
+    update();
+    setInterval(update, 1000);
 }
 
 function checkVCF() {
@@ -196,7 +282,7 @@ function checkVCF() {
 function updateDateTime() {
     const now = new Date();
     const date = now.toLocaleDateString();
-    const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
     document.getElementById('datetime').textContent = `📅 ${date} ⏲️ ${time}`;
 }
 
@@ -235,7 +321,6 @@ function toggleTheme() {
     }
 }
 
-// Load saved theme
 if (localStorage.getItem('theme') === 'dark') {
     document.documentElement.setAttribute('data-theme', 'dark');
     document.getElementById('theme-icon').textContent = '🌙';
