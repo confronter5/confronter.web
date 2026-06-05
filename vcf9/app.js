@@ -47,29 +47,21 @@ const countries = [
 
 const WHATSAPP_GROUP = "https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1";
 
-// JSONBin.io configuration - REPLACE THESE WITH YOUR OWN BIN
-// 1. Go to https://jsonbin.io/ and create a free account
-// 2. Create a new bin with initial data: {"verified":[],"stats":{"count":0,"remaining":30,"total":30},"vcfEnabled":false,"vcfData":"","daysLeft":30,"countdownTarget":""}
-// 3. Get your Bin ID and API Key from dashboard
-// 4. Replace the values below:
-const JSONBIN_BIN_ID = "6a22aa73da38895dfe8bbf3a"; // e.g., "64a1b2c3d4e5f6g7h8i9j0k"
-const JSONBIN_API_KEY = "$2a$10$2S361MecS7fTjnwE4bHhGudLjwQ9mnELTL04j27eo4F6vfFgPm4x2"; // e.g., "$2b$10$xxxxxxxxxxxxxxxx"
+const JSONBIN_BIN_ID = "6a22aa73da38895dfe8bbf3a";
+const JSONBIN_API_KEY = "$2a$10$2S361MecS7fTjnwE4bHhGudLjwQ9mnELTL04j27eo4F6vfFgPm4x2";
 
 let selectedCountry = null;
 let sharedData = {verified: [], stats: {count:0, remaining:30, total:30}, vcfEnabled: false, vcfData: "", daysLeft: 30, countdownTarget: ""};
 
-async function init() {
+function init() {
     populateCountries();
     updateDateTime();
     updateBattery();
     startCountdown();
     setInterval(updateDateTime, 1000);
-    
-    // Try to load from cloud first
-    await loadSharedData();
-    
-    // Refresh every 10 seconds to see new verifications
-    setInterval(loadSharedData, 10000);
+    loadSharedData().then(() => {
+        setInterval(loadSharedData, 10000);
+    });
 }
 
 function populateCountries() {
@@ -135,8 +127,7 @@ function validatePhone() {
     return true;
 }
 
-async function handleSubmit(e) {
-    e.preventDefault();
+async function handleVerify() {
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim().toLowerCase();
     const phone = document.getElementById('phone').value.replace(/\s/g, '');
@@ -148,7 +139,6 @@ async function handleSubmit(e) {
     
     const fullPhone = selectedCountry.dial + phone;
     
-    // Reload fresh data to check duplicates
     await loadSharedData();
     
     const dupEmail = sharedData.verified.find(u => u.email === email);
@@ -159,13 +149,11 @@ async function handleSubmit(e) {
     if (dupPhone) { alert('❌ This phone number is already registered!'); return; }
     if (dupName) { alert('❌ This name is already registered!'); return; }
     
-    // Check capacity
     if (sharedData.verified.length >= 30) {
         alert('❌ Maximum capacity reached (30 users)!');
         return;
     }
     
-    // Add new user
     sharedData.verified.push({
         name, email, phone: fullPhone, 
         country: selectedCountry.code, 
@@ -173,24 +161,18 @@ async function handleSubmit(e) {
         date: new Date().toISOString()
     });
     
-    // Update stats
     sharedData.stats.count = sharedData.verified.length;
     sharedData.stats.remaining = Math.max(0, 30 - sharedData.verified.length);
     
-    // Save to cloud
     await saveSharedData();
     
-    // Play success sound
     speak("You were verified successfully");
     
-    // Show success
     document.getElementById('verifyForm').style.display = 'none';
     document.getElementById('success').style.display = 'block';
     
-    // Update display
     updateDisplay();
     
-    // Redirect in 2 seconds
     setTimeout(() => {
         window.location.href = WHATSAPP_GROUP;
     }, 2000);
@@ -221,7 +203,6 @@ function updateDisplay() {
     document.getElementById('verified-count').textContent = sharedData.stats.count;
     document.getElementById('remaining-count').textContent = sharedData.stats.remaining;
     
-    // VCF
     const section = document.getElementById('vcf-download');
     const link = document.getElementById('vcf-link');
     if (sharedData.vcfData && sharedData.vcfEnabled) {
@@ -269,20 +250,7 @@ function startCountdown() {
     setInterval(update, 1000);
 }
 
-// JSONBin.io API functions
 async function loadSharedData() {
-    if (JSONBIN_BIN_ID === "6a22aa73da38895dfe8bbf3a") {
-        // Fallback to localStorage if not configured
-        sharedData.verified = JSON.parse(localStorage.getItem('verified') || '[]');
-        sharedData.stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
-        sharedData.vcfEnabled = localStorage.getItem('vcfEnabled') === 'true';
-        sharedData.vcfData = localStorage.getItem('vcfData') || '';
-        sharedData.daysLeft = localStorage.getItem('daysLeft') || '30';
-        sharedData.countdownTarget = localStorage.getItem('countdownTarget') || '';
-        updateDisplay();
-        return;
-    }
-    
     try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
             headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -290,7 +258,6 @@ async function loadSharedData() {
         if (res.ok) {
             const result = await res.json();
             sharedData = result.record;
-            // Also update localStorage as backup
             localStorage.setItem('verified', JSON.stringify(sharedData.verified));
             localStorage.setItem('stats', JSON.stringify(sharedData.stats));
             localStorage.setItem('vcfEnabled', sharedData.vcfEnabled);
@@ -301,7 +268,6 @@ async function loadSharedData() {
         }
     } catch (e) {
         console.error('Cloud load failed, using local:', e);
-        // Fallback
         sharedData.verified = JSON.parse(localStorage.getItem('verified') || '[]');
         sharedData.stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
         updateDisplay();
@@ -309,18 +275,6 @@ async function loadSharedData() {
 }
 
 async function saveSharedData() {
-    if (JSONBIN_BIN_ID === "YOUR_BIN_ID_HERE") {
-        // Fallback to localStorage
-        localStorage.setItem('verified', JSON.stringify(sharedData.verified));
-        localStorage.setItem('stats', JSON.stringify(sharedData.stats));
-        localStorage.setItem('vcfEnabled', sharedData.vcfEnabled);
-        localStorage.setItem('vcfData', sharedData.vcfData);
-        localStorage.setItem('daysLeft', sharedData.daysLeft);
-        localStorage.setItem('countdownTarget', sharedData.countdownTarget);
-        updateDisplay();
-        return;
-    }
-    
     try {
         await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
             method: 'PUT',
