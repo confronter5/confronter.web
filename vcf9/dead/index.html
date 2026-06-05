@@ -14,6 +14,7 @@
             --accent: #2563eb;
             --danger: #dc2626;
             --success: #16a34a;
+            --warning: #d97706;
         }
         [data-theme="dark"] {
             --bg: #000000;
@@ -38,7 +39,7 @@
             border-radius: 16px;
             border: 1px solid var(--border);
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 20px;
         }
         h1 { font-size: 16px; margin-bottom: 20px; text-align: center; }
@@ -79,7 +80,7 @@
         .panel { display: none; }
         .grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1.5fr;
             gap: 16px;
         }
         @media (max-width: 768px) {
@@ -138,7 +139,7 @@
             border-collapse: collapse;
         }
         th, td {
-            padding: 8px;
+            padding: 6px;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
@@ -185,7 +186,30 @@
             font-size: 11px;
             margin-bottom: 4px;
         }
+        .bulk-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .bulk-bar button {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 11px;
+        }
+        .bulk-select { background: var(--warning); }
+        .bulk-delete { background: var(--danger); }
+        .bulk-csv { background: #059669; }
+        .bulk-vcf { background: #7c3aed; }
+        .bulk-doc { background: #d97706; }
+        .cb {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .selected-row { background: rgba(37,99,235,0.1); }
     </style>
+<base target="_blank">
 </head>
 <body>
     <button class="theme-toggle" onclick="toggleTheme()">
@@ -236,15 +260,26 @@
             <div>
                 <div class="section">
                     <h3>Verified Users</h3>
-                    <div class="dl-btns">
-                        <button onclick="downloadCSV()" style="background:#059669;">📄 CSV</button>
-                        <button onclick="downloadVCF()" style="background:#7c3aed;">📇 VCF List</button>
-                        <button onclick="downloadDoc()" style="background:#d97706;">📝 Document</button>
+                    <div class="bulk-bar">
+                        <button class="bulk-select" onclick="selectAll()">☑️ Select All</button>
+                        <button class="bulk-select" onclick="deselectAll()">⬜ Deselect</button>
+                        <button class="bulk-delete" onclick="bulkDelete()">🗑️ Delete Selected</button>
+                        <button class="bulk-csv" onclick="bulkCSV()">📄 CSV Selected</button>
+                        <button class="bulk-vcf" onclick="bulkVCF()">📇 VCF Selected</button>
+                        <button class="bulk-doc" onclick="bulkDoc()">📝 Doc Selected</button>
                     </div>
-                    <div style="max-height:400px;overflow-y:auto;margin-top:12px;">
+                    <div style="max-height:400px;overflow-y:auto;">
                         <table>
                             <thead>
-                                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Date</th><th>Action</th></tr>
+                                <tr>
+                                    <th><input type="checkbox" class="cb" id="master-cb" onchange="toggleAll(this)"></th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Country</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
                             </thead>
                             <tbody id="users-table"></tbody>
                         </table>
@@ -258,6 +293,7 @@
 
     <script>
         const CORRECT_PASS = "confronter1";
+        let selectedIndices = new Set();
 
         function login() {
             const pass = document.getElementById('pass').value;
@@ -276,6 +312,7 @@
             document.getElementById('panel').style.display = 'none';
             document.getElementById('pass').value = '';
             document.getElementById('msg').textContent = '';
+            selectedIndices.clear();
         }
 
         function loadAdminData() {
@@ -305,13 +342,17 @@
                 countryDiv.innerHTML += `<span class="country-tag">${country}: ${count}</span>`;
             });
             
-            // Users table with edit/delete
+            // Users table with checkboxes
             const tbody = document.getElementById('users-table');
             tbody.innerHTML = '';
             verified.forEach((u, idx) => {
                 const row = document.createElement('tr');
+                const isSelected = selectedIndices.has(idx);
+                if (isSelected) row.classList.add('selected-row');
+                
                 const date = new Date(u.date).toLocaleDateString();
                 row.innerHTML = `
+                    <td><input type="checkbox" class="cb" ${isSelected ? 'checked' : ''} onchange="toggleSelect(${idx}, this)"></td>
                     <td><input class="edit-input" value="${u.name || ''}" onchange="editUser(${idx}, 'name', this.value)"></td>
                     <td><input class="edit-input" value="${u.email}" onchange="editUser(${idx}, 'email', this.value)"></td>
                     <td><input class="edit-input" value="${u.phone}" onchange="editUser(${idx}, 'phone', this.value)"></td>
@@ -321,6 +362,92 @@
                 `;
                 tbody.appendChild(row);
             });
+            
+            // Update master checkbox
+            const master = document.getElementById('master-cb');
+            master.checked = verified.length > 0 && selectedIndices.size === verified.length;
+        }
+
+        function toggleSelect(idx, cb) {
+            if (cb.checked) {
+                selectedIndices.add(idx);
+            } else {
+                selectedIndices.delete(idx);
+            }
+            loadAdminData();
+        }
+
+        function toggleAll(master) {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            if (master.checked) {
+                verified.forEach((_, i) => selectedIndices.add(i));
+            } else {
+                selectedIndices.clear();
+            }
+            loadAdminData();
+        }
+
+        function selectAll() {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            verified.forEach((_, i) => selectedIndices.add(i));
+            loadAdminData();
+        }
+
+        function deselectAll() {
+            selectedIndices.clear();
+            loadAdminData();
+        }
+
+        function getSelectedUsers() {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            return verified.filter((_, i) => selectedIndices.has(i));
+        }
+
+        function bulkDelete() {
+            if (selectedIndices.size === 0) { alert('Select contacts first'); return; }
+            if (!confirm(`Delete ${selectedIndices.size} selected contacts?`)) return;
+            
+            let verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            verified = verified.filter((_, i) => !selectedIndices.has(i));
+            localStorage.setItem('verified', JSON.stringify(verified));
+            selectedIndices.clear();
+            updateStats();
+            loadAdminData();
+        }
+
+        function bulkCSV() {
+            const users = getSelectedUsers();
+            if (users.length === 0) { alert('Select contacts first'); return; }
+            let csv = 'Name,Email,Phone,Country,Date\n';
+            users.forEach(u => {
+                csv += `"${u.name || ''}","${u.email}","${u.phone}","${u.countryName || u.country}","${u.date}"\n`;
+            });
+            downloadFile(csv, 'selected_users.csv', 'text/csv');
+        }
+
+        function bulkVCF() {
+            const users = getSelectedUsers();
+            if (users.length === 0) { alert('Select contacts first'); return; }
+            let vcf = '';
+            users.forEach(u => {
+                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${u.name || u.email}\nTEL:${u.phone}\nEMAIL:${u.email}\nEND:VCARD\n`;
+            });
+            downloadFile(vcf, 'selected_users.vcf', 'text/vcard');
+        }
+
+        function bulkDoc() {
+            const users = getSelectedUsers();
+            if (users.length === 0) { alert('Select contacts first'); return; }
+            let doc = 'CONFRONTER TECH WIZARD - SELECTED USERS\n';
+            doc += '=====================================\n\n';
+            users.forEach((u, i) => {
+                doc += `${i+1}. Name: ${u.name || 'N/A'}\n`;
+                doc += `   Email: ${u.email}\n`;
+                doc += `   Phone: ${u.phone}\n`;
+                doc += `   Country: ${u.countryName || u.country}\n`;
+                doc += `   Date: ${new Date(u.date).toLocaleString()}\n\n`;
+            });
+            downloadFile(doc, 'selected_users.txt', 'text/plain');
         }
 
         function editUser(idx, field, value) {
@@ -337,6 +464,13 @@
             const verified = JSON.parse(localStorage.getItem('verified') || '[]');
             verified.splice(idx, 1);
             localStorage.setItem('verified', JSON.stringify(verified));
+            // Rebuild selected indices
+            const newSelected = new Set();
+            selectedIndices.forEach(i => {
+                if (i < idx) newSelected.add(i);
+                else if (i > idx) newSelected.add(i - 1);
+            });
+            selectedIndices = newSelected;
             updateStats();
             loadAdminData();
         }
@@ -367,38 +501,6 @@
                 document.getElementById('vcf-status').className = 'success';
             };
             reader.readAsText(file);
-        }
-
-        function downloadCSV() {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            let csv = 'Name,Email,Phone,Country,Date\n';
-            verified.forEach(u => {
-                csv += `"${u.name || ''}","${u.email}","${u.phone}","${u.countryName || u.country}","${u.date}"\n`;
-            });
-            downloadFile(csv, 'verified_users.csv', 'text/csv');
-        }
-
-        function downloadVCF() {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            let vcf = '';
-            verified.forEach(u => {
-                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${u.name || u.email}\nTEL:${u.phone}\nEMAIL:${u.email}\nEND:VCARD\n`;
-            });
-            downloadFile(vcf, 'verified_users.vcf', 'text/vcard');
-        }
-
-        function downloadDoc() {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            let doc = 'CONFRONTER TECH WIZARD - VERIFIED USERS\n';
-            doc += '=====================================\n\n';
-            verified.forEach((u, i) => {
-                doc += `${i+1}. Name: ${u.name || 'N/A'}\n`;
-                doc += `   Email: ${u.email}\n`;
-                doc += `   Phone: ${u.phone}\n`;
-                doc += `   Country: ${u.countryName || u.country}\n`;
-                doc += `   Date: ${new Date(u.date).toLocaleString()}\n\n`;
-            });
-            downloadFile(doc, 'verified_users.txt', 'text/plain');
         }
 
         function downloadFile(content, filename, type) {
@@ -441,4 +543,4 @@
         }
     </script>
 </body>
-</html>
+        </html>
