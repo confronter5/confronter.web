@@ -208,8 +208,16 @@
             cursor: pointer;
         }
         .selected-row { background: rgba(37,99,235,0.1); }
+        .sync-status {
+            text-align: center;
+            font-size: 11px;
+            padding: 4px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+        .sync-ok { background: rgba(22,163,74,0.1); color: var(--success); }
+        .sync-err { background: rgba(220,38,38,0.1); color: var(--danger); }
     </style>
-<base target="_blank">
 </head>
 <body>
     <button class="theme-toggle" onclick="toggleTheme()">
@@ -225,6 +233,7 @@
 
     <div class="panel" id="panel">
         <h1>⚡ Confronter Admin</h1>
+        <div id="sync-status" class="sync-status sync-ok">🔄 Synced with cloud</div>
 
         <div class="grid">
             <div>
@@ -293,7 +302,13 @@
 
     <script>
         const CORRECT_PASS = "confronter1";
+        
+        // SAME JSONBIN CONFIG - MUST MATCH app.js
+        const JSONBIN_BIN_ID = "6a22aa73da38895dfe8bbf3a";
+        const JSONBIN_API_KEY = "$2a$10$2S361MecS7fTjnwE4bHhGudLjwQ9mnELTL04j27eo4F6vfFgPm4x2";
+        
         let selectedIndices = new Set();
+        let sharedData = {verified: [], stats: {count:0, remaining:30, total:30}, vcfEnabled: false, vcfData: "", daysLeft: 30, countdownTarget: ""};
 
         function login() {
             const pass = document.getElementById('pass').value;
@@ -301,6 +316,8 @@
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('panel').style.display = 'block';
                 loadAdminData();
+                // Auto-refresh every 5 seconds
+                setInterval(loadAdminData, 5000);
             } else {
                 document.getElementById('msg').textContent = "❌ Wrong password";
                 document.getElementById('msg').className = "error";
@@ -315,25 +332,24 @@
             selectedIndices.clear();
         }
 
-        function loadAdminData() {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30}');
+        async function loadAdminData() {
+            await loadSharedData();
             
-            document.getElementById('admin-verified').textContent = stats.count;
-            document.getElementById('admin-remaining').textContent = stats.remaining;
+            document.getElementById('admin-verified').textContent = sharedData.stats.count;
+            document.getElementById('admin-remaining').textContent = sharedData.stats.remaining;
             
-            const days = localStorage.getItem('daysLeft') || '30';
+            const days = sharedData.daysLeft || '30';
             document.getElementById('days-input').value = days;
             
-            const vcfEnabled = localStorage.getItem('vcfEnabled') === 'true';
+            const vcfEnabled = sharedData.vcfEnabled;
             document.getElementById('vcf-switch').className = vcfEnabled ? 'switch on' : 'switch';
             
-            const vcfData = localStorage.getItem('vcfData');
+            const vcfData = sharedData.vcfData;
             document.getElementById('vcf-status').textContent = vcfData ? '✓ File uploaded' : 'No file uploaded';
             
             // Country breakdown
             const countryCounts = {};
-            verified.forEach(u => {
+            sharedData.verified.forEach(u => {
                 countryCounts[u.countryName || u.country] = (countryCounts[u.countryName || u.country] || 0) + 1;
             });
             const countryDiv = document.getElementById('country-stats');
@@ -342,10 +358,10 @@
                 countryDiv.innerHTML += `<span class="country-tag">${country}: ${count}</span>`;
             });
             
-            // Users table with checkboxes
+            // Users table
             const tbody = document.getElementById('users-table');
             tbody.innerHTML = '';
-            verified.forEach((u, idx) => {
+            sharedData.verified.forEach((u, idx) => {
                 const row = document.createElement('tr');
                 const isSelected = selectedIndices.has(idx);
                 if (isSelected) row.classList.add('selected-row');
@@ -363,24 +379,19 @@
                 tbody.appendChild(row);
             });
             
-            // Update master checkbox
             const master = document.getElementById('master-cb');
-            master.checked = verified.length > 0 && selectedIndices.size === verified.length;
+            master.checked = sharedData.verified.length > 0 && selectedIndices.size === sharedData.verified.length;
         }
 
         function toggleSelect(idx, cb) {
-            if (cb.checked) {
-                selectedIndices.add(idx);
-            } else {
-                selectedIndices.delete(idx);
-            }
+            if (cb.checked) selectedIndices.add(idx);
+            else selectedIndices.delete(idx);
             loadAdminData();
         }
 
         function toggleAll(master) {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
             if (master.checked) {
-                verified.forEach((_, i) => selectedIndices.add(i));
+                sharedData.verified.forEach((_, i) => selectedIndices.add(i));
             } else {
                 selectedIndices.clear();
             }
@@ -388,8 +399,7 @@
         }
 
         function selectAll() {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            verified.forEach((_, i) => selectedIndices.add(i));
+            sharedData.verified.forEach((_, i) => selectedIndices.add(i));
             loadAdminData();
         }
 
@@ -399,19 +409,18 @@
         }
 
         function getSelectedUsers() {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            return verified.filter((_, i) => selectedIndices.has(i));
+            return sharedData.verified.filter((_, i) => selectedIndices.has(i));
         }
 
-        function bulkDelete() {
+        async function bulkDelete() {
             if (selectedIndices.size === 0) { alert('Select contacts first'); return; }
             if (!confirm(`Delete ${selectedIndices.size} selected contacts?`)) return;
             
-            let verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            verified = verified.filter((_, i) => !selectedIndices.has(i));
-            localStorage.setItem('verified', JSON.stringify(verified));
+            sharedData.verified = sharedData.verified.filter((_, i) => !selectedIndices.has(i));
+            sharedData.stats.count = sharedData.verified.length;
+            sharedData.stats.remaining = Math.max(0, 30 - sharedData.verified.length);
             selectedIndices.clear();
-            updateStats();
+            await saveSharedData();
             loadAdminData();
         }
 
@@ -450,57 +459,116 @@
             downloadFile(doc, 'selected_users.txt', 'text/plain');
         }
 
-        function editUser(idx, field, value) {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+        async function editUser(idx, field, value) {
             if (field === 'email') value = value.toLowerCase();
-            verified[idx][field] = value;
-            localStorage.setItem('verified', JSON.stringify(verified));
-            updateStats();
+            sharedData.verified[idx][field] = value;
+            await saveSharedData();
             loadAdminData();
         }
 
-        function deleteUser(idx) {
+        async function deleteUser(idx) {
             if (!confirm('Delete this user?')) return;
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            verified.splice(idx, 1);
-            localStorage.setItem('verified', JSON.stringify(verified));
-            // Rebuild selected indices
+            sharedData.verified.splice(idx, 1);
+            sharedData.stats.count = sharedData.verified.length;
+            sharedData.stats.remaining = Math.max(0, 30 - sharedData.verified.length);
             const newSelected = new Set();
             selectedIndices.forEach(i => {
                 if (i < idx) newSelected.add(i);
                 else if (i > idx) newSelected.add(i - 1);
             });
             selectedIndices = newSelected;
-            updateStats();
+            await saveSharedData();
             loadAdminData();
         }
 
-        function saveDays() {
+        async function saveDays() {
             const days = parseInt(document.getElementById('days-input').value);
-            localStorage.setItem('daysLeft', days);
+            sharedData.daysLeft = days;
             const now = new Date();
             const target = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
-            localStorage.setItem('countdownTarget', target.toISOString());
+            sharedData.countdownTarget = target.toISOString();
+            await saveSharedData();
             alert('Timer updated to ' + days + ' days');
         }
 
-        function toggleVCF() {
-            const current = localStorage.getItem('vcfEnabled') === 'true';
-            localStorage.setItem('vcfEnabled', !current);
-            document.getElementById('vcf-switch').className = !current ? 'switch on' : 'switch';
+        async function toggleVCF() {
+            sharedData.vcfEnabled = !sharedData.vcfEnabled;
+            await saveSharedData();
+            document.getElementById('vcf-switch').className = sharedData.vcfEnabled ? 'switch on' : 'switch';
         }
 
-        function uploadVCF() {
+        async function uploadVCF() {
             const file = document.getElementById('vcf-file').files[0];
             if (!file) return;
             
             const reader = new FileReader();
-            reader.onload = function(e) {
-                localStorage.setItem('vcfData', e.target.result);
+            reader.onload = async function(e) {
+                sharedData.vcfData = e.target.result;
+                await saveSharedData();
                 document.getElementById('vcf-status').textContent = '✓ File uploaded: ' + file.name;
                 document.getElementById('vcf-status').className = 'success';
             };
             reader.readAsText(file);
+        }
+
+        // JSONBin.io API
+        async function loadSharedData() {
+            if (JSONBIN_BIN_ID === "6a22aa73da38895dfe8bbf3a") {
+                sharedData.verified = JSON.parse(localStorage.getItem('verified') || '[]');
+                sharedData.stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
+                sharedData.vcfEnabled = localStorage.getItem('vcfEnabled') === 'true';
+                sharedData.vcfData = localStorage.getItem('vcfData') || '';
+                sharedData.daysLeft = localStorage.getItem('daysLeft') || '30';
+                sharedData.countdownTarget = localStorage.getItem('countdownTarget') || '';
+                document.getElementById('sync-status').textContent = '⚠️ Using local storage (configure JSONBin)';
+                document.getElementById('sync-status').className = 'sync-status sync-err';
+                return;
+            }
+            
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    sharedData = result.record;
+                    document.getElementById('sync-status').textContent = '🔄 Synced with cloud (' + new Date().toLocaleTimeString() + ')';
+                    document.getElementById('sync-status').className = 'sync-status sync-ok';
+                }
+            } catch (e) {
+                console.error('Cloud load failed:', e);
+                document.getElementById('sync-status').textContent = '❌ Cloud sync failed';
+                document.getElementById('sync-status').className = 'sync-status sync-err';
+            }
+        }
+
+        async function saveSharedData() {
+            if (JSONBIN_BIN_ID === "YOUR_BIN_ID_HERE") {
+                localStorage.setItem('verified', JSON.stringify(sharedData.verified));
+                localStorage.setItem('stats', JSON.stringify(sharedData.stats));
+                localStorage.setItem('vcfEnabled', sharedData.vcfEnabled);
+                localStorage.setItem('vcfData', sharedData.vcfData);
+                localStorage.setItem('daysLeft', sharedData.daysLeft);
+                localStorage.setItem('countdownTarget', sharedData.countdownTarget);
+                return;
+            }
+            
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify(sharedData)
+                });
+                document.getElementById('sync-status').textContent = '✅ Saved to cloud (' + new Date().toLocaleTimeString() + ')';
+                document.getElementById('sync-status').className = 'sync-status sync-ok';
+            } catch (e) {
+                console.error('Cloud save failed:', e);
+                document.getElementById('sync-status').textContent = '❌ Save failed';
+                document.getElementById('sync-status').className = 'sync-status sync-err';
+            }
         }
 
         function downloadFile(content, filename, type) {
@@ -511,14 +579,6 @@
             a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
-        }
-
-        function updateStats() {
-            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-            const total = 30;
-            const count = verified.length;
-            const remaining = Math.max(0, total - count);
-            localStorage.setItem('stats', JSON.stringify({count, remaining, total}));
         }
 
         function toggleTheme() {
@@ -543,4 +603,4 @@
         }
     </script>
 </body>
-        </html>
+</html>
