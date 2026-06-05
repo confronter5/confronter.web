@@ -3,1107 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel — Confronter Tech Wizard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Admin - Confronter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
         :root {
-            --bg-primary: #f5f7fa;
-            --bg-card: #ffffff;
-            --text-primary: #1a1a2e;
-            --text-secondary: #4a4a6a;
-            --text-muted: #8888a0;
-            --accent: #6366f1;
-            --accent-hover: #4f46e5;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --border: #e2e8f0;
-            --shadow: 0 10px 40px rgba(0,0,0,0.08);
+            --bg: #ffffff;
+            --fg: #111111;
+            --card: #f5f5f5;
+            --border: #e0e0e0;
+            --accent: #2563eb;
+            --danger: #dc2626;
         }
-
         [data-theme="dark"] {
-            --bg-primary: #000000;
-            --bg-card: #111118;
-            --text-primary: #f1f1f6;
-            --text-secondary: #a0a0b8;
-            --text-muted: #505060;
-            --accent: #818cf8;
-            --accent-hover: #a5b4fc;
-            --success: #34d399;
-            --danger: #f87171;
-            --warning: #fbbf24;
-            --border: #1f1f2e;
-            --shadow: 0 10px 40px rgba(0,0,0,0.5);
+            --bg: #000000;
+            --fg: #ffffff;
+            --card: #111111;
+            --border: #333333;
+            --accent: #3b82f6;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body {
-            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
             font-size: 13px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            transition: all 0.4s ease;
-        }
-
-        .admin-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 240px;
-            background: var(--bg-card);
-            border-right: 1px solid var(--border);
-            padding: 24px 16px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
-            transition: all 0.4s ease;
-        }
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
-
-        .sidebar-brand i {
-            font-size: 22px;
-            color: var(--accent);
-        }
-
-        .sidebar-brand h2 {
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .sidebar-brand small {
-            font-size: 10px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .nav-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-        }
-
-        .nav-menu li a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            border-radius: 12px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .nav-menu li a:hover,
-        .nav-menu li a.active {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .nav-menu li a i {
-            font-size: 14px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .sidebar-footer {
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            font-size: 10px;
-            color: var(--text-muted);
-            text-align: center;
-        }
-
-        .main-content {
-            margin-left: 240px;
-            flex: 1;
-            padding: 24px 28px;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .topbar h1 {
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .theme-toggle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: var(--bg-card);
-            color: var(--accent);
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
         }
-
-        .theme-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
+        .login-box, .panel {
+            background: var(--card);
+            padding: 30px;
             border-radius: 16px;
-            padding: 20px;
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .stat-card .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .stat-card .stat-header span {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .stat-card .stat-header i {
-            font-size: 18px;
-            color: var(--accent);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(99,102,241,0.1);
-            border-radius: 10px;
-        }
-
-        .stat-card .stat-value {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .stat-card .stat-change {
-            font-size: 11px;
-            color: var(--success);
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        .stat-card.danger .stat-header i {
-            color: var(--danger);
-            background: rgba(239,68,68,0.1);
-        }
-
-        .stat-card.warning .stat-header i {
-            color: var(--warning);
-            background: rgba(245,158,11,0.1);
-        }
-
-        .stat-card.success .stat-header i {
-            color: var(--success);
-            background: rgba(16,185,129,0.1);
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title i {
-            color: var(--accent);
-        }
-
-        .table-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            overflow-x: auto;
-            margin-bottom: 24px;
-        }
-
-        table {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
+            max-width: 420px;
+            margin: 20px;
         }
-
-        thead th {
-            text-align: left;
-            padding: 10px 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tbody td {
+        h1 { font-size: 16px; margin-bottom: 20px; text-align: center; }
+        input {
+            width: 100%;
             padding: 12px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-            font-weight: 500;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--fg);
+            font-size: 13px;
+            margin-bottom: 12px;
         }
-
-        tbody tr:hover td {
-            background: rgba(99,102,241,0.03);
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .badge {
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: rgba(16,185,129,0.15);
-            color: var(--success);
-        }
-
-        .action-btn {
-            padding: 6px 12px;
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
             border: none;
             border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.2s ease;
-        }
-
-        .btn-delete {
-            background: rgba(239,68,68,0.1);
-            color: var(--danger);
-        }
-
-        .btn-delete:hover {
-            background: var(--danger);
-            color: #fff;
-        }
-
-        .btn-export, .btn-download, .btn-toggle, .btn-upload {
-            padding: 10px 18px;
-            border-radius: 12px;
-            border: none;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(99,102,241,0.3);
-        }
-
-        .btn-export {
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: #fff;
-        }
-
-        .btn-export:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99,102,241,0.4);
-        }
-
-        .btn-download {
-            background: linear-gradient(135deg, var(--success), #059669);
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(16,185,129,0.3);
-        }
-
-        .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16,185,129,0.4);
-        }
-
-        .btn-toggle {
-            background: linear-gradient(135deg, var(--warning), #d97706);
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(245,158,11,0.3);
-        }
-
-        .btn-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245,158,11,0.4);
-        }
-
-        .btn-toggle.off {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-            box-shadow: 0 4px 16px rgba(107,114,128,0.3);
-        }
-
-        .btn-toggle.off:hover {
-            box-shadow: 0 6px 20px rgba(107,114,128,0.4);
-        }
-
-        .btn-upload {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(139,92,246,0.3);
-        }
-
-        .btn-upload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139,92,246,0.4);
-        }
-
-        .download-area, .upload-area {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-        }
-
-        .download-area h3, .upload-area h3 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .download-area h3 i, .upload-area h3 i {
-            color: var(--accent);
-        }
-
-        .download-buttons, .upload-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .file-name {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-left: 8px;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .upload-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .upload-status.uploaded {
-            background: rgba(16,185,129,0.15);
-            color: var(--success);
-        }
-
-        .upload-status.empty {
-            background: rgba(239,68,68,0.15);
-            color: var(--danger);
-        }
-
-        .toggle-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .toggle-status.on {
-            background: rgba(16,185,129,0.15);
-            color: var(--success);
-        }
-
-        .toggle-status.off {
-            background: rgba(239,68,68,0.15);
-            color: var(--danger);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-        }
-
-        .empty-state i {
-            font-size: 40px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            color: var(--text-primary);
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Password Overlay */
-        .password-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .password-card {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 40px 32px;
-            max-width: 360px;
-            width: 90%;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        .password-card i {
-            font-size: 48px;
-            color: var(--accent);
-            margin-bottom: 16px;
-        }
-
-        .password-card h2 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .password-card p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .password-card input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1.5px solid var(--border);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            margin-bottom: 12px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .password-card input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-        }
-
-        .password-card .error-msg {
-            color: var(--danger);
-            font-size: 11px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .password-card .error-msg.show {
-            display: block;
-        }
-
-        .password-card button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 14px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: #fff;
             font-size: 13px;
             font-weight: 600;
-            font-family: 'Poppins', sans-serif;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
         }
-
-        .password-card button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 28px rgba(99,102,241,0.4);
+        .theme-toggle {
+            position: fixed;
+            top: 16px; right: 16px;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: var(--card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
         }
-
-        .hidden {
-            display: none !important;
+        .panel { display: none; }
+        .section {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 16px;
-            }
-            .mobile-menu-btn {
-                display: flex;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .section h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: var(--accent);
         }
-
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .download-buttons, .upload-buttons {
-                flex-direction: column;
-            }
-            .btn-export, .btn-download, .btn-toggle, .btn-upload {
-                width: 100%;
-                justify-content: center;
-            }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
+        .stat-row span:last-child { font-weight: 700; }
+        .toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .switch.on { background: var(--accent); }
+        .switch::after {
+            content: '';
+            position: absolute;
+            width: 20px; height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            transition: 0.3s;
+        }
+        .switch.on::after { left: 22px; }
+        table {
+            width: 100%;
+            font-size: 11px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th { font-weight: 600; font-size: 10px; text-transform: uppercase; }
+        .file-input {
+            margin-bottom: 10px;
+        }
+        .success { color: var(--accent); }
+        .error { color: var(--danger); }
     </style>
 </head>
 <body>
-    <!-- Password Overlay -->
-    <div class="password-overlay" id="passwordOverlay">
-        <div class="password-card">
-            <i class="fas fa-lock"></i>
-            <h2>Admin Access</h2>
-            <p>Enter your password to access the admin panel</p>
-            <input type="password" id="adminPassword" placeholder="Enter password...">
-            <div class="error-msg" id="passwordError"><i class="fas fa-circle-exclamation"></i> Incorrect password</div>
-            <button id="loginBtn"><i class="fas fa-arrow-right"></i> Login</button>
-        </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">☀️</span>
+    </button>
+
+    <div class="login-box" id="login">
+        <h1>🔐 Admin Access</h1>
+        <input type="password" id="pass" placeholder="Password" onkeypress="if(event.key==='Enter')login()">
+        <button onclick="login()">Enter</button>
+        <p id="msg" style="text-align:center;margin-top:10px;font-size:12px;"></p>
     </div>
 
-    <div class="admin-wrapper hidden" id="adminWrapper">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">
-                <i class="fas fa-shield-halved"></i>
-                <div>
-                    <h2>Confronter Tech</h2>
-                    <small>Admin Dashboard</small>
-                </div>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
-                <li><a href="#"><i class="fas fa-users"></i> Verified Users</a></li>
-                <li><a href="#"><i class="fas fa-globe"></i> Countries</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-            </ul>
-            <div class="sidebar-footer">
-                <i class="fas fa-code"></i> Confronter Tech Wizard
-            </div>
-        </aside>
+    <div class="panel" id="panel">
+        <h1>⚡ Confronter Admin</h1>
 
-        <main class="main-content">
-            <div class="topbar">
-                <div style="display:flex;align-items:center;gap:12px;">
-                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
-                    <h1><i class="fas fa-chart-pie" style="color:var(--accent);margin-right:8px;"></i>Dashboard</h1>
-                </div>
-                <div class="topbar-actions">
-                    <button class="theme-toggle" id="themeToggle"><i class="fas fa-sun" id="themeIcon"></i></button>
-                </div>
+        <div class="section">
+            <h3>Stats</h3>
+            <div class="stat-row">
+                <span>Verified</span>
+                <span id="admin-verified">0</span>
             </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <span>Total Verified</span>
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-value" id="totalVerified">0</div>
-                    <div class="stat-change"><i class="fas fa-arrow-up"></i> All time</div>
-                </div>
-                <div class="stat-card success">
-                    <div class="stat-header">
-                        <span>Active Today</span>
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <div class="stat-value" id="activeToday">0</div>
-                    <div class="stat-change">Verified users</div>
-                </div>
-                <div class="stat-card warning">
-                    <div class="stat-header">
-                        <span>Remaining Slots</span>
-                        <i class="fas fa-door-open"></i>
-                    </div>
-                    <div class="stat-value" id="remainingSlots">100</div>
-                    <div class="stat-change">Out of 100</div>
-                </div>
-                <div class="stat-card danger">
-                    <div class="stat-header">
-                        <span>Countries</span>
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <div class="stat-value" id="totalCountries">0</div>
-                    <div class="stat-change">Unique nations</div>
-                </div>
+            <div class="stat-row">
+                <span>Remaining</span>
+                <span id="admin-remaining">30</span>
             </div>
-
-            <!-- VCF Upload Area -->
-            <div class="upload-area">
-                <h3><i class="fas fa-cloud-upload-alt"></i> Upload VCF File</h3>
-                <div class="upload-buttons">
-                    <div class="file-input-wrapper">
-                        <button class="btn-upload"><i class="fas fa-file-upload"></i> Choose VCF File</button>
-                        <input type="file" id="vcfFileInput" accept=".vcf">
-                    </div>
-                    <span class="file-name" id="fileName">No file selected</span>
-                    <button class="btn-export" id="saveVcfBtn"><i class="fas fa-save"></i> Save & Publish</button>
-                    <button class="btn-delete" id="removeVcfBtn" style="padding:10px 18px;border-radius:12px;"><i class="fas fa-trash"></i> Remove</button>
-                    <span class="upload-status empty" id="uploadStatus"><i class="fas fa-circle"></i> No VCF uploaded</span>
-                </div>
+            <div class="stat-row">
+                <span>Total Capacity</span>
+                <span>30</span>
             </div>
+        </div>
 
-            <!-- Download & Toggle Area -->
-            <div class="download-area">
-                <h3><i class="fas fa-download"></i> Downloads & Controls</h3>
-                <div class="download-buttons">
-                    <button class="btn-export" id="exportBtn"><i class="fas fa-file-csv"></i> Export CSV</button>
-                    <button class="btn-download" id="downloadVcfBtn"><i class="fas fa-address-card"></i> Download VCF</button>
-                    <button class="btn-download" id="downloadDocBtn" style="background:linear-gradient(135deg,#3b82f6,#2563eb);box-shadow:0 4px 16px rgba(59,130,246,0.3);"><i class="fas fa-file-word"></i> Export Document</button>
-                    <button class="btn-toggle" id="vcfToggleBtn"><i class="fas fa-toggle-on"></i> VCF Release: <span id="toggleLabel">OFF</span></button>
-                    <span class="toggle-status off" id="toggleStatus"><i class="fas fa-circle"></i> Hidden on Main</span>
-                </div>
+        <div class="section">
+            <h3>Countdown Days</h3>
+            <input type="number" id="days-input" value="30" min="1" max="365">
+            <button onclick="saveDays()" style="margin-top:8px;">Update Days</button>
+        </div>
+
+        <div class="section">
+            <h3>VCF File</h3>
+            <div class="toggle-btn">
+                <span>Available for Download</span>
+                <div class="switch" id="vcf-switch" onclick="toggleVCF()"></div>
             </div>
+            <input type="file" id="vcf-file" accept=".vcf" class="file-input" onchange="uploadVCF()">
+            <small id="vcf-status">No file uploaded</small>
+        </div>
 
-            <!-- Users Table -->
-            <div class="section-title"><i class="fas fa-list"></i> Verified Users</div>
-            <div class="table-card">
+        <div class="section">
+            <h3>Verified Users</h3>
+            <div style="max-height:200px;overflow-y:auto;">
                 <table>
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Country</th>
-                            <th>Phone</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
+                        <tr><th>Email</th><th>Phone</th><th>Date</th></tr>
                     </thead>
-                    <tbody id="usersTableBody">
-                        <tr>
-                            <td colspan="8">
-                                <div class="empty-state">
-                                    <i class="fas fa-inbox"></i>
-                                    <p>No verified users yet</p>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody id="users-table"></tbody>
                 </table>
             </div>
-        </main>
+        </div>
+
+        <button onclick="logout()" style="background:var(--danger);margin-top:10px;">Logout</button>
     </div>
 
     <script>
-        const MAX_MEMBERS = 100;
-        const ADMIN_PASSWORD = 'confronter2025'; // Change this password
+        const CORRECT_PASS = "confronter1";
 
-        function init() {
-            setupPassword();
-            loadUsers();
-            updateStats();
-            setupTheme();
-            setupMobileMenu();
-            setupExport();
-            setupDownloads();
-            setupVcfToggle();
-            setupVcfUpload();
-        }
-
-        // ===================== PASSWORD =====================
-        function setupPassword() {
-            const overlay = document.getElementById('passwordOverlay');
-            const wrapper = document.getElementById('adminWrapper');
-            const input = document.getElementById('adminPassword');
-            const btn = document.getElementById('loginBtn');
-            const error = document.getElementById('passwordError');
-
-            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-                overlay.classList.add('hidden');
-                wrapper.classList.remove('hidden');
-                return;
-            }
-
-            function attemptLogin() {
-                if (input.value === ADMIN_PASSWORD) {
-                    sessionStorage.setItem('adminLoggedIn', 'true');
-                    overlay.style.opacity = '0';
-                    overlay.style.transition = 'opacity 0.4s ease';
-                    setTimeout(() => {
-                        overlay.classList.add('hidden');
-                        wrapper.classList.remove('hidden');
-                    }, 400);
-                } else {
-                    error.classList.add('show');
-                    input.style.borderColor = 'var(--danger)';
-                    input.value = '';
-                    input.focus();
-                    setTimeout(() => {
-                        error.classList.remove('show');
-                        input.style.borderColor = '';
-                    }, 3000);
-                }
-            }
-
-            btn.addEventListener('click', attemptLogin);
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') attemptLogin();
-            });
-        }
-
-        // ===================== VCF UPLOAD =====================
-        function setupVcfUpload() {
-            const fileInput = document.getElementById('vcfFileInput');
-            const fileName = document.getElementById('fileName');
-            const saveBtn = document.getElementById('saveVcfBtn');
-            const removeBtn = document.getElementById('removeVcfBtn');
-            const uploadStatus = document.getElementById('uploadStatus');
-
-            let selectedFile = null;
-            let fileContent = localStorage.getItem('adminVcfContent');
-
-            // Check existing upload
-            if (fileContent) {
-                fileName.textContent = 'VCF file saved in storage';
-                uploadStatus.className = 'upload-status uploaded';
-                uploadStatus.innerHTML = '<i class="fas fa-check-circle"></i> VCF uploaded & active';
-            }
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    selectedFile = file;
-                    fileName.textContent = file.name;
-
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        fileContent = event.target.result;
-                    };
-                    reader.readAsText(file);
-                }
-            });
-
-            saveBtn.addEventListener('click', () => {
-                if (!fileContent) {
-                    alert('Please select a VCF file first!');
-                    return;
-                }
-                localStorage.setItem('adminVcfContent', fileContent);
-                localStorage.setItem('vcfOut', 'true');
-                uploadStatus.className = 'upload-status uploaded';
-                uploadStatus.innerHTML = '<i class="fas fa-check-circle"></i> VCF uploaded & active';
-                alert('VCF file saved and published! Users can now download it.');
-
-                // Update toggle to ON
-                updateToggleUI(true);
-            });
-
-            removeBtn.addEventListener('click', () => {
-                if (!confirm('Remove uploaded VCF? Users will no longer be able to download it.')) return;
-                localStorage.removeItem('adminVcfContent');
-                localStorage.setItem('vcfOut', 'false');
-                fileContent = null;
-                selectedFile = null;
-                fileInput.value = '';
-                fileName.textContent = 'No file selected';
-                uploadStatus.className = 'upload-status empty';
-                uploadStatus.innerHTML = '<i class="fas fa-circle"></i> No VCF uploaded';
-                updateToggleUI(false);
-                alert('VCF file removed.');
-            });
-        }
-
-        // ===================== USERS TABLE =====================
-        function loadUsers() {
-            const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
-            const tbody = document.getElementById('usersTableBody');
-
-            if (submissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="fas fa-inbox"></i><p>No verified users yet</p></div></td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = submissions.map((s, i) => {
-                const date = new Date(s.timestamp);
-                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                return '<tr>' +
-                    '<td>' + (i + 1) + '</td>' +
-                    '<td style="font-weight:600;color:var(--text-primary);">' + escapeHtml(s.name) + '</td>' +
-                    '<td style="font-size:11px;">' + escapeHtml(s.email || '-') + '</td>' +
-                    '<td>' + escapeHtml(s.country) + '</td>' +
-                    '<td style="font-family:monospace;">' + escapeHtml(s.phone) + '</td>' +
-                    '<td>' + dateStr + '<br><small style="color:var(--text-muted);">' + timeStr + '</small></td>' +
-                    '<td><span class="badge badge-success"><i class="fas fa-check"></i> Verified</span></td>' +
-                    '<td><button class="action-btn btn-delete" onclick="deleteUser(' + i + ')"><i class="fas fa-trash"></i></button></td>' +
-                    '</tr>';
-            }).join('');
-        }
-
-        function updateStats() {
-            const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
-            const total = submissions.length;
-            const remaining = Math.max(0, MAX_MEMBERS - total);
-            const uniqueCountries = new Set(submissions.map(s => s.country)).size;
-
-            document.getElementById('totalVerified').textContent = total;
-            document.getElementById('activeToday').textContent = total;
-            document.getElementById('remainingSlots').textContent = remaining;
-            document.getElementById('totalCountries').textContent = uniqueCountries;
-        }
-
-        function deleteUser(index) {
-            if (!confirm('Are you sure you want to delete this user?')) return;
-            const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
-            submissions.splice(index, 1);
-            localStorage.setItem('vcfSubmissions', JSON.stringify(submissions));
-            localStorage.setItem('verifiedCount', submissions.length.toString());
-            loadUsers();
-            updateStats();
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // ===================== EXPORT CSV =====================
-        function setupExport() {
-            document.getElementById('exportBtn').addEventListener('click', () => {
-                const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
-                if (submissions.length === 0) {
-                    alert('No data to export!');
-                    return;
-                }
-                let csv = 'Name,Email,Country,Phone,Timestamp\n';
-                submissions.forEach(s => {
-                    csv += '"' + s.name + '","' + (s.email || '') + '","' + s.country + '","' + s.phone + '","' + s.timestamp + '"\n';
-                });
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'verified_users.csv';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-        }
-
-        // ===================== DOWNLOADS (VCF + DOC) =====================
-        function setupDownloads() {
-            // Download admin-uploaded VCF or default
-            document.getElementById('downloadVcfBtn').addEventListener('click', () => {
-                const vcfContent = localStorage.getItem('adminVcfContent') || 
-                    'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
-                const blob = new Blob([vcfContent], { type: 'text/vcard' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'Confronter_Tech_Wizard.vcf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-
-            document.getElementById('downloadDocBtn').addEventListener('click', () => {
-                const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
-                if (submissions.length === 0) {
-                    alert('No data to export!');
-                    return;
-                }
-                let html = '<html><head><title>Verified Users</title><style>body{font-family:Arial;padding:40px;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;border:1px solid #ddd;text-align:left;}th{background:#6366f1;color:#fff;}</style></head><body>';
-                html += '<h1>Confronter Tech Wizard - Verified Users</h1>';
-                html += '<p>Generated: ' + new Date().toLocaleString() + '</p>';
-                html += '<table><tr><th>#</th><th>Name</th><th>Email</th><th>Country</th><th>Phone</th><th>Date</th></tr>';
-                submissions.forEach((s, i) => {
-                    html += '<tr><td>' + (i+1) + '</td><td>' + s.name + '</td><td>' + (s.email || '-') + '</td><td>' + s.country + '</td><td>' + s.phone + '</td><td>' + new Date(s.timestamp).toLocaleString() + '</td></tr>';
-                });
-                html += '</table></body></html>';
-                const blob = new Blob([html], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'verified_users.html';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-        }
-
-        // ===================== VCF TOGGLE =====================
-        function setupVcfToggle() {
-            const btn = document.getElementById('vcfToggleBtn');
-            const label = document.getElementById('toggleLabel');
-            const status = document.getElementById('toggleStatus');
-
-            const vcfOut = localStorage.getItem('vcfOut') === 'true';
-            updateToggleUI(vcfOut);
-
-            btn.addEventListener('click', () => {
-                const current = localStorage.getItem('vcfOut') === 'true';
-                const next = !current;
-                localStorage.setItem('vcfOut', next.toString());
-                updateToggleUI(next);
-            });
-        }
-
-        function updateToggleUI(isOn) {
-            const btn = document.getElementById('vcfToggleBtn');
-            const status = document.getElementById('toggleStatus');
-            if (isOn) {
-                btn.classList.remove('off');
-                btn.innerHTML = '<i class="fas fa-toggle-on"></i> VCF Release: <span id="toggleLabel">ON</span>';
-                status.className = 'toggle-status on';
-                status.innerHTML = '<i class="fas fa-circle"></i> Showing on Main';
+        function login() {
+            const pass = document.getElementById('pass').value;
+            if (pass === CORRECT_PASS) {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('panel').style.display = 'block';
+                loadAdminData();
             } else {
-                btn.classList.add('off');
-                btn.innerHTML = '<i class="fas fa-toggle-off"></i> VCF Release: <span id="toggleLabel">OFF</span>';
-                status.className = 'toggle-status off';
-                status.innerHTML = '<i class="fas fa-circle"></i> Hidden on Main';
+                document.getElementById('msg').textContent = "❌ Wrong password";
+                document.getElementById('msg').className = "error";
             }
         }
 
-        // ===================== THEME =====================
-        function setupTheme() {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', saved);
-            updateThemeIcon(saved);
+        function logout() {
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('panel').style.display = 'none';
+            document.getElementById('pass').value = '';
+            document.getElementById('msg').textContent = '';
+        }
 
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                const current = document.documentElement.getAttribute('data-theme');
-                const next = current === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('theme', next);
-                updateThemeIcon(next);
+        function loadAdminData() {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30}');
+            
+            document.getElementById('admin-verified').textContent = stats.count;
+            document.getElementById('admin-remaining').textContent = stats.remaining;
+            
+            const days = localStorage.getItem('daysLeft') || '30';
+            document.getElementById('days-input').value = days;
+            
+            const vcfEnabled = localStorage.getItem('vcfEnabled') === 'true';
+            document.getElementById('vcf-switch').className = vcfEnabled ? 'switch on' : 'switch';
+            
+            const vcfData = localStorage.getItem('vcfData');
+            document.getElementById('vcf-status').textContent = vcfData ? '✓ File uploaded' : 'No file uploaded';
+            
+            const tbody = document.getElementById('users-table');
+            tbody.innerHTML = '';
+            verified.slice().reverse().forEach(u => {
+                const row = document.createElement('tr');
+                const date = new Date(u.date).toLocaleDateString();
+                row.innerHTML = `<td>${u.email}</td><td>${u.phone}</td><td>${date}</td>`;
+                tbody.appendChild(row);
             });
         }
 
-        function updateThemeIcon(theme) {
-            document.getElementById('themeIcon').className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        function saveDays() {
+            const days = document.getElementById('days-input').value;
+            localStorage.setItem('daysLeft', days);
+            alert('Days updated to ' + days);
         }
 
-        // ===================== MOBILE MENU =====================
-        function setupMobileMenu() {
-            const btn = document.getElementById('mobileMenuBtn');
-            const sidebar = document.getElementById('sidebar');
-            btn.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
+        function toggleVCF() {
+            const current = localStorage.getItem('vcfEnabled') === 'true';
+            localStorage.setItem('vcfEnabled', !current);
+            document.getElementById('vcf-switch').className = !current ? 'switch on' : 'switch';
         }
 
-        // ===================== STORAGE LISTENER =====================
-        window.addEventListener('storage', () => {
-            loadUsers();
-            updateStats();
-        });
+        function uploadVCF() {
+            const file = document.getElementById('vcf-file').files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('vcfData', e.target.result);
+                document.getElementById('vcf-status').textContent = '✓ File uploaded: ' + file.name;
+                document.getElementById('vcf-status').className = 'success';
+            };
+            reader.readAsText(file);
+        }
 
-        document.addEventListener('DOMContentLoaded', init);
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const current = html.getAttribute('data-theme');
+            
+            if (current === 'dark') {
+                html.removeAttribute('data-theme');
+                icon.textContent = '☀️';
+                localStorage.setItem('adminTheme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.textContent = '🌙';
+                localStorage.setItem('adminTheme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('adminTheme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('theme-icon').textContent = '🌙';
+        }
     </script>
 </body>
-                </html>
+</html>
