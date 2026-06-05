@@ -1,218 +1,184 @@
-const form = document.getElementById("verifyForm");
-const messageBox = document.getElementById("messageBox");
+// Country verification metadata lookup dictionary
+const countriesList = [
+    { name: "Kenya", code: "254", regex: /^(254)(7\d{8}|1\d{8})$/ },
+    { name: "Nigeria", code: "234", regex: /^(234)([789][01]\d{8})$/ },
+    { name: "South Africa", code: "27", regex: /^(27)([678]\d{8})$/ },
+    { name: "United Kingdom", code: "44", regex: /^(44)(7\d{9})$/ },
+    { name: "United States", code: "1", regex: /^(1)([2-9]\d{9})$/ },
+    { name: "India", code: "91", regex: /^(91)([6789]\d{9})$/ }
+];
 
-const whatsappGroup =
-"https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1";
+let selectedCountry = null;
+const WHATSAPP_REDIRECT_URL = "https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1";
 
-/* ==========================
-   SPEECH
-========================== */
+document.addEventListener("DOMContentLoaded", () => {
+    initApp();
+    setupSystemStatus();
+});
 
-function speakSuccess() {
-    const msg = new SpeechSynthesisUtterance(
-        "You have been verified successfully"
-    );
-    msg.rate = 1;
-    msg.pitch = 1;
-    msg.volume = 1;
-    speechSynthesis.speak(msg);
+function initApp() {
+    populateCountries();
+    fetchSyncSettings();
+
+    // Theme Engine Hook
+    document.getElementById('theme-toggle').addEventListener('click', toggleThemeMode);
+    
+    // Select Input validation handler context
+    document.getElementById('country').addEventListener('change', handleCountryChange);
+    
+    // Actions events setup
+    document.getElementById('verificationForm').addEventListener('submit', handleFormSubmit);
+    document.getElementById('btn-clear').addEventListener('click', () => document.getElementById('verificationForm').reset());
+    document.getElementById('btn-back').addEventListener('click', () => alert('Navigating back...'));
 }
 
-/* ==========================
-   PHONE VALIDATION
-   (STRICT COUNTRY FORMAT)
-========================== */
-
-function validatePhone(countryCode, phone) {
-
-    const rules = {
-        "+254": /^254\d{9}$/,
-        "+255": /^255\d{9}$/,
-        "+256": /^256\d{9}$/,
-        "+250": /^250\d{9}$/,
-        "+257": /^257\d{8}$/,
-        "+211": /^211\d{9}$/,
-        "+234": /^234\d{10}$/,
-        "+27": /^27\d{9}$/,
-        "+20": /^20\d{9,10}$/,
-        "+1": /^1\d{10}$/,
-        "+44": /^44\d{10}$/,
-        "+91": /^91\d{10}$/,
-        "+971": /^971\d{9}$/,
-        "+86": /^86\d{11}$/,
-        "+81": /^81\d{9,10}$/,
-        "+49": /^49\d{10,11}$/,
-        "+33": /^33\d{9}$/,
-        "+39": /^39\d{9,10}$/,
-        "+34": /^34\d{9}$/,
-        "+61": /^61\d{9}$/,
-        "+55": /^55\d{10,11}$/,
-        "+7": /^7\d{10}$/
-    };
-
-    return rules[countryCode]
-        ? rules[countryCode].test(phone)
-        : false;
+function populateCountries() {
+    const select = document.getElementById('country');
+    countriesList.sort((a,b)=> a.name.localeCompare(b.name)).forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.code;
+        opt.textContent = `${c.name} (+${c.code})`;
+        select.appendChild(opt);
+    });
 }
 
-/* ==========================
-   FORM SUBMIT
-========================== */
+function handleCountryChange(e) {
+    selectedCountry = countriesList.find(c => c.code === e.target.value);
+    const prefixEl = document.getElementById('country-prefix');
+    const phoneInput = document.getElementById('phone');
+    
+    prefixEl.textContent = `+${selectedCountry.code}`;
+    phoneInput.disabled = false;
+    phoneInput.placeholder = `Full string starts with ${selectedCountry.code}`;
+    phoneInput.value = selectedCountry.code;
+}
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const fullname = document.getElementById("fullname").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const country = document.getElementById("country").value;
-    let phone = document.getElementById("phone").value.trim();
-
-    if (!country || !fullname || !email || !phone) {
-        messageBox.innerText = "Please fill all fields";
-        return;
-    }
-
-    // Ensure no "+" is used
-    if (phone.startsWith("+")) {
-        phone = phone.replace("+", "");
-    }
-
-    if (!validatePhone(country, phone)) {
-        messageBox.innerText = "Invalid phone number format";
-        return;
-    }
-
+async function fetchSyncSettings() {
     try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        
+        document.getElementById('verifiedCount').textContent = data.verifiedCount;
+        document.getElementById('remainingCount').textContent = data.remainingCount;
+        document.getElementById('daysCount').textContent = data.daysRemaining;
 
-        const res = await fetch("/api/verify", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+        // Visual progress circle calculation loop
+        const total = data.verifiedCount + data.remainingCount;
+        const percentage = total > 0 ? (data.verifiedCount / total) * 360 : 0;
+        document.getElementById('progressCircle').style.background = `conic-gradient(var(--accent-color) ${percentage}deg, var(--border-color) 0deg)`;
+
+        // Download section configuration 
+        const downloadBox = document.getElementById('vcf-download-container');
+        if(data.vcfDownloadAvailable && data.uploadedVcfPath) {
+            downloadBox.classList.remove('hidden');
+            document.getElementById('vcf-download-btn').href = data.uploadedVcfPath;
+        } else {
+            downloadBox.classList.add('hidden');
+        }
+    } catch (e) { console.error("Sync error:", e); }
+}
+
+async function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    
+    let valid = true;
+
+    // Email validation standard pattern verification
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('emailError').style.display = 'block';
+        valid = false;
+    } else {
+        document.getElementById('emailError').style.display = 'none';
+    }
+
+    // Comprehensive absolute country code number match check execution 
+    if (!selectedCountry || !selectedCountry.regex.test(phone)) {
+        document.getElementById('phoneError').textContent = `Must start with country prefix and fit valid format for ${selectedCountry?.name || 'selected country'}.`;
+        document.getElementById('phoneError').style.display = 'block';
+        valid = false;
+    } else {
+        document.getElementById('phoneError').style.display = 'none';
+    }
+
+    if (!valid) return;
+
+    // Send Payload schema logic block to backend server system context
+    try {
+        const response = await fetch('/api/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                fullname,
                 email,
-                country,
-                phone
+                phone: `+${phone}`,
+                countryCode: selectedCountry.code,
+                countryName: selectedCountry.name
             })
         });
 
-        const data = await res.json();
-
-        if (data.success) {
-
-            messageBox.innerText = "Verification Successful";
-
-            speakSuccess();
-
-            loadStats();
-
+        if (response.ok) {
+            triggerInstantVerificationVoice();
+            showToast("Verified Successfully! Redirecting...");
+            
             setTimeout(() => {
-                window.location.href = whatsappGroup;
+                window.location.href = WHATSAPP_REDIRECT_URL;
             }, 2000);
-
-        } else {
-            messageBox.innerText = data.message || "Error occurred";
         }
+    } catch(err) { showToast("Server communication breakdown."); }
+}
 
-    } catch (err) {
-        messageBox.innerText = "Server error";
-    }
-});
-
-/* ==========================
-   LOAD STATS
-========================== */
-
-async function loadStats() {
-    try {
-        const res = await fetch("/api/stats");
-        const data = await res.json();
-
-        document.getElementById("verifiedCount").innerText =
-            data.verifiedCount;
-
-        document.getElementById("remainingCount").innerText =
-            data.remainingCount;
-
-        document.getElementById("countdownDays").innerText =
-            data.countdownDays;
-
-    } catch (err) {
-        console.log(err);
+function triggerInstantVerificationVoice() {
+    if ('speechSynthesis' in window) {
+        const speech = new SpeechSynthesisUtterance("You were verified successfully");
+        speech.rate = 1.0; 
+        speech.pitch = 1.0;
+        window.speechSynthesis.speak(speech);
     }
 }
 
-loadStats();
-
-/* ==========================
-   ADD ANOTHER NUMBER
-========================== */
-
-document.getElementById("addAnotherBtn")
-.addEventListener("click", () => {
-    form.reset();
-    messageBox.innerText = "";
-});
-
-/* ==========================
-   GO BACK
-========================== */
-
-document.getElementById("goBackBtn")
-.addEventListener("click", () => {
-    history.back();
-});
-
-/* ==========================
-   DARK / LIGHT MODE
-========================== */
-
-const toggle = document.getElementById("themeToggle");
-
-toggle.addEventListener("click", () => {
-    document.body.classList.toggle("light");
-    toggle.innerText =
-        document.body.classList.contains("light")
-        ? "☀️"
-        : "🌙";
-});
-
-/* ==========================
-   CLOCK
-========================== */
-
-function updateTime() {
-    const now = new Date();
-
-    document.getElementById("currentDate").innerText =
-        now.toLocaleDateString();
-
-    document.getElementById("currentTime").innerText =
-        now.toLocaleTimeString();
+function toggleThemeMode() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const target = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', target);
+    
+    const icon = document.querySelector('#theme-toggle i');
+    icon.className = target === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
 }
 
-setInterval(updateTime, 1000);
-updateTime();
+function setupSystemStatus() {
+    // Clock cycle ticker logic setup
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('live-date').textContent = now.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+        document.getElementById('live-time').textContent = now.toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    }, 1000);
 
-/* ==========================
-   BATTERY STATUS
-========================== */
+    // Battery hardware monitor bridge hook configuration
+    if (navigator.getBattery) {
+        navigator.getBattery().then(battery => {
+            const updateBattery = () => {
+                const level = Math.floor(battery.level * 100);
+                document.getElementById('battery-level').textContent = `${level}%`;
+                const icon = document.getElementById('battery-icon');
+                if(battery.charging) {
+                    icon.className = "fas fa-battery-charging";
+                } else {
+                    icon.className = level > 50 ? "fas fa-battery-full" : "fas fa-battery-quarter";
+                }
+            };
+            updateBattery();
+            battery.addEventListener('chargingchange', updateBattery);
+            battery.addEventListener('levelchange', updateBattery);
+        });
+    }
+}
 
-if ("getBattery" in navigator) {
-    navigator.getBattery().then((battery) => {
-
-        function updateBattery() {
-            document.getElementById("batteryStatus").innerText =
-                `${Math.round(battery.level * 100)}% ${
-                    battery.charging ? "(Charging)" : "(Not Charging)"
-                }`;
-        }
-
-        updateBattery();
-
-        battery.addEventListener("levelchange", updateBattery);
-        battery.addEventListener("chargingchange", updateBattery);
-
-    });
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
 }
