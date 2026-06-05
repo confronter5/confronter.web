@@ -172,7 +172,7 @@ function updateStats() {
 }
 
 function loadStats() {
-    const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
+    const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":800,"total":800}');
     document.getElementById('verified-count').textContent = stats.count;
     document.getElementById('remaining-count').textContent = stats.remaining;
     document.getElementById('days-left').textContent = localStorage.getItem('daysLeft') || '30';
