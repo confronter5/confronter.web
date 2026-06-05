@@ -4,478 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confronter Tech Wizard VCF</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<base target="_blank">
 </head>
 <body>
+    <div class="status-bar">
+        <span id="datetime">📅 --/--/---- ⏲️ --:--</span>
+        <span id="battery">🔋 --%</span>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">☀️</span>
+    </button>
+
     <div class="container">
-        <!-- Dark/Light Mode Toggle -->
-        <button id="themeToggle" class="theme-toggle" title="Toggle Theme">
-            <i class="fas fa-sun" id="themeIcon"></i>
-        </button>
+        <h1>Confronter Tech Wizard</h1>
+        <h2>VCF Active Viewers</h2>
 
-        <!-- Header -->
-        <div class="header">
-            <i class="fas fa-shield-halved logo-icon"></i>
-            <h1>Confronter Tech Wizard VCF</h1>
-            <p class="subtitle">Active Viewers Verification</p>
-        </div>
-
-        <!-- Countdown -->
-        <div class="countdown-box">
-            <i class="fas fa-hourglass-half"></i>
-            <span id="countdownText">VCF Release Countdown</span>
-            <div id="countdownTimer" class="countdown-timer"></div>
-            <button id="downloadVcfBtn" class="download-vcf-btn hidden">
-                <i class="fas fa-download"></i> Download VCF
-            </button>
-        </div>
-
-        <!-- Stats Circle -->
         <div class="stats-circle">
-            <svg viewBox="0 0 100 100">
-                <circle class="bg-ring" cx="50" cy="50" r="40"/>
-                <circle class="progress-ring" cx="50" cy="50" r="40" id="progressRing"/>
-            </svg>
-            <div class="stats-text">
-                <span id="verifiedCount">0</span>
+            <div class="circle-inner">
+                <span id="verified-count">0</span>
                 <small>Verified</small>
             </div>
-        </div>
-        <div class="stats-labels">
-            <span><i class="fas fa-check-circle"></i> <span id="verifiedLabel">0</span> Verified</span>
-            <span><i class="fas fa-clock"></i> <span id="remainingLabel">100</span> Remaining</span>
-        </div>
-
-        <!-- Real-time Info -->
-        <div class="info-bar">
-            <span><i class="fas fa-clock"></i> <span id="liveTime"></span></span>
-            <span><i class="fas fa-calendar-day"></i> <span id="liveDate"></span></span>
-            <span><i class="fas fa-battery-full" id="batteryIcon"></i> <span id="batteryPercent">--%</span> <span id="chargingStatus"></span></span>
+            <div class="circle-remaining">
+                <span id="remaining-count">30</span>
+                <small>Remaining</small>
+            </div>
         </div>
 
-        <!-- Verification Form -->
-        <form id="vcfForm" class="vcf-form">
+        <div class="countdown">
+            <span id="days-left">30</span> days remaining
+        </div>
+
+        <div id="vcf-download" class="vcf-section" style="display:none;">
+            <a id="vcf-link" href="#" download="confronter.vcf" class="vcf-btn">📥 Download VCF</a>
+        </div>
+
+        <form id="verifyForm" onsubmit="handleSubmit(event)">
             <div class="form-group">
-                <label><i class="fas fa-user"></i> Full Name</label>
-                <input type="text" id="fullName" placeholder="Enter your full name" required>
+                <label>Email</label>
+                <input type="email" id="email" required placeholder="your@email.com">
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Email Address</label>
-                <input type="email" id="email" placeholder="your@email.com" required>
-                <small class="hint" id="emailHint">Enter a valid email address</small>
-            </div>
-
-            <div class="form-group">
-                <label><i class="fas fa-globe"></i> Country</label>
-                <select id="countrySelect" required>
-                    <option value="" disabled selected>Select your country</option>
+                <label>Country</label>
+                <select id="country" onchange="updatePhoneFormat()" required>
+                    <option value="">Select</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-phone"></i> Phone Number</label>
-                <div class="phone-input-wrapper">
-                    <span class="country-code" id="countryCode">+</span>
-                    <input type="tel" id="phoneNumber" placeholder="Phone number" required>
-                </div>
-                <small class="hint" id="phoneHint">Select a country first</small>
+                <label>Phone (+<<span id="code-display">---</span>)</label>
+                <input type="tel" id="phone" required placeholder="7XX XXX XXX" oninput="validatePhone()">
+                <small id="phone-hint">Select country first</small>
             </div>
 
-            <button type="submit" class="verify-btn">
-                <i class="fas fa-shield-halved"></i> Get Verified
-            </button>
+            <button type="submit" class="submit-btn">Verify & Join</button>
         </form>
 
-        <!-- Success Overlay -->
-        <div id="successOverlay" class="success-overlay hidden">
-            <div class="success-card">
-                <i class="fas fa-circle-check success-icon"></i>
-                <h2>You were verified successfully!</h2>
-                <p>Redirecting to group in <span id="redirectCount">2</span> seconds...</p>
-                <div class="success-buttons">
-                    <button id="goBackBtn" class="btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Go Back
-                    </button>
-                    <button id="addAnotherBtn" class="btn-primary">
-                        <i class="fas fa-plus"></i> Add Another Number
-                    </button>
-                </div>
+        <div id="success" class="success-msg" style="display:none;">
+            <p>✅ Verified! Redirecting...</p>
+            <div class="action-btns">
+                <button onclick="goBack()" class="btn-secondary">← Go Back</button>
+                <button onclick="addAnother()" class="btn-secondary">+ Add Number</button>
             </div>
         </div>
     </div>
 
-    <script>
-    // ===================== COUNTRY DATA WITH PHONE VALIDATION RULES =====================
-    const countries = [
-        { name: "Kenya", code: "KE", dialCode: "+254", minLength: 9, maxLength: 9, startsWith: ["7", "1"] },
-        { name: "Nigeria", code: "NG", dialCode: "+234", minLength: 10, maxLength: 10, startsWith: ["7", "8", "9"] },
-        { name: "South Africa", code: "ZA", dialCode: "+27", minLength: 9, maxLength: 9, startsWith: ["6", "7", "8"] },
-        { name: "Ghana", code: "GH", dialCode: "+233", minLength: 9, maxLength: 9, startsWith: ["2", "5"] },
-        { name: "Uganda", code: "UG", dialCode: "+256", minLength: 9, maxLength: 9, startsWith: ["7"] },
-        { name: "Tanzania", code: "TZ", dialCode: "+255", minLength: 9, maxLength: 9, startsWith: ["6", "7"] },
-        { name: "United States", code: "US", dialCode: "+1", minLength: 10, maxLength: 10, startsWith: null },
-        { name: "United Kingdom", code: "GB", dialCode: "+44", minLength: 10, maxLength: 10, startsWith: ["7"] },
-        { name: "India", code: "IN", dialCode: "+91", minLength: 10, maxLength: 10, startsWith: ["6", "7", "8", "9"] },
-        { name: "Germany", code: "DE", dialCode: "+49", minLength: 10, maxLength: 11, startsWith: ["1", "2", "3", "4", "5", "6", "7", "8", "9"] },
-        { name: "France", code: "FR", dialCode: "+33", minLength: 9, maxLength: 9, startsWith: ["6", "7"] },
-        { name: "Australia", code: "AU", dialCode: "+61", minLength: 9, maxLength: 9, startsWith: ["4"] },
-        { name: "Canada", code: "CA", dialCode: "+1", minLength: 10, maxLength: 10, startsWith: null },
-        { name: "Brazil", code: "BR", dialCode: "+55", minLength: 10, maxLength: 11, startsWith: null },
-        { name: "China", code: "CN", dialCode: "+86", minLength: 11, maxLength: 11, startsWith: ["1"] },
-        { name: "Japan", code: "JP", dialCode: "+81", minLength: 10, maxLength: 10, startsWith: ["7", "8", "9", "6"] },
-        { name: "South Korea", code: "KR", dialCode: "+82", minLength: 10, maxLength: 10, startsWith: ["1"] },
-        { name: "Russia", code: "RU", dialCode: "+7", minLength: 10, maxLength: 10, startsWith: ["9"] },
-        { name: "Italy", code: "IT", dialCode: "+39", minLength: 10, maxLength: 10, startsWith: ["3"] },
-        { name: "Spain", code: "ES", dialCode: "+34", minLength: 9, maxLength: 9, startsWith: ["6", "7"] },
-        { name: "Netherlands", code: "NL", dialCode: "+31", minLength: 9, maxLength: 9, startsWith: ["6"] },
-        { name: "Sweden", code: "SE", dialCode: "+46", minLength: 9, maxLength: 9, startsWith: ["7"] },
-        { name: "Norway", code: "NO", dialCode: "+47", minLength: 8, maxLength: 8, startsWith: ["4", "9"] },
-        { name: "Denmark", code: "DK", dialCode: "+45", minLength: 8, maxLength: 8, startsWith: ["2", "3", "4", "5", "6", "7", "8", "9"] },
-        { name: "Finland", code: "FI", dialCode: "+358", minLength: 9, maxLength: 9, startsWith: ["4", "5"] },
-        { name: "Switzerland", code: "CH", dialCode: "+41", minLength: 9, maxLength: 9, startsWith: ["7", "8"] },
-        { name: "Austria", code: "AT", dialCode: "+43", minLength: 10, maxLength: 10, startsWith: null },
-        { name: "Belgium", code: "BE", dialCode: "+32", minLength: 9, maxLength: 9, startsWith: ["4"] },
-        { name: "Portugal", code: "PT", dialCode: "+351", minLength: 9, maxLength: 9, startsWith: ["9"] },
-        { name: "Ireland", code: "IE", dialCode: "+353", minLength: 9, maxLength: 9, startsWith: ["8", "9"] },
-        { name: "Poland", code: "PL", dialCode: "+48", minLength: 9, maxLength: 9, startsWith: ["5", "6", "7", "8"] },
-        { name: "Turkey", code: "TR", dialCode: "+90", minLength: 10, maxLength: 10, startsWith: ["5"] },
-        { name: "Saudi Arabia", code: "SA", dialCode: "+966", minLength: 9, maxLength: 9, startsWith: ["5"] },
-        { name: "UAE", code: "AE", dialCode: "+971", minLength: 9, maxLength: 9, startsWith: ["5"] },
-        { name: "Israel", code: "IL", dialCode: "+972", minLength: 9, maxLength: 9, startsWith: ["5"] },
-        { name: "Egypt", code: "EG", dialCode: "+20", minLength: 10, maxLength: 10, startsWith: ["1"] },
-        { name: "Morocco", code: "MA", dialCode: "+212", minLength: 9, maxLength: 9, startsWith: ["6", "7"] },
-        { name: "Ethiopia", code: "ET", dialCode: "+251", minLength: 9, maxLength: 9, startsWith: ["9"] },
-        { name: "Rwanda", code: "RW", dialCode: "+250", minLength: 9, maxLength: 9, startsWith: ["7", "8"] },
-        { name: "Zambia", code: "ZM", dialCode: "+260", minLength: 9, maxLength: 9, startsWith: ["9", "7"] },
-        { name: "Zimbabwe", code: "ZW", dialCode: "+263", minLength: 9, maxLength: 9, startsWith: ["7", "8"] },
-        { name: "Botswana", code: "BW", dialCode: "+267", minLength: 8, maxLength: 8, startsWith: ["7"] },
-        { name: "Namibia", code: "NA", dialCode: "+264", minLength: 9, maxLength: 9, startsWith: ["8"] },
-        { name: "Malawi", code: "MW", dialCode: "+265", minLength: 9, maxLength: 9, startsWith: ["8", "9"] },
-        { name: "Mozambique", code: "MZ", dialCode: "+258", minLength: 9, maxLength: 9, startsWith: ["8"] },
-        { name: "Angola", code: "AO", dialCode: "+244", minLength: 9, maxLength: 9, startsWith: ["9"] },
-        { name: "Cameroon", code: "CM", dialCode: "+237", minLength: 9, maxLength: 9, startsWith: ["6"] },
-        { name: "Ivory Coast", code: "CI", dialCode: "+225", minLength: 8, maxLength: 8, startsWith: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] },
-        { name: "Senegal", code: "SN", dialCode: "+221", minLength: 9, maxLength: 9, startsWith: ["7"] },
-        { name: "Mali", code: "ML", dialCode: "+223", minLength: 8, maxLength: 8, startsWith: ["5", "6", "7", "8", "9"] },
-        { name: "Burkina Faso", code: "BF", dialCode: "+226", minLength: 8, maxLength: 8, startsWith: ["5", "6", "7"] },
-        { name: "Niger", code: "NE", dialCode: "+227", minLength: 8, maxLength: 8, startsWith: ["8", "9"] },
-        { name: "Chad", code: "TD", dialCode: "+235", minLength: 8, maxLength: 8, startsWith: ["6", "7", "9"] },
-        { name: "Sudan", code: "SD", dialCode: "+249", minLength: 9, maxLength: 9, startsWith: ["9"] },
-        { name: "Somalia", code: "SO", dialCode: "+252", minLength: 9, maxLength: 9, startsWith: ["6", "7"] },
-        { name: "Djibouti", code: "DJ", dialCode: "+253", minLength: 8, maxLength: 8, startsWith: ["7"] },
-        { name: "Eritrea", code: "ER", dialCode: "+291", minLength: 7, maxLength: 7, startsWith: ["1", "7"] },
-        { name: "Madagascar", code: "MG", dialCode: "+261", minLength: 9, maxLength: 9, startsWith: ["3", "4"] },
-        { name: "Mauritius", code: "MU", dialCode: "+230", minLength: 8, maxLength: 8, startsWith: ["5"] },
-        { name: "Seychelles", code: "SC", dialCode: "+248", minLength: 7, maxLength: 7, startsWith: ["2"] },
-        { name: "Comoros", code: "KM", dialCode: "+269", minLength: 7, maxLength: 7, startsWith: ["3", "4"] },
-        { name: "Gabon", code: "GA", dialCode: "+241", minLength: 8, maxLength: 8, startsWith: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] },
-        { name: "Equatorial Guinea", code: "GQ", dialCode: "+240", minLength: 9, maxLength: 9, startsWith: ["2", "5", "6", "7"] },
-        { name: "Congo", code: "CG", dialCode: "+242", minLength: 9, maxLength: 9, startsWith: ["0", "4", "5", "6"] },
-        { name: "DR Congo", code: "CD", dialCode: "+243", minLength: 9, maxLength: 9, startsWith: ["8", "9"] },
-        { name: "Central African Republic", code: "CF", dialCode: "+236", minLength: 8, maxLength: 8, startsWith: ["7"] },
-        { name: "Liberia", code: "LR", dialCode: "+231", minLength: 8, maxLength: 8, startsWith: ["4", "5", "6", "7"] },
-        { name: "Sierra Leone", code: "SL", dialCode: "+232", minLength: 8, maxLength: 8, startsWith: ["7", "8"] },
-        { name: "Guinea", code: "GN", dialCode: "+224", minLength: 9, maxLength: 9, startsWith: ["6", "7"] },
-        { name: "Guinea-Bissau", code: "GW", dialCode: "+245", minLength: 7, maxLength: 7, startsWith: ["5", "6", "7"] },
-        { name: "Gambia", code: "GM", dialCode: "+220", minLength: 7, maxLength: 7, startsWith: ["2", "3", "4", "5", "6", "7", "8", "9"] },
-        { name: "Cape Verde", code: "CV", dialCode: "+238", minLength: 7, maxLength: 7, startsWith: ["5", "9"] },
-        { name: "Sao Tome", code: "ST", dialCode: "+239", minLength: 7, maxLength: 7, startsWith: ["9"] },
-        { name: "Benin", code: "BJ", dialCode: "+229", minLength: 8, maxLength: 8, startsWith: ["4", "5", "6", "7", "8", "9"] },
-        { name: "Togo", code: "TG", dialCode: "+228", minLength: 8, maxLength: 8, startsWith: ["9"] },
-        { name: "Lesotho", code: "LS", dialCode: "+266", minLength: 8, maxLength: 8, startsWith: ["5", "6"] },
-        { name: "Eswatini", code: "SZ", dialCode: "+268", minLength: 8, maxLength: 8, startsWith: ["7"] },
-        { name: "Lesotho", code: "LS", dialCode: "+266", minLength: 8, maxLength: 8, startsWith: ["5", "6"] },
-    ];
-
-    // ===================== DOM ELEMENTS =====================
-    const countrySelect = document.getElementById('countrySelect');
-    const countryCodeEl = document.getElementById('countryCode');
-    const phoneInput = document.getElementById('phoneNumber');
-    const phoneHint = document.getElementById('phoneHint');
-    const vcfForm = document.getElementById('vcfForm');
-    const downloadVcfBtn = document.getElementById('downloadVcfBtn');
-    const successOverlay = document.getElementById('successOverlay');
-    const verifiedCountEl = document.getElementById('verifiedCount');
-    const verifiedLabel = document.getElementById('verifiedLabel');
-    const remainingLabel = document.getElementById('remainingLabel');
-    const progressRing = document.getElementById('progressRing');
-
-    let selectedCountry = null;
-    let verifiedCount = 0;
-    const MAX_VERIFIED = 100;
-
-    // ===================== THEME TOGGLE =====================
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    let isDark = true;
-    themeToggle.addEventListener('click', () => {
-        isDark = !isDark;
-        document.body.classList.toggle('light-mode', !isDark);
-        themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-    });
-
-    // ===================== LIVE TIME & DATE =====================
-    function updateTime() {
-        const now = new Date();
-        document.getElementById('liveTime').textContent = now.toLocaleTimeString();
-        document.getElementById('liveDate').textContent = now.toLocaleDateString();
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
-
-    // ===================== BATTERY STATUS =====================
-    async function updateBattery() {
-        if ('getBattery' in navigator) {
-            try {
-                const battery = await navigator.getBattery();
-                const update = () => {
-                    const pct = Math.round(battery.level * 100);
-                    document.getElementById('batteryPercent').textContent = pct + '%';
-                    document.getElementById('chargingStatus').textContent = battery.charging ? '(Charging)' : '';
-                    const icon = document.getElementById('batteryIcon');
-                    icon.className = 'fas ' + (pct <= 20 ? 'fa-battery-empty' : pct <= 50 ? 'fa-battery-half' : 'fa-battery-full');
-                };
-                update();
-                battery.addEventListener('levelchange', update);
-                battery.addEventListener('chargingchange', update);
-            } catch (e) {
-                document.getElementById('batteryPercent').textContent = '--%';
-            }
-        }
-    }
-    updateBattery();
-
-    // ===================== POPULATE COUNTRIES =====================
-    countries.sort((a, b) => a.name.localeCompare(b.name));
-    countries.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c.code;
-        opt.textContent = `${c.name} (${c.dialCode})`;
-        countrySelect.appendChild(opt);
-    });
-
-    // ===================== COUNTRY SELECTION =====================
-    countrySelect.addEventListener('change', () => {
-        selectedCountry = countries.find(c => c.code === countrySelect.value);
-        if (selectedCountry) {
-            countryCodeEl.textContent = selectedCountry.dialCode;
-            phoneInput.value = '';
-            phoneInput.placeholder = `${selectedCountry.dialCode} ...`;
-            let hint = `Must be ${selectedCountry.minLength} digits after ${selectedCountry.dialCode}`;
-            if (selectedCountry.startsWith) {
-                hint += `, must start with ${selectedCountry.startsWith.join(' or ')}`;
-            }
-            phoneHint.textContent = hint;
-            phoneHint.style.color = '#aaa';
-            phoneInput.focus();
-        }
-    });
-
-    // ===================== PHONE NUMBER VALIDATION =====================
-    // User must NOT start with any random number - must start with country prefix
-    phoneInput.addEventListener('input', (e) => {
-        if (!selectedCountry) return;
-        let val = e.target.value.replace(/\D/g, '');
-        // Prevent user from entering country code digits at the start
-        const ccDigits = selectedCountry.dialCode.replace('+', '');
-        if (val.startsWith(ccDigits)) {
-            val = val.substring(ccDigits.length);
-        }
-        e.target.value = val;
-    });
-
-    phoneInput.addEventListener('blur', () => {
-        validatePhone();
-    });
-
-    function validatePhone() {
-        if (!selectedCountry) {
-            phoneHint.textContent = 'Select a country first';
-            phoneHint.style.color = '#f44336';
-            return false;
-        }
-        const val = phoneInput.value.trim();
-        if (!val) {
-            phoneHint.textContent = 'Phone number is required';
-            phoneHint.style.color = '#f44336';
-            return false;
-        }
-        if (val.length < selectedCountry.minLength || val.length > selectedCountry.maxLength) {
-            phoneHint.textContent = `Must be exactly ${selectedCountry.minLength} digits for ${selectedCountry.name}`;
-            phoneHint.style.color = '#f44336';
-            return false;
-        }
-        if (selectedCountry.startsWith && !selectedCountry.startsWith.some(sw => val.startsWith(sw))) {
-            phoneHint.textContent = `Must start with ${selectedCountry.startsWith.join(' or ')} for ${selectedCountry.name}`;
-            phoneHint.style.color = '#f44336';
-            return false;
-        }
-        phoneHint.textContent = 'Valid phone number';
-        phoneHint.style.color = '#4caf50';
-        return true;
-    }
-
-    // ===================== INSTANT TTS - PRELOADED =====================
-    let ttsUtterance = null;
-    let speechSynth = window.speechSynthesis;
-    let voicesLoaded = false;
-
-    function preloadSpeech() {
-        if (!speechSynth) return;
-        // Force voices to load
-        const voices = speechSynth.getVoices();
-        if (voices.length === 0) {
-            speechSynth.onvoiceschanged = () => {
-                voicesLoaded = true;
-            };
-        } else {
-            voicesLoaded = true;
-        }
-        // Pre-create utterance
-        ttsUtterance = new SpeechSynthesisUtterance('You have been verified successfully');
-        ttsUtterance.rate = 1.0;
-        ttsUtterance.pitch = 1.0;
-        ttsUtterance.volume = 1.0;
-        const voices = speechSynth.getVoices();
-        const enVoice = voices.find(v => v.lang.startsWith('en'));
-        if (enVoice) ttsUtterance.voice = enVoice;
-    }
-
-    // Preload on page load and on first interaction
-    preloadSpeech();
-    document.addEventListener('click', () => {
-        if (!voicesLoaded) preloadSpeech();
-        // Unlock audio context on mobile
-        if (speechSynth && speechSynth.speak) {
-            const dummy = new SpeechSynthesisUtterance('');
-            dummy.volume = 0;
-            speechSynth.speak(dummy);
-        }
-    }, { once: true });
-
-    function playSuccessSpeech() {
-        if (!speechSynth) return;
-        // Cancel any ongoing speech
-        speechSynth.cancel();
-        const utter = new SpeechSynthesisUtterance('You have been verified successfully');
-        utter.rate = 1.0;
-        utter.pitch = 1.0;
-        utter.volume = 1.0;
-        const voices = speechSynth.getVoices();
-        const enVoice = voices.find(v => v.lang && v.lang.startsWith('en'));
-        if (enVoice) utter.voice = enVoice;
-        speechSynth.speak(utter);
-    }
-
-    // ===================== VCF DOWNLOAD (ONE AT A TIME) =====================
-    let vcfDownloaded = false;
-
-    downloadVcfBtn.addEventListener('click', () => {
-        if (vcfDownloaded) {
-            alert('You have already downloaded the VCF file. Only one download is allowed.');
-            return;
-        }
-        const vcfContent = `BEGIN:VCARD
-VERSION:3.0
-FN:Confronter Tech Wizard
-ORG:Confronter Tech Wizard
-TEL:+254712345678
-EMAIL:contact@confrontertech.com
-URL:https://confrontertech.com
-END:VCARD`;
-        const blob = new Blob([vcfContent], { type: 'text/vcard' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'Confronter_Tech_Wizard.vcf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        vcfDownloaded = true;
-        downloadVcfBtn.innerHTML = '<i class="fas fa-check"></i> VCF Downloaded';
-        downloadVcfBtn.style.opacity = '0.6';
-        downloadVcfBtn.style.cursor = 'not-allowed';
-    });
-
-    // ===================== FORM SUBMISSION =====================
-    vcfForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (!validatePhone()) {
-            phoneInput.focus();
-            return;
-        }
-        const email = document.getElementById('email').value;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            document.getElementById('emailHint').textContent = 'Enter a valid email address';
-            document.getElementById('emailHint').style.color = '#f44336';
-            return;
-        }
-
-        // INSTANT SPEECH - play immediately
-        playSuccessSpeech();
-
-        // Show success overlay
-        successOverlay.classList.remove('hidden');
-
-        // Update stats
-        verifiedCount++;
-        verifiedCountEl.textContent = verifiedCount;
-        verifiedLabel.textContent = verifiedCount;
-        remainingLabel.textContent = Math.max(0, MAX_VERIFIED - verifiedCount);
-        const progress = (verifiedCount / MAX_VERIFIED) * 251.2;
-        progressRing.style.strokeDashoffset = 251.2 - progress;
-
-        // Countdown redirect
-        let redirectCount = 2;
-        document.getElementById('redirectCount').textContent = redirectCount;
-        const redirectInterval = setInterval(() => {
-            redirectCount--;
-            document.getElementById('redirectCount').textContent = redirectCount;
-            if (redirectCount <= 0) {
-                clearInterval(redirectInterval);
-                window.location.href = 'https://chat.whatsapp.com/your-group-link';
-            }
-        }, 1000);
-    });
-
-    // ===================== SUCCESS BUTTONS =====================
-    document.getElementById('goBackBtn').addEventListener('click', () => {
-        successOverlay.classList.add('hidden');
-    });
-
-    document.getElementById('addAnotherBtn').addEventListener('click', () => {
-        successOverlay.classList.add('hidden');
-        vcfForm.reset();
-        countryCodeEl.textContent = '+';
-        phoneHint.textContent = 'Select a country first';
-        phoneHint.style.color = '#aaa';
-        selectedCountry = null;
-    });
-
-    // ===================== COUNTDOWN TIMER =====================
-    const targetDate = new Date();
-    targetDate.setHours(targetDate.getHours() + 24);
-
-    function updateCountdown() {
-        const now = new Date();
-        const diff = targetDate - now;
-        if (diff <= 0) {
-            document.getElementById('countdownTimer').textContent = 'VCF Released!';
-            downloadVcfBtn.classList.remove('hidden');
-            return;
-        }
-        const h = Math.floor(diff / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-        document.getElementById('countdownTimer').textContent =
-            `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
