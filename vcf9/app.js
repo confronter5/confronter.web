@@ -160,7 +160,7 @@ function addAnother() {
 
 function updateStats() {
     const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-    const total = 30;
+    const total = 800;
     const count = verified.length;
     const remaining = Math.max(0, total - count);
     
