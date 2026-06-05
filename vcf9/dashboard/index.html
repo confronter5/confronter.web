@@ -1,86 +1,116 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confronter Tech Wizard Vcf Active Viewers</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confronter Tech Wizard VCF - Active Viewers</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+    <span id="themeIcon">🌙</span>
+  </button>
 
-    <div class="status-bar">
-        <div class="status-left">
-            <span id="live-date"></span>
-            <span id="live-time"></span>
-        </div>
-        <div class="status-right">
-            <i id="battery-icon" class="fas fa-battery-full"></i>
-            <span id="battery-level">100%</span>
-        </div>
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="datetime">
+      <span id="clockDate">📅 --/--/----</span>
+      <span id="clockTime">⏲️ --:--</span>
+    </div>
+    <div class="battery">
+      <span id="chargingIcon" class="charging" style="display:none">⚡</span>
+      <div class="battery-icon">
+        <div class="battery-fill" id="batteryFill" style="width:80%"></div>
+      </div>
+      <span id="batteryPct">80%</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Confronter Tech Wizard</h1>
+      <p class="subtitle">VCF Active Viewers Verification</p>
     </div>
 
-    <div class="container">
-        <header>
-            <div class="header-main">
-                <h1>Confronter Tech Wizard Vcf Active Viewers</h1>
-                <button id="theme-toggle" class="icon-btn"><i class="fas fa-moon"></i></button>
-            </div>
-            <p class="subtitle">Complete verification to join elite active community platforms.</p>
-        </header>
-
-        <div class="counter-box">
-            <div class="progress-circle" id="progressCircle">
-                <div class="inner-circle">
-                    <span class="count-num" id="verifiedCount">0</span>
-                    <span class="count-label">Verified</span>
-                </div>
-            </div>
-            <div class="counter-stats">
-                <p><i class="fas fa-hourglass-half"></i> Remaining slots: <strong id="remainingCount">0</strong></p>
-                <p><i class="fas fa-calendar-alt"></i> Campaign Cycle: <strong id="daysCount">30</strong> Days left</p>
-            </div>
-        </div>
-
-        <div id="vcf-download-container" class="download-section hidden">
-            <p>Admin shared file is ready for download:</p>
-            <a href="#" id="vcf-download-btn" class="btn download-btn" download><i class="fas fa-file-download"></i> Download Admin VCF</a>
-        </div>
-
-        <form id="verificationForm" novalidate>
-            <div class="input-group">
-                <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
-                <input type="email" id="email" placeholder="name@domain.com" required>
-                <span class="error-msg" id="emailError">Please enter a valid email address.</span>
-            </div>
-
-            <div class="input-group">
-                <label for="country"><i class="fas fa-globe"></i> Select Country</label>
-                <select id="country" required>
-                    <option value="" disabled selected>Choose your country...</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
-                <div class="phone-input-container">
-                    <span id="country-prefix">+</span>
-                    <input type="tel" id="phone" placeholder="Enter number" disabled required>
-                </div>
-                <span class="error-msg" id="phoneError">Invalid country code format matches required.</span>
-            </div>
-
-            <button type="submit" class="btn submit-btn">Verify Account</button>
-        </form>
-
-        <div class="action-buttons">
-            <button id="btn-back" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Go Back</button>
-            <button id="btn-clear" class="btn btn-secondary"><i class="fas fa-user-plus"></i> Add Another Number</button>
-        </div>
+    <!-- Members Circle -->
+    <div class="members-circle">
+      <div class="circle-item verified">
+        <div class="circle" id="verifiedCount">0</div>
+        <div class="label">Verified</div>
+      </div>
+      <div class="circle-item remaining">
+        <div class="circle" id="remainingCount">30</div>
+        <div class="label">Remaining</div>
+      </div>
     </div>
 
-    <div id="toast" class="toast">Success Message</div>
+    <!-- Countdown -->
+    <div class="countdown-box">
+      <div class="cd-label">⏳ Time Remaining</div>
+      <div class="cd-timer" id="countdown">30d 00h 00m 00s</div>
+    </div>
 
-    <script src="app.js"></script>
+    <!-- VCF Download Section -->
+    <div class="vcf-section" id="vcfSection">
+      <div class="vcf-title">📇 Download VCF Contact</div>
+      <div class="vcf-desc">Get the verified contact file instantly</div>
+      <a href="#" class="vcf-btn" id="vcfDownloadBtn" download>
+        <span>⬇️</span> Download VCF
+      </a>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card" id="formCard">
+      <form id="verifyForm" novalidate>
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+          <div class="error-msg">Please enter your full name</div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com" required>
+          <div class="error-msg">Please enter a valid email address</div>
+        </div>
+
+        <!-- Country + Phone -->
+        <div class="form-group">
+          <label for="countrySelect">Country & Phone Number</label>
+          <div class="phone-row">
+            <select id="countrySelect" name="country" required>
+              <option value="" disabled selected>Country</option>
+            </select>
+            <input type="tel" id="phoneInput" name="phone" placeholder="Phone number" required>
+          </div>
+          <div class="error-msg" id="phoneError">Please select a country and enter a valid phone number</div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Verify & Join Group</button>
+      </form>
+    </div>
+
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+      <div class="check-icon">✓</div>
+      <h2>Verification Successful!</h2>
+      <p>You have been verified successfully.</p>
+      <p class="redirect-msg" id="redirectMsg">Redirecting to WhatsApp group in <span id="redirectSec">2</span>s...</p>
+      <div class="success-btns">
+        <button id="goBackBtn">🔙 Go Back</button>
+        <button id="addAnotherBtn">➕ Add Another Number</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Confronter Tech Wizard &copy; 2026</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
-</html>
+      </html>
