@@ -6,11 +6,10 @@
     <title>Confronter Tech Wizard VCF</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<base target="_blank">
 </head>
 <body>
     <div class="status-bar">
-        <span id="datetime">📅 --/--/---- ⏲️ --:--</span>
+        <span id="datetime">📅 --/--/---- ⏲️ --:--:--</span>
         <span id="battery">🔋 --%</span>
     </div>
 
@@ -34,7 +33,10 @@
         </div>
 
         <div class="countdown">
-            <span id="days-left">30</span> days remaining
+            <span id="days-left">30</span>d 
+            <span id="hours-left">00</span>h 
+            <span id="mins-left">00</span>m 
+            <span id="secs-left">00</span>s
         </div>
 
         <div id="vcf-download" class="vcf-section" style="display:none;">
@@ -42,6 +44,11 @@
         </div>
 
         <form id="verifyForm" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="name" required placeholder="Full Name">
+            </div>
+
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" id="email" required placeholder="your@email.com">
@@ -55,7 +62,7 @@
             </div>
 
             <div class="form-group">
-                <label>Phone (+<<span id="code-display">---</span>)</label>
+                <label>Phone (+<span id="code-display">---</span>)</label>
                 <input type="tel" id="phone" required placeholder="7XX XXX XXX" oninput="validatePhone()">
                 <small id="phone-hint">Select country first</small>
             </div>
