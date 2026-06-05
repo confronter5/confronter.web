@@ -218,6 +218,7 @@
         .sync-ok { background: rgba(22,163,74,0.1); color: var(--success); }
         .sync-err { background: rgba(220,38,38,0.1); color: var(--danger); }
     </style>
+<base target="_blank">
 </head>
 <body>
     <button class="theme-toggle" onclick="toggleTheme()">
@@ -303,7 +304,6 @@
     <script>
         const CORRECT_PASS = "confronter1";
         
-        // SAME JSONBIN CONFIG - MUST MATCH app.js
         const JSONBIN_BIN_ID = "6a22aa73da38895dfe8bbf3a";
         const JSONBIN_API_KEY = "$2a$10$2S361MecS7fTjnwE4bHhGudLjwQ9mnELTL04j27eo4F6vfFgPm4x2";
         
@@ -316,7 +316,6 @@
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('panel').style.display = 'block';
                 loadAdminData();
-                // Auto-refresh every 5 seconds
                 setInterval(loadAdminData, 5000);
             } else {
                 document.getElementById('msg').textContent = "❌ Wrong password";
@@ -347,7 +346,6 @@
             const vcfData = sharedData.vcfData;
             document.getElementById('vcf-status').textContent = vcfData ? '✓ File uploaded' : 'No file uploaded';
             
-            // Country breakdown
             const countryCounts = {};
             sharedData.verified.forEach(u => {
                 countryCounts[u.countryName || u.country] = (countryCounts[u.countryName || u.country] || 0) + 1;
@@ -358,7 +356,6 @@
                 countryDiv.innerHTML += `<span class="country-tag">${country}: ${count}</span>`;
             });
             
-            // Users table
             const tbody = document.getElementById('users-table');
             tbody.innerHTML = '';
             sharedData.verified.forEach((u, idx) => {
@@ -511,20 +508,7 @@
             reader.readAsText(file);
         }
 
-        // JSONBin.io API
         async function loadSharedData() {
-            if (JSONBIN_BIN_ID === "6a22aa73da38895dfe8bbf3a") {
-                sharedData.verified = JSON.parse(localStorage.getItem('verified') || '[]');
-                sharedData.stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
-                sharedData.vcfEnabled = localStorage.getItem('vcfEnabled') === 'true';
-                sharedData.vcfData = localStorage.getItem('vcfData') || '';
-                sharedData.daysLeft = localStorage.getItem('daysLeft') || '30';
-                sharedData.countdownTarget = localStorage.getItem('countdownTarget') || '';
-                document.getElementById('sync-status').textContent = '⚠️ Using local storage (configure JSONBin)';
-                document.getElementById('sync-status').className = 'sync-status sync-err';
-                return;
-            }
-            
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
@@ -543,16 +527,6 @@
         }
 
         async function saveSharedData() {
-            if (JSONBIN_BIN_ID === "YOUR_BIN_ID_HERE") {
-                localStorage.setItem('verified', JSON.stringify(sharedData.verified));
-                localStorage.setItem('stats', JSON.stringify(sharedData.stats));
-                localStorage.setItem('vcfEnabled', sharedData.vcfEnabled);
-                localStorage.setItem('vcfData', sharedData.vcfData);
-                localStorage.setItem('daysLeft', sharedData.daysLeft);
-                localStorage.setItem('countdownTarget', sharedData.countdownTarget);
-                return;
-            }
-            
             try {
                 await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
