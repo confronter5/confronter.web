@@ -1,186 +1,212 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Confronter Admin Panel</title>
-
-<link rel="stylesheet" href="styles.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Wizard Admin Space</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-auth-container { max-width: 360px; margin: 100px auto; padding: 24px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); }
+        .dashboard-layout { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; max-width: 900px; margin-top: 20px; }
+        .panel-card { border: 1px solid var(--border-color); background: var(--card-bg); border-radius: 8px; padding: 16px; }
+        .flex-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .3s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px;}
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--text-muted); }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; background: #222; color: #fff;}
+        .action-icon { cursor: pointer; color: var(--error-color); margin-left: 8px; }
+        .export-shelf { display: flex; gap: 10px; margin-bottom: 15px;}
+        .export-shelf .btn { width: auto; font-size: 11px; padding: 6px 12px;}
+    </style>
 </head>
+<body>
 
-<body class="admin-page">
+    <div id="authGate" class="admin-auth-container">
+        <h3><i class="fas fa-lock"></i> Verification Required</h3><br>
+        <div class="input-group">
+            <label>Enter Secret Dashboard Password</label>
+            <input type="password" id="adminPassword" placeholder="••••••••">
+        </div>
+        <button onclick="loginAdmin()" class="btn submit-btn">Unlock System</button>
+    </div>
 
-<!-- ==========================
-     LOGIN SCREEN
-========================== -->
+    <div id="adminPanel" class="container hidden" style="max-width: 950px;">
+        <header class="flex-row">
+            <div>
+                <h1>Confronter Master Admin Operations Control</h1>
+                <p class="subtitle">Live tracking metrics, user management and system switches</p>
+            </div>
+            <button id="theme-toggle" class="icon-btn" onclick="toggleThemeMode()"><i class="fas fa-moon"></i></button>
+        </header>
 
-<div id="loginBox" class="admin-login">
+        <div class="dashboard-layout">
+            <div class="panel-card">
+                <h3><i class="fas fa-sliders-h"></i> Operational Switches & System Parameters</h3><br>
+                <div class="flex-row">
+                    <span>Available to Download User Form File Visibility</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="vcfToggle" onchange="updateLiveSettings()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px;">
+                    <div class="input-group">
+                        <label>Campaign Lifecycle (Days)</label>
+                        <input type="number" id="daysInput" onchange="updateLiveSettings()">
+                    </div>
+                    <div class="input-group">
+                        <label>Verified Base Offset</label>
+                        <input type="number" id="baseVerified" onchange="updateLiveSettings()">
+                    </div>
+                    <div class="input-group">
+                        <label>Remaining Capacity</label>
+                        <input type="number" id="baseRemaining" onchange="updateLiveSettings()">
+                    </div>
+                </div>
 
-<h2>Admin Login</h2>
+                <div class="input-group" style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                    <label><i class="fas fa-upload"></i> Upload Admin Master VCF File to Client Homepage</label>
+                    <input type="file" id="vcfFileInput" accept=".vcf" style="background:transparent; border:none; padding:5px 0;">
+                    <button class="btn btn-secondary" onclick="uploadVcfDocument()" style="width:auto; margin-top:5px; font-size:11px;">Process Upload File</button>
+                </div>
+            </div>
 
-<p style="font-size:12px;opacity:0.7;">
-Confronter Tech Wizard Control Panel
-</p>
+            <div class="panel-card">
+                <div class="flex-row">
+                    <h3><i class="fas fa-users-cog"></i> Received Form Submissions Logs</h3>
+                    <span id="liveRecordsCount" class="badge">0 Records</span>
+                </div>
+                
+                <div class="export-shelf">
+                    <button class="btn btn-secondary" onclick="location.href='/api/export/vcf'"><i class="fas fa-file-download"></i> Extract VCF</button>
+                    <button class="btn btn-secondary" onclick="location.href='/api/export/csv'"><i class="fas fa-file-csv"></i> Extract CSV</button>
+                    <button class="btn btn-secondary" onclick="location.href='/api/export/txt'"><i class="fas fa-file-alt"></i> Extract TXT Document</button>
+                </div>
 
-<input
-type="password"
-id="adminPassword"
-placeholder="Enter Admin Password">
+                <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Email</th>
+                                <th>Country</th>
+                                <th>Phone Format Verified</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionsTableBody">
+                            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No entries recorded yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<button id="loginBtn">
-Login
-</button>
+    <script>
+        let settings = {};
 
-<p id="loginMessage" style="font-size:12px;color:red;"></p>
+        function loginAdmin() {
+            const pass = document.getElementById('adminPassword').value;
+            if(pass === "confronter1") {
+                document.getElementById('authGate').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadDashboardData();
+                setInterval(loadDashboardData, 5000); // Polling sync every 5 seconds
+            } else {
+                alert("Unauthorized password credential code string match failed.");
+            }
+        }
 
-</div>
+        async function loadDashboardData() {
+            const settingsRes = await fetch('/api/settings');
+            settings = await settingsRes.json();
 
-<!-- ==========================
-     ADMIN PANEL
-========================== -->
+            document.getElementById('vcfToggle').checked = settings.vcfDownloadAvailable;
+            document.getElementById('daysInput').value = settings.daysRemaining;
+            document.getElementById('baseVerified').value = settings.verifiedCount;
+            document.getElementById('baseRemaining').value = settings.remainingCount;
 
-<div id="adminPanel" style="display:none;">
+            const tableRes = await fetch('/api/submissions');
+            const data = await tableRes.json();
+            
+            document.getElementById('liveRecordsCount').textContent = `${data.length} Submissions`;
+            const tbody = document.getElementById('submissionsTableBody');
+            
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No entries recorded yet.</td></tr>`;
+                return;
+            }
 
-<h2 style="text-align:center;">
-VCF Active Viewers Admin Panel
-</h2>
+            tbody.innerHTML = "";
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.timestamp}</td>
+                    <td>${item.email}</td>
+                    <td>${item.countryName}</td>
+                    <td><strong>${item.phone}</strong></td>
+                    <td><i class="fas fa-trash-alt action-icon" onclick="deleteEntry(${item.id})"></i></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-<!-- ==========================
-     ACTION CARDS
-========================== -->
+        async function updateLiveSettings() {
+            const payload = {
+                vcfDownloadAvailable: document.getElementById('vcfToggle').checked,
+                daysRemaining: parseInt(document.getElementById('daysInput').value) || 30,
+                verifiedCount: parseInt(document.getElementById('baseVerified').value) || 0,
+                remainingCount: parseInt(document.getElementById('baseRemaining').value) || 0
+            };
 
-<div class="admin-grid">
+            await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
 
-<!-- VCF UPLOAD -->
-<div class="card">
+        async function uploadVcfDocument() {
+            const fileInput = document.getElementById('vcfFileInput');
+            if(!fileInput.files[0]) return alert("Please select a valid .vcf item first");
 
-<h3>Upload VCF File</h3>
+            const formData = new FormData();
+            formData.append('vcfFile', fileInput.files[0]);
 
-<input
-type="file"
-id="vcfFile"
-accept=".vcf">
+            const res = await fetch('/api/upload-vcf', { method: 'POST', body: formData });
+            if(res.ok) {
+                alert("Master global public download VCF updated successfully!");
+                loadDashboardData();
+            }
+        }
 
-<button id="uploadBtn">
-Upload VCF
-</button>
+        async function deleteEntry(id) {
+            if(confirm("Confirm entry destruction permanently?")) {
+                await fetch('/api/submissions/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                loadDashboardData();
+            }
+        }
 
-<p id="uploadStatus" style="font-size:12px;"></p>
-
-</div>
-
-<!-- VCF STATUS -->
-<div class="card">
-
-<h3>VCF Availability</h3>
-
-<select id="vcfStatus">
-
-<option value="1">Enabled</option>
-<option value="0">Disabled</option>
-
-</select>
-
-<button id="saveVcfStatus">
-Save
-</button>
-
-</div>
-
-<!-- COUNTDOWN -->
-<div class="card">
-
-<h3>Countdown Days</h3>
-
-<input
-type="number"
-id="countdownDays"
-min="1"
-value="30">
-
-<button id="saveDays">
-Update
-</button>
-
-</div>
-
-<!-- EXPORT -->
-<div class="card">
-
-<h3>Export Users</h3>
-
-<a
-href="/api/export-csv"
-class="btn-link"
-target="_blank">
-
-Download CSV
-
-</a>
-
-</div>
-
-<!-- REFRESH -->
-<div class="card">
-
-<h3>Users</h3>
-
-<button id="refreshUsers">
-Refresh List
-</button>
-
-</div>
-
-<!-- LOGOUT -->
-<div class="card">
-
-<h3>Session</h3>
-
-<button id="logoutBtn">
-Logout
-</button>
-
-</div>
-
-</div>
-
-<!-- ==========================
-     USERS TABLE
-========================== -->
-
-<h3 style="margin-top:20px;">
-Verified Users List
-</h3>
-
-<div class="table-wrap">
-
-<table id="usersTable">
-
-<thead>
-
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Email</th>
-<th>Phone</th>
-<th>Country</th>
-<th>Date</th>
-</tr>
-
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-<script src="admin.js"></script>
-
+        function toggleThemeMode() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', target);
+            document.querySelector('#theme-toggle i').className = target === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+    </script>
 </body>
 </html>
