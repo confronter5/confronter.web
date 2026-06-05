@@ -1,106 +1,269 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const multer = require('multer');
-const path = require('path');
+const http = require('http');
 const fs = require('fs');
+const path = require('path');
+const url = require('url');
 
-const app = express();
-const PORT = 3000;
+// ====== Data Storage (file persistence) ======
+const DATA_FILE = path.join(__dirname, 'data.json');
 
-app.use(bodyParser.json());
-app.use(express.static(__dirname));
+function loadData() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    }
+  } catch (e) { console.error('Load error:', e); }
+  return {
+    members: [],
+    target: 30,
+    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    vcfEnabled: false,
+    vcfName: null,
+    vcfData: null
+  };
+}
 
-// Storage structures
-let submissions = [];
-let adminSettings = {
-    vcfDownloadAvailable: true,
-    uploadedVcfPath: null,
-    uploadedVcfName: '',
-    daysRemaining: 30,
-    verifiedCount: 1420, 
-    remainingCount: 80
+function saveData(data) {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  } catch (e) { console.error('Save error:', e); }
+}
+
+let data = loadData();
+
+// ====== MIME Types ======
+const mimeTypes = {
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.js': 'application/javascript',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.vcf': 'text/vcard',
+  '.csv': 'text/csv',
+  '.txt': 'text/plain',
+  '.pdf': 'application/pdf',
+  '.doc': 'application/msword',
+  '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  '.xls': 'application/vnd.ms-excel',
+  '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 };
 
-// Setup file upload configurations
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, './'),
-    filename: (req, file, cb) => cb(null, 'global_contacts.vcf')
-});
-const upload = multer({ storage });
+// ====== CORS Headers ======
+function setCors(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
-// API Endpoints
-app.get('/api/settings', (req, res) => res.json(adminSettings));
+// ====== Parse Body ======
+function parseBody(req, callback) {
+  let body = '';
+  req.on('data', chunk => body += chunk);
+  req.on('end', () => {
+    try {
+      callback(JSON.parse(body));
+    } catch {
+      callback({});
+    }
+  });
+}
 
-app.post('/api/settings', (req, res) => {
-    adminSettings = { ...adminSettings, ...req.body };
-    res.json({ success: true, settings: adminSettings });
-});
+// ====== Request Handler (works for both local & Vercel) ======
+function handleRequest(req, res) {
+  setCors(res);
 
-app.post('/api/upload-vcf', upload.single('vcfFile'), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    adminSettings.uploadedVcfPath = '/global_contacts.vcf';
-    adminSettings.uploadedVcfName = req.file.originalname;
-    res.json({ success: true, path: adminSettings.uploadedVcfPath });
-});
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
 
-app.get('/api/submissions', (req, res) => res.json(submissions));
+  const parsedUrl = url.parse(req.url, true);
+  const pathname = parsedUrl.pathname;
 
-app.post('/api/submit', (req, res) => {
-    const { email, phone, countryCode, countryName } = req.body;
-    if (!email || !phone) return res.status(400).json({ error: 'Missing fields' });
+  // ====== API Routes ======
 
-    const newRecord = {
-        id: Date.now(),
-        email,
-        phone,
-        countryCode,
-        countryName,
-        timestamp: new Date().toLocaleString()
-    };
-    submissions.push(newRecord);
-    
-    // Adjust real-time counters
-    adminSettings.verifiedCount += 1;
-    if (adminSettings.remainingCount > 0) adminSettings.remainingCount -= 1;
+  // GET /api/members - Get all members
+  if (pathname === '/api/members' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data.members));
+    return;
+  }
 
-    res.json({ success: true });
-});
-
-app.post('/api/submissions/delete', (req, res) => {
-    const { id } = req.body;
-    submissions = submissions.filter(item => item.id !== id);
-    res.json({ success: true });
-});
-
-// Export Data Routes
-app.get('/api/export/csv', (req, res) => {
-    let csvContent = "ID,Timestamp,Email,Country,Phone\n";
-    submissions.forEach(s => {
-        csvContent += `${s.id},"${s.timestamp}","${s.email}","${s.countryName}",${s.phone}\n`;
+  // POST /api/members - Add new member
+  if (pathname === '/api/members' && req.method === 'POST') {
+    parseBody(req, (body) => {
+      const member = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        name: body.name || '',
+        email: body.email || '',
+        phone: body.phone || '',
+        country: body.country || '',
+        status: 'verified',
+        date: new Date().toISOString(),
+        notes: ''
+      };
+      data.members.push(member);
+      saveData(data);
+      res.writeHead(201, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(member));
     });
-    res.setHeader('Content-Type', 'text/csv');
-    res.attachment('submissions.csv');
-    res.send(csvContent);
-});
+    return;
+  }
 
-app.get('/api/export/vcf', (req, res) => {
-    let vcfContent = "";
-    submissions.forEach((s, idx) => {
-        vcfContent += `BEGIN:VCARD\nVERSION:3.0\nFN:Wizard Client ${idx+1}\nTEL;TYPE=CELL:${s.phone}\nEMAIL:${s.email}\nEND:VCARD\n`;
+  // PUT /api/members/:id - Update member status
+  if (pathname.startsWith('/api/members/') && req.method === 'PUT') {
+    const id = pathname.split('/')[3];
+    parseBody(req, (body) => {
+      const member = data.members.find(m => m.id === id);
+      if (member) {
+        if (body.status) member.status = body.status;
+        if (body.notes !== undefined) member.notes = body.notes;
+        saveData(data);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(member));
+      } else {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Member not found' }));
+      }
     });
-    res.setHeader('Content-Type', 'text/vcard');
-    res.attachment('generated_users.vcf');
-    res.send(vcfContent);
-});
+    return;
+  }
 
-app.get('/api/export/txt', (req, res) => {
-    let txtContent = "CONFRONTER TECH WIZARD SUBMISSIONS\n==================================\n";
-    submissions.forEach(s => {
-        txtContent += `[${s.timestamp}] Email: ${s.email} | Phone: ${s.phone} (${s.countryName})\n`;
+  // PUT /api/members/bulk - Bulk update status
+  if (pathname === '/api/members/bulk' && req.method === 'PUT') {
+    parseBody(req, (body) => {
+      const ids = body.ids || [];
+      ids.forEach(id => {
+        const m = data.members.find(x => x.id === id);
+        if (m && body.status) m.status = body.status;
+      });
+      saveData(data);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ updated: ids.length }));
     });
-    res.setHeader('Content-Type', 'text/plain');
-    res.attachment('submissions.txt');
-    res.send(txtContent);
-});
+    return;
+  }
 
-app.listen(PORT, () => console.log(`Server running smoothly on http://localhost:${PORT}`));
+  // GET /api/stats - Get stats
+  if (pathname === '/api/stats' && req.method === 'GET') {
+    const verified = data.members.filter(m => m.status === 'verified').length;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      total: data.members.length,
+      verified: verified,
+      target: data.target,
+      remaining: Math.max(0, data.target - verified),
+      endDate: data.endDate
+    }));
+    return;
+  }
+
+  // PUT /api/stats - Update target and endDate
+  if (pathname === '/api/stats' && req.method === 'PUT') {
+    parseBody(req, (body) => {
+      if (body.target !== undefined) data.target = parseInt(body.target) || 30;
+      if (body.endDate) data.endDate = body.endDate;
+      saveData(data);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true }));
+    });
+    return;
+  }
+
+  // DELETE /api/members - Reset all (admin only)
+  if (pathname === '/api/members' && req.method === 'DELETE') {
+    parseBody(req, (body) => {
+      if (body.password === 'confronter1') {
+        data.members = [];
+        saveData(data);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+      } else {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized' }));
+      }
+    });
+    return;
+  }
+
+  // GET /api/vcf - Get VCF file info
+  if (pathname === '/api/vcf' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      enabled: data.vcfEnabled,
+      name: data.vcfName,
+      data: data.vcfData
+    }));
+    return;
+  }
+
+  // PUT /api/vcf - Update VCF settings
+  if (pathname === '/api/vcf' && req.method === 'PUT') {
+    parseBody(req, (body) => {
+      if (body.enabled !== undefined) data.vcfEnabled = body.enabled;
+      if (body.name !== undefined) data.vcfName = body.name;
+      if (body.data !== undefined) data.vcfData = body.data;
+      saveData(data);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true }));
+    });
+    return;
+  }
+
+  // DELETE /api/vcf - Remove VCF
+  if (pathname === '/api/vcf' && req.method === 'DELETE') {
+    parseBody(req, (body) => {
+      if (body.password === 'confronter1') {
+        data.vcfEnabled = false;
+        data.vcfName = null;
+        data.vcfData = null;
+        saveData(data);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+      } else {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Unauthorized' }));
+      }
+    });
+    return;
+  }
+
+  // ====== Static File Serving ======
+  let filePath = pathname === '/' ? '/index.html' : pathname;
+  filePath = path.join(__dirname, filePath);
+
+  const ext = path.extname(filePath).toLowerCase();
+  const contentType = mimeTypes[ext] || 'application/octet-stream';
+
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('File not found');
+      } else {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Server error');
+      }
+    } else {
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(content);
+    }
+  });
+}
+
+// ====== Local Server (for development) ======
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 3000;
+  const server = http.createServer(handleRequest);
+  server.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
+
+// ====== Export for Vercel (serverless) ======
+module.exports = handleRequest;
