@@ -13,6 +13,7 @@
             --border: #e0e0e0;
             --accent: #2563eb;
             --danger: #dc2626;
+            --success: #16a34a;
         }
         [data-theme="dark"] {
             --bg: #000000;
@@ -37,7 +38,7 @@
             border-radius: 16px;
             border: 1px solid var(--border);
             width: 100%;
-            max-width: 420px;
+            max-width: 900px;
             margin: 20px;
         }
         h1 { font-size: 16px; margin-bottom: 20px; text-align: center; }
@@ -76,8 +77,16 @@
             font-size: 16px;
         }
         .panel { display: none; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             padding: 16px;
             background: var(--bg);
             border-radius: 12px;
@@ -134,11 +143,48 @@
             border-bottom: 1px solid var(--border);
         }
         th { font-weight: 600; font-size: 10px; text-transform: uppercase; }
-        .file-input {
-            margin-bottom: 10px;
-        }
-        .success { color: var(--accent); }
+        .file-input { margin-bottom: 10px; }
+        .success { color: var(--success); }
         .error { color: var(--danger); }
+        .country-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--accent);
+            color: white;
+            border-radius: 4px;
+            font-size: 10px;
+            margin: 2px;
+        }
+        .dl-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .dl-btns button {
+            flex: 1;
+            font-size: 11px;
+            padding: 8px;
+        }
+        .edit-btn {
+            background: var(--success);
+            padding: 4px 8px;
+            font-size: 10px;
+            width: auto;
+            border-radius: 4px;
+        }
+        .del-btn {
+            background: var(--danger);
+            padding: 4px 8px;
+            font-size: 10px;
+            width: auto;
+            border-radius: 4px;
+        }
+        input.edit-input {
+            width: 100%;
+            padding: 4px;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body>
@@ -156,47 +202,54 @@
     <div class="panel" id="panel">
         <h1>⚡ Confronter Admin</h1>
 
-        <div class="section">
-            <h3>Stats</h3>
-            <div class="stat-row">
-                <span>Verified</span>
-                <span id="admin-verified">0</span>
-            </div>
-            <div class="stat-row">
-                <span>Remaining</span>
-                <span id="admin-remaining">30</span>
-            </div>
-            <div class="stat-row">
-                <span>Total Capacity</span>
-                <span>30</span>
-            </div>
-        </div>
+        <div class="grid">
+            <div>
+                <div class="section">
+                    <h3>Stats</h3>
+                    <div class="stat-row"><span>Verified</span><span id="admin-verified">0</span></div>
+                    <div class="stat-row"><span>Remaining</span><span id="admin-remaining">30</span></div>
+                    <div class="stat-row"><span>Total Capacity</span><span>30</span></div>
+                </div>
 
-        <div class="section">
-            <h3>Countdown Days</h3>
-            <input type="number" id="days-input" value="30" min="1" max="365">
-            <button onclick="saveDays()" style="margin-top:8px;">Update Days</button>
-        </div>
+                <div class="section">
+                    <h3>Countdown</h3>
+                    <input type="number" id="days-input" value="30" min="1" max="365">
+                    <button onclick="saveDays()" style="margin-top:8px;">Update Timer</button>
+                </div>
 
-        <div class="section">
-            <h3>VCF File</h3>
-            <div class="toggle-btn">
-                <span>Available for Download</span>
-                <div class="switch" id="vcf-switch" onclick="toggleVCF()"></div>
+                <div class="section">
+                    <h3>VCF File</h3>
+                    <div class="toggle-btn">
+                        <span>Available for Download</span>
+                        <div class="switch" id="vcf-switch" onclick="toggleVCF()"></div>
+                    </div>
+                    <input type="file" id="vcf-file" accept=".vcf" class="file-input" onchange="uploadVCF()">
+                    <small id="vcf-status">No file uploaded</small>
+                </div>
+
+                <div class="section">
+                    <h3>Countries Breakdown</h3>
+                    <div id="country-stats"></div>
+                </div>
             </div>
-            <input type="file" id="vcf-file" accept=".vcf" class="file-input" onchange="uploadVCF()">
-            <small id="vcf-status">No file uploaded</small>
-        </div>
 
-        <div class="section">
-            <h3>Verified Users</h3>
-            <div style="max-height:200px;overflow-y:auto;">
-                <table>
-                    <thead>
-                        <tr><th>Email</th><th>Phone</th><th>Date</th></tr>
-                    </thead>
-                    <tbody id="users-table"></tbody>
-                </table>
+            <div>
+                <div class="section">
+                    <h3>Verified Users</h3>
+                    <div class="dl-btns">
+                        <button onclick="downloadCSV()" style="background:#059669;">📄 CSV</button>
+                        <button onclick="downloadVCF()" style="background:#7c3aed;">📇 VCF List</button>
+                        <button onclick="downloadDoc()" style="background:#d97706;">📝 Document</button>
+                    </div>
+                    <div style="max-height:400px;overflow-y:auto;margin-top:12px;">
+                        <table>
+                            <thead>
+                                <tr><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Date</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="users-table"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -241,20 +294,60 @@
             const vcfData = localStorage.getItem('vcfData');
             document.getElementById('vcf-status').textContent = vcfData ? '✓ File uploaded' : 'No file uploaded';
             
+            // Country breakdown
+            const countryCounts = {};
+            verified.forEach(u => {
+                countryCounts[u.countryName || u.country] = (countryCounts[u.countryName || u.country] || 0) + 1;
+            });
+            const countryDiv = document.getElementById('country-stats');
+            countryDiv.innerHTML = '';
+            Object.entries(countryCounts).forEach(([country, count]) => {
+                countryDiv.innerHTML += `<span class="country-tag">${country}: ${count}</span>`;
+            });
+            
+            // Users table with edit/delete
             const tbody = document.getElementById('users-table');
             tbody.innerHTML = '';
-            verified.slice().reverse().forEach(u => {
+            verified.forEach((u, idx) => {
                 const row = document.createElement('tr');
                 const date = new Date(u.date).toLocaleDateString();
-                row.innerHTML = `<td>${u.email}</td><td>${u.phone}</td><td>${date}</td>`;
+                row.innerHTML = `
+                    <td><input class="edit-input" value="${u.name || ''}" onchange="editUser(${idx}, 'name', this.value)"></td>
+                    <td><input class="edit-input" value="${u.email}" onchange="editUser(${idx}, 'email', this.value)"></td>
+                    <td><input class="edit-input" value="${u.phone}" onchange="editUser(${idx}, 'phone', this.value)"></td>
+                    <td>${u.countryName || u.country}</td>
+                    <td>${date}</td>
+                    <td><button class="del-btn" onclick="deleteUser(${idx})">🗑️</button></td>
+                `;
                 tbody.appendChild(row);
             });
         }
 
+        function editUser(idx, field, value) {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            if (field === 'email') value = value.toLowerCase();
+            verified[idx][field] = value;
+            localStorage.setItem('verified', JSON.stringify(verified));
+            updateStats();
+            loadAdminData();
+        }
+
+        function deleteUser(idx) {
+            if (!confirm('Delete this user?')) return;
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            verified.splice(idx, 1);
+            localStorage.setItem('verified', JSON.stringify(verified));
+            updateStats();
+            loadAdminData();
+        }
+
         function saveDays() {
-            const days = document.getElementById('days-input').value;
+            const days = parseInt(document.getElementById('days-input').value);
             localStorage.setItem('daysLeft', days);
-            alert('Days updated to ' + days);
+            const now = new Date();
+            const target = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+            localStorage.setItem('countdownTarget', target.toISOString());
+            alert('Timer updated to ' + days + ' days');
         }
 
         function toggleVCF() {
@@ -274,6 +367,56 @@
                 document.getElementById('vcf-status').className = 'success';
             };
             reader.readAsText(file);
+        }
+
+        function downloadCSV() {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            let csv = 'Name,Email,Phone,Country,Date\n';
+            verified.forEach(u => {
+                csv += `"${u.name || ''}","${u.email}","${u.phone}","${u.countryName || u.country}","${u.date}"\n`;
+            });
+            downloadFile(csv, 'verified_users.csv', 'text/csv');
+        }
+
+        function downloadVCF() {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            let vcf = '';
+            verified.forEach(u => {
+                vcf += `BEGIN:VCARD\nVERSION:3.0\nFN:${u.name || u.email}\nTEL:${u.phone}\nEMAIL:${u.email}\nEND:VCARD\n`;
+            });
+            downloadFile(vcf, 'verified_users.vcf', 'text/vcard');
+        }
+
+        function downloadDoc() {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            let doc = 'CONFRONTER TECH WIZARD - VERIFIED USERS\n';
+            doc += '=====================================\n\n';
+            verified.forEach((u, i) => {
+                doc += `${i+1}. Name: ${u.name || 'N/A'}\n`;
+                doc += `   Email: ${u.email}\n`;
+                doc += `   Phone: ${u.phone}\n`;
+                doc += `   Country: ${u.countryName || u.country}\n`;
+                doc += `   Date: ${new Date(u.date).toLocaleString()}\n\n`;
+            });
+            downloadFile(doc, 'verified_users.txt', 'text/plain');
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], {type});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function updateStats() {
+            const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+            const total = 30;
+            const count = verified.length;
+            const remaining = Math.max(0, total - count);
+            localStorage.setItem('stats', JSON.stringify({count, remaining, total}));
         }
 
         function toggleTheme() {
