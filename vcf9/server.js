@@ -1,558 +1,106 @@
-const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
-const multer = require("multer");
-const session = require("express-session");
-const cors = require("cors");
-const path = require("path");
-const fs = require("fs");
+const express = require('express');
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
 
-/* --------------------------
-   CREATE REQUIRED FOLDERS
---------------------------- */
+app.use(bodyParser.json());
+app.use(express.static(__dirname));
 
-if (!fs.existsSync("./uploads")) {
-    fs.mkdirSync("./uploads");
-}
+// Storage structures
+let submissions = [];
+let adminSettings = {
+    vcfDownloadAvailable: true,
+    uploadedVcfPath: null,
+    uploadedVcfName: '',
+    daysRemaining: 30,
+    verifiedCount: 1420, 
+    remainingCount: 80
+};
 
-/* --------------------------
-   DATABASE
---------------------------- */
+// Setup file upload configurations
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, './'),
+    filename: (req, file, cb) => cb(null, 'global_contacts.vcf')
+});
+const upload = multer({ storage });
 
-const db = new sqlite3.Database("confronter.db");
+// API Endpoints
+app.get('/api/settings', (req, res) => res.json(adminSettings));
 
-db.serialize(() => {
-
-    db.run(`
-    CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fullname TEXT,
-        email TEXT,
-        phone TEXT UNIQUE,
-        country TEXT,
-        verifiedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-    `);
-
-    db.run(`
-    CREATE TABLE IF NOT EXISTS settings(
-        id INTEGER PRIMARY KEY,
-        verifiedCount INTEGER DEFAULT 0,
-        remainingCount INTEGER DEFAULT 10000,
-        countdownDays INTEGER DEFAULT 30,
-        vcfEnabled INTEGER DEFAULT 1,
-        uploadedFile TEXT DEFAULT ''
-    )
-    `);
-
-    db.run(`
-    INSERT OR IGNORE INTO settings
-    (
-        id,
-        verifiedCount,
-        remainingCount,
-        countdownDays,
-        vcfEnabled
-    )
-    VALUES
-    (
-        1,
-        0,
-        10000,
-        30,
-        1
-    )
-    `);
-
+app.post('/api/settings', (req, res) => {
+    adminSettings = { ...adminSettings, ...req.body };
+    res.json({ success: true, settings: adminSettings });
 });
 
-/* --------------------------
-   MIDDLEWARE
---------------------------- */
-
-app.use(cors());
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(
-    session({
-        secret: "confronter-secret-key",
-        resave: false,
-        saveUninitialized: true
-    })
-);
-
-/* --------------------------
-   STATIC FILES
---------------------------- */
-
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+app.post('/api/upload-vcf', upload.single('vcfFile'), (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    adminSettings.uploadedVcfPath = '/global_contacts.vcf';
+    adminSettings.uploadedVcfName = req.file.originalname;
+    res.json({ success: true, path: adminSettings.uploadedVcfPath });
 });
 
-app.get("/admin", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin.html"));
-});
+app.get('/api/submissions', (req, res) => res.json(submissions));
 
-app.get("/styles.css", (req, res) => {
-    res.sendFile(path.join(__dirname, "styles.css"));
-});
+app.post('/api/submit', (req, res) => {
+    const { email, phone, countryCode, countryName } = req.body;
+    if (!email || !phone) return res.status(400).json({ error: 'Missing fields' });
 
-app.get("/app.js", (req, res) => {
-    res.sendFile(path.join(__dirname, "app.js"));
-});
-
-/* --------------------------
-   ADMIN PASSWORD
---------------------------- */
-
-const ADMIN_PASSWORD = "confronter1";
-
-/* --------------------------
-   LOGIN
---------------------------- */
-
-app.post("/api/admin/login", (req, res) => {
-
-    const { password } = req.body;
-
-    if (password === ADMIN_PASSWORD) {
-
-        req.session.admin = true;
-
-        return res.json({
-            success: true
-        });
-    }
-
-    res.json({
-        success: false,
-        message: "Wrong Password"
-    });
-
-});
-
-/* --------------------------
-   VERIFY USER
---------------------------- */
-
-app.post("/api/verify", (req, res) => {
-
-    const {
-        fullname,
+    const newRecord = {
+        id: Date.now(),
         email,
         phone,
-        country
-    } = req.body;
+        countryCode,
+        countryName,
+        timestamp: new Date().toLocaleString()
+    };
+    submissions.push(newRecord);
+    
+    // Adjust real-time counters
+    adminSettings.verifiedCount += 1;
+    if (adminSettings.remainingCount > 0) adminSettings.remainingCount -= 1;
 
-    if (
-        !fullname ||
-        !email ||
-        !phone ||
-        !country
-    ) {
-
-        return res.json({
-            success: false,
-            message: "Fill all fields"
-        });
-
-    }
-
-    db.get(
-        "SELECT * FROM users WHERE phone=?",
-        [phone],
-        (err, existingUser) => {
-
-            if (existingUser) {
-
-                return res.json({
-                    success: false,
-                    message: "Number already verified"
-                });
-
-            }
-
-            db.run(
-                `
-                INSERT INTO users
-                (
-                    fullname,
-                    email,
-                    phone,
-                    country
-                )
-                VALUES
-                (?,?,?,?)
-                `,
-                [
-                    fullname,
-                    email,
-                    phone,
-                    country
-                ],
-                function (err) {
-
-                    if (err) {
-
-                        return res.json({
-                            success: false,
-                            message: "Database error"
-                        });
-
-                    }
-
-                    db.run(`
-                    UPDATE settings
-                    SET
-                    verifiedCount = verifiedCount + 1,
-                    remainingCount = remainingCount - 1
-                    `);
-
-                    res.json({
-                        success: true
-                    });
-
-                }
-            );
-
-        }
-    );
-
+    res.json({ success: true });
 });
 
-/* --------------------------
-   STATS
---------------------------- */
-
-app.get("/api/stats", (req, res) => {
-
-    db.get(
-        "SELECT * FROM settings WHERE id=1",
-        (err, row) => {
-
-            res.json(row);
-
-        }
-    );
-
+app.post('/api/submissions/delete', (req, res) => {
+    const { id } = req.body;
+    submissions = submissions.filter(item => item.id !== id);
+    res.json({ success: true });
 });
 
-/* --------------------------
-   ADMIN USERS
---------------------------- */
-
-app.get("/api/users", (req, res) => {
-
-    if (!req.session.admin) {
-
-        return res.status(403).json({
-            success: false
-        });
-
-    }
-
-    db.all(
-        "SELECT * FROM users ORDER BY id DESC",
-        (err, rows) => {
-
-            res.json(rows);
-
-        }
-    );
-
-});
-
-/* --------------------------
-   DELETE USER
---------------------------- */
-
-app.delete("/api/user/:id", (req, res) => {
-
-    if (!req.session.admin) {
-
-        return res.status(403).json({
-            success: false
-        });
-
-    }
-
-    db.run(
-        "DELETE FROM users WHERE id=?",
-        [req.params.id],
-        function () {
-
-            res.json({
-                success: true
-            });
-
-        }
-    );
-
-});
-
-/* --------------------------
-   UPDATE COUNTDOWN
---------------------------- */
-
-app.post("/api/countdown", (req, res) => {
-
-    if (!req.session.admin) {
-
-        return res.status(403).json({
-            success: false
-        });
-
-    }
-
-    const { days } = req.body;
-
-    db.run(
-        `
-        UPDATE settings
-        SET countdownDays=?
-        `,
-        [days],
-        () => {
-
-            res.json({
-                success: true
-            });
-
-        }
-    );
-
-});
-
-/* --------------------------
-   VCF STATUS
---------------------------- */
-
-app.post("/api/vcf-status", (req, res) => {
-
-    if (!req.session.admin) {
-
-        return res.status(403).json({
-            success: false
-        });
-
-    }
-
-    const { enabled } = req.body;
-
-    db.run(
-        `
-        UPDATE settings
-        SET vcfEnabled=?
-        `,
-        [enabled],
-        () => {
-
-            res.json({
-                success: true
-            });
-
-        }
-    );
-
-});
-
-/* --------------------------
-   FILE UPLOAD
---------------------------- */
-
-const storage = multer.diskStorage({
-
-    destination: function (req, file, cb) {
-
-        cb(null, "./uploads");
-
-    },
-
-    filename: function (req, file, cb) {
-
-        cb(
-            null,
-            Date.now() +
-            "-" +
-            file.originalname
-        );
-
-    }
-
-});
-
-const upload = multer({
-    storage
-});
-
-app.post(
-    "/api/upload-vcf",
-    upload.single("vcf"),
-    (req, res) => {
-
-        if (!req.session.admin) {
-
-            return res.status(403).json({
-                success: false
-            });
-
-        }
-
-        const filename = req.file.filename;
-
-        db.run(
-            `
-            UPDATE settings
-            SET uploadedFile=?
-            `,
-            [filename]
-        );
-
-        res.json({
-            success: true,
-            filename
-        });
-
-    }
-);
-
-/* --------------------------
-   DOWNLOAD VCF
---------------------------- */
-
-app.get("/api/download-vcf", (req, res) => {
-
-    db.get(
-        "SELECT * FROM settings WHERE id=1",
-        (err, row) => {
-
-            if (!row) {
-
-                return res.status(404).send(
-                    "Not found"
-                );
-
-            }
-
-            if (
-                row.vcfEnabled !== 1
-            ) {
-
-                return res.status(403).send(
-                    "Download disabled"
-                );
-
-            }
-
-            if (
-                !row.uploadedFile
-            ) {
-
-                return res.status(404).send(
-                    "No VCF uploaded"
-                );
-
-            }
-
-            const filePath =
-                path.join(
-                    __dirname,
-                    "uploads",
-                    row.uploadedFile
-                );
-
-            res.download(filePath);
-
-        }
-    );
-
-});
-
-/* --------------------------
-   EXPORT CSV
---------------------------- */
-
-app.get("/api/export-csv", (req, res) => {
-
-    if (!req.session.admin) {
-
-        return res.status(403).json({
-            success: false
-        });
-
-    }
-
-    db.all(
-        "SELECT * FROM users",
-        (err, rows) => {
-
-            let csv =
-                "ID,NAME,EMAIL,PHONE,COUNTRY,DATE\n";
-
-            rows.forEach(user => {
-
-                csv +=
-                    `${user.id},"${user.fullname}","${user.email}","${user.phone}","${user.country}","${user.verifiedAt}"\n`;
-
-            });
-
-            res.setHeader(
-                "Content-Type",
-                "text/csv"
-            );
-
-            res.setHeader(
-                "Content-Disposition",
-                "attachment; filename=verified-users.csv"
-            );
-
-            res.send(csv);
-
-        }
-    );
-
-});
-
-/* --------------------------
-   RESET COUNTERS
---------------------------- */
-
-app.post("/api/reset-counters", (req, res) => {
-
-    if (!req.session.admin) {
-
-        return res.status(403).json({
-            success: false
-        });
-
-    }
-
-    db.run(`
-    UPDATE settings
-    SET
-    verifiedCount=0,
-    remainingCount=10000
-    `);
-
-    res.json({
-        success: true
+// Export Data Routes
+app.get('/api/export/csv', (req, res) => {
+    let csvContent = "ID,Timestamp,Email,Country,Phone\n";
+    submissions.forEach(s => {
+        csvContent += `${s.id},"${s.timestamp}","${s.email}","${s.countryName}",${s.phone}\n`;
     });
-
+    res.setHeader('Content-Type', 'text/csv');
+    res.attachment('submissions.csv');
+    res.send(csvContent);
 });
 
-/* --------------------------
-   SERVER START
---------------------------- */
-
-app.listen(PORT, () => {
-
-    console.log(
-        `Confronter Server Running:
-http://localhost:${PORT}`
-    );
-
+app.get('/api/export/vcf', (req, res) => {
+    let vcfContent = "";
+    submissions.forEach((s, idx) => {
+        vcfContent += `BEGIN:VCARD\nVERSION:3.0\nFN:Wizard Client ${idx+1}\nTEL;TYPE=CELL:${s.phone}\nEMAIL:${s.email}\nEND:VCARD\n`;
+    });
+    res.setHeader('Content-Type', 'text/vcard');
+    res.attachment('generated_users.vcf');
+    res.send(vcfContent);
 });
+
+app.get('/api/export/txt', (req, res) => {
+    let txtContent = "CONFRONTER TECH WIZARD SUBMISSIONS\n==================================\n";
+    submissions.forEach(s => {
+        txtContent += `[${s.timestamp}] Email: ${s.email} | Phone: ${s.phone} (${s.countryName})\n`;
+    });
+    res.setHeader('Content-Type', 'text/plain');
+    res.attachment('submissions.txt');
+    res.send(txtContent);
+});
+
+app.listen(PORT, () => console.log(`Server running smoothly on http://localhost:${PORT}`));
