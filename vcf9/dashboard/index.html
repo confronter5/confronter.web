@@ -1,117 +1,328 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confronter Tech Wizard VCF - Active Viewers</title>
-  <link rel="stylesheet" href="styles.css">
-<base target="_blank">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Confronter Tech Wizard VCF Active Viewers</title>
+
+<link rel="stylesheet" href="styles.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 </head>
+
 <body>
-  <!-- Theme Toggle -->
-  <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
-    <span id="themeIcon">🌙</span>
-  </button>
 
-  <!-- Status Bar -->
-  <div class="status-bar">
-    <div class="datetime">
-      <span id="clockDate">📅 --/--/----</span>
-      <span id="clockTime">⏲️ --:--</span>
-    </div>
-    <div class="battery">
-      <span id="chargingIcon" class="charging" style="display:none">⚡</span>
-      <div class="battery-icon">
-        <div class="battery-fill" id="batteryFill" style="width:80%"></div>
-      </div>
-      <span id="batteryPct">80%</span>
-    </div>
-  </div>
+<div class="theme-toggle" id="themeToggle">
+🌙
+</div>
 
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h1>Confronter Tech Wizard</h1>
-      <p class="subtitle">VCF Active Viewers Verification</p>
-    </div>
+<div class="container">
 
-    <!-- Members Circle -->
-    <div class="members-circle">
-      <div class="circle-item verified">
-        <div class="circle" id="verifiedCount">0</div>
-        <div class="label">Verified</div>
-      </div>
-      <div class="circle-item remaining">
-        <div class="circle" id="remainingCount">30</div>
-        <div class="label">Remaining</div>
-      </div>
-    </div>
+<div class="header">
 
-    <!-- Countdown -->
-    <div class="countdown-box">
-      <div class="cd-label">⏳ Time Remaining</div>
-      <div class="cd-timer" id="countdown">30d 00h 00m 00s</div>
-    </div>
+<h1>Confronter Tech Wizard</h1>
 
-    <!-- VCF Download Section -->
-    <div class="vcf-section" id="vcfSection">
-      <div class="vcf-title">📇 Download VCF Contact</div>
-      <div class="vcf-desc">Get the verified contact file instantly</div>
-      <a href="#" class="vcf-btn" id="vcfDownloadBtn" download>
-        <span>⬇️</span> Download VCF
-      </a>
-    </div>
+<p class="subtitle">
+VCF Active Viewers Verification Portal
+</p>
 
-    <!-- Form Card -->
-    <div class="form-card" id="formCard">
-      <form id="verifyForm" novalidate>
-        <!-- Full Name -->
-        <div class="form-group">
-          <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
-          <div class="error-msg">Please enter your full name</div>
-        </div>
+</div>
 
-        <!-- Email -->
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" name="email" placeholder="your@email.com" required>
-          <div class="error-msg">Please enter a valid email address</div>
-        </div>
+<div class="top-info">
 
-        <!-- Country + Phone -->
-        <div class="form-group">
-          <label for="countrySelect">Country & Phone Number</label>
-          <div class="phone-row">
-            <select id="countrySelect" name="country" required>
-              <option value="" disabled selected>Country</option>
-            </select>
-            <input type="tel" id="phoneInput" name="phone" placeholder="Phone number" required>
-          </div>
-          <div class="error-msg" id="phoneError">Please select a country and enter a valid phone number</div>
-        </div>
+<div class="info-card">
+📅
+<span id="currentDate">
+Loading...
+</span>
+</div>
 
-        <button type="submit" class="submit-btn" id="submitBtn">Verify & Join Group</button>
-      </form>
-    </div>
+<div class="info-card">
+⏲️
+<span id="currentTime">
+Loading...
+</span>
+</div>
 
-    <!-- Success Screen -->
-    <div class="success-screen" id="successScreen">
-      <div class="check-icon">✓</div>
-      <h2>Verification Successful!</h2>
-      <p>You have been verified successfully.</p>
-      <p class="redirect-msg" id="redirectMsg">Redirecting to WhatsApp group in <span id="redirectSec">2</span>s...</p>
-      <div class="success-btns">
-        <button id="goBackBtn">🔙 Go Back</button>
-        <button id="addAnotherBtn">➕ Add Another Number</button>
-      </div>
-    </div>
+<div class="info-card">
+🔋
+<span id="batteryStatus">
+Checking...
+</span>
+</div>
 
-    <div class="footer">
-      <p>Confronter Tech Wizard &copy; 2026</p>
-    </div>
-  </div>
+</div>
 
-  <script src="app.js"></script>
+<div class="stats-wrapper">
+
+<div class="circle-card verified">
+
+<div class="circle-number"
+id="verifiedCount">
+0
+</div>
+
+<div class="circle-label">
+Verified
+</div>
+
+</div>
+
+<div class="circle-card remaining">
+
+<div class="circle-number"
+id="remainingCount">
+0
+</div>
+
+<div class="circle-label">
+Remaining
+</div>
+
+</div>
+
+</div>
+
+<div class="countdown-box">
+
+📅 Verification Campaign Ends In
+
+<strong id="countdownDays">
+30
+</strong>
+
+Days
+
+</div>
+
+<div class="form-box">
+
+<form id="verifyForm">
+
+<div class="form-group">
+
+<label>
+Full Name
+</label>
+
+<input
+type="text"
+id="fullname"
+required
+placeholder="Enter Full Name">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Email Address
+</label>
+
+<input
+type="email"
+id="email"
+required
+placeholder="example@email.com">
+
+</div>
+
+<div class="form-group">
+
+<label>
+Country
+</label>
+
+<select id="country" required>
+
+<option value="">
+Choose Country
+</option>
+
+<option value="+254">
+Kenya (+254)
+</option>
+
+<option value="+255">
+Tanzania (+255)
+</option>
+
+<option value="+256">
+Uganda (+256)
+</option>
+
+<option value="+250">
+Rwanda (+250)
+</option>
+
+<option value="+257">
+Burundi (+257)
+</option>
+
+<option value="+211">
+South Sudan (+211)
+</option>
+
+<option value="+234">
+Nigeria (+234)
+</option>
+
+<option value="+27">
+South Africa (+27)
+</option>
+
+<option value="+20">
+Egypt (+20)
+</option>
+
+<option value="+1">
+United States (+1)
+</option>
+
+<option value="+44">
+United Kingdom (+44)
+</option>
+
+<option value="+91">
+India (+91)
+</option>
+
+<option value="+971">
+United Arab Emirates (+971)
+</option>
+
+<option value="+86">
+China (+86)
+</option>
+
+<option value="+81">
+Japan (+81)
+</option>
+
+<option value="+49">
+Germany (+49)
+</option>
+
+<option value="+33">
+France (+33)
+</option>
+
+<option value="+39">
+Italy (+39)
+</option>
+
+<option value="+34">
+Spain (+34)
+</option>
+
+<option value="+61">
+Australia (+61)
+</option>
+
+<option value="+55">
+Brazil (+55)
+</option>
+
+<option value="+7">
+Russia (+7)
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Phone Number
+</label>
+
+<input
+type="text"
+id="phone"
+required
+placeholder="Example: 254793908671">
+
+<small>
+Do not include spaces.
+Start with your country code.
+</small>
+
+</div>
+
+<button
+type="submit"
+class="verify-btn">
+
+VERIFY NOW
+
+</button>
+
+</form>
+
+<div id="messageBox"></div>
+
+</div>
+
+<div class="download-section">
+
+<h3>
+Available VCF Download
+</h3>
+
+<a
+href="/api/download-vcf"
+class="download-btn">
+
+📥 Download VCF
+
+</a>
+
+</div>
+
+<div class="actions">
+
+<button
+type="button"
+id="addAnotherBtn">
+
+➕ Add Another Number
+
+</button>
+
+<button
+type="button"
+id="goBackBtn">
+
+⬅️ Go Back
+
+</button>
+
+</div>
+
+<div class="verification-note">
+
+<p>
+After successful verification,
+you will automatically join the
+official WhatsApp group.
+</p>
+
+</div>
+
+<div class="footer">
+
+© 2026 Confronter Tech Wizard
+
+</div>
+
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>
