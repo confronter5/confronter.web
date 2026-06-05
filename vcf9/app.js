@@ -1,600 +1,244 @@
-// ===================== COUNTRIES DATA =====================
 const countries = [
-    { name: "Afghanistan", code: "AF", dial: "+93", regex: /^[0-9]{9}$/ },
-    { name: "Albania", code: "AL", dial: "+355", regex: /^[0-9]{9}$/ },
-    { name: "Algeria", code: "DZ", dial: "+213", regex: /^[0-9]{9}$/ },
-    { name: "Andorra", code: "AD", dial: "+376", regex: /^[0-9]{6}$/ },
-    { name: "Angola", code: "AO", dial: "+244", regex: /^[0-9]{9}$/ },
-    { name: "Argentina", code: "AR", dial: "+54", regex: /^[0-9]{10,11}$/ },
-    { name: "Armenia", code: "AM", dial: "+374", regex: /^[0-9]{8}$/ },
-    { name: "Australia", code: "AU", dial: "+61", regex: /^[0-9]{9}$/ },
-    { name: "Austria", code: "AT", dial: "+43", regex: /^[0-9]{10,13}$/ },
-    { name: "Azerbaijan", code: "AZ", dial: "+994", regex: /^[0-9]{9}$/ },
-    { name: "Bahamas", code: "BS", dial: "+1-242", regex: /^[0-9]{10}$/ },
-    { name: "Bahrain", code: "BH", dial: "+973", regex: /^[0-9]{8}$/ },
-    { name: "Bangladesh", code: "BD", dial: "+880", regex: /^[0-9]{10}$/ },
-    { name: "Belarus", code: "BY", dial: "+375", regex: /^[0-9]{9}$/ },
-    { name: "Belgium", code: "BE", dial: "+32", regex: /^[0-9]{9,10}$/ },
-    { name: "Belize", code: "BZ", dial: "+501", regex: /^[0-9]{7}$/ },
-    { name: "Benin", code: "BJ", dial: "+229", regex: /^[0-9]{8}$/ },
-    { name: "Bhutan", code: "BT", dial: "+975", regex: /^[0-9]{8}$/ },
-    { name: "Bolivia", code: "BO", dial: "+591", regex: /^[0-9]{8}$/ },
-    { name: "Bosnia and Herzegovina", code: "BA", dial: "+387", regex: /^[0-9]{8}$/ },
-    { name: "Botswana", code: "BW", dial: "+267", regex: /^[0-9]{8}$/ },
-    { name: "Brazil", code: "BR", dial: "+55", regex: /^[0-9]{10,11}$/ },
-    { name: "Brunei", code: "BN", dial: "+673", regex: /^[0-9]{7}$/ },
-    { name: "Bulgaria", code: "BG", dial: "+359", regex: /^[0-9]{9}$/ },
-    { name: "Burkina Faso", code: "BF", dial: "+226", regex: /^[0-9]{8}$/ },
-    { name: "Burundi", code: "BI", dial: "+257", regex: /^[0-9]{8}$/ },
-    { name: "Cambodia", code: "KH", dial: "+855", regex: /^[0-9]{8,9}$/ },
-    { name: "Cameroon", code: "CM", dial: "+237", regex: /^[0-9]{9}$/ },
-    { name: "Canada", code: "CA", dial: "+1", regex: /^[0-9]{10}$/ },
-    { name: "Cape Verde", code: "CV", dial: "+238", regex: /^[0-9]{7}$/ },
-    { name: "Central African Republic", code: "CF", dial: "+236", regex: /^[0-9]{8}$/ },
-    { name: "Chad", code: "TD", dial: "+235", regex: /^[0-9]{8}$/ },
-    { name: "Chile", code: "CL", dial: "+56", regex: /^[0-9]{9}$/ },
-    { name: "China", code: "CN", dial: "+86", regex: /^[0-9]{11}$/ },
-    { name: "Colombia", code: "CO", dial: "+57", regex: /^[0-9]{10}$/ },
-    { name: "Comoros", code: "KM", dial: "+269", regex: /^[0-9]{7}$/ },
-    { name: "Congo", code: "CG", dial: "+242", regex: /^[0-9]{9}$/ },
-    { name: "Costa Rica", code: "CR", dial: "+506", regex: /^[0-9]{8}$/ },
-    { name: "Croatia", code: "HR", dial: "+385", regex: /^[0-9]{9}$/ },
-    { name: "Cuba", code: "CU", dial: "+53", regex: /^[0-9]{8}$/ },
-    { name: "Cyprus", code: "CY", dial: "+357", regex: /^[0-9]{8}$/ },
-    { name: "Czech Republic", code: "CZ", dial: "+420", regex: /^[0-9]{9}$/ },
-    { name: "Denmark", code: "DK", dial: "+45", regex: /^[0-9]{8}$/ },
-    { name: "Djibouti", code: "DJ", dial: "+253", regex: /^[0-9]{8}$/ },
-    { name: "Dominica", code: "DM", dial: "+1-767", regex: /^[0-9]{10}$/ },
-    { name: "Dominican Republic", code: "DO", dial: "+1-809", regex: /^[0-9]{10}$/ },
-    { name: "Ecuador", code: "EC", dial: "+593", regex: /^[0-9]{9}$/ },
-    { name: "Egypt", code: "EG", dial: "+20", regex: /^[0-9]{10}$/ },
-    { name: "El Salvador", code: "SV", dial: "+503", regex: /^[0-9]{8}$/ },
-    { name: "Equatorial Guinea", code: "GQ", dial: "+240", regex: /^[0-9]{9}$/ },
-    { name: "Eritrea", code: "ER", dial: "+291", regex: /^[0-9]{7}$/ },
-    { name: "Estonia", code: "EE", dial: "+372", regex: /^[0-9]{7,8}$/ },
-    { name: "Eswatini", code: "SZ", dial: "+268", regex: /^[0-9]{8}$/ },
-    { name: "Ethiopia", code: "ET", dial: "+251", regex: /^[0-9]{9}$/ },
-    { name: "Fiji", code: "FJ", dial: "+679", regex: /^[0-9]{7}$/ },
-    { name: "Finland", code: "FI", dial: "+358", regex: /^[0-9]{9}$/ },
-    { name: "France", code: "FR", dial: "+33", regex: /^[0-9]{9}$/ },
-    { name: "Gabon", code: "GA", dial: "+241", regex: /^[0-9]{7,8}$/ },
-    { name: "Gambia", code: "GM", dial: "+220", regex: /^[0-9]{7}$/ },
-    { name: "Georgia", code: "GE", dial: "+995", regex: /^[0-9]{9}$/ },
-    { name: "Germany", code: "DE", dial: "+49", regex: /^[0-9]{10,11}$/ },
-    { name: "Ghana", code: "GH", dial: "+233", regex: /^[0-9]{9}$/ },
-    { name: "Greece", code: "GR", dial: "+30", regex: /^[0-9]{10}$/ },
-    { name: "Guatemala", code: "GT", dial: "+502", regex: /^[0-9]{8}$/ },
-    { name: "Guinea", code: "GN", dial: "+224", regex: /^[0-9]{9}$/ },
-    { name: "Guinea-Bissau", code: "GW", dial: "+245", regex: /^[0-9]{7}$/ },
-    { name: "Guyana", code: "GY", dial: "+592", regex: /^[0-9]{7}$/ },
-    { name: "Haiti", code: "HT", dial: "+509", regex: /^[0-9]{8}$/ },
-    { name: "Honduras", code: "HN", dial: "+504", regex: /^[0-9]{8}$/ },
-    { name: "Hungary", code: "HU", dial: "+36", regex: /^[0-9]{9}$/ },
-    { name: "Iceland", code: "IS", dial: "+354", regex: /^[0-9]{7}$/ },
-    { name: "India", code: "IN", dial: "+91", regex: /^[0-9]{10}$/ },
-    { name: "Indonesia", code: "ID", dial: "+62", regex: /^[0-9]{10,12}$/ },
-    { name: "Iran", code: "IR", dial: "+98", regex: /^[0-9]{10}$/ },
-    { name: "Iraq", code: "IQ", dial: "+964", regex: /^[0-9]{10}$/ },
-    { name: "Ireland", code: "IE", dial: "+353", regex: /^[0-9]{9}$/ },
-    { name: "Israel", code: "IL", dial: "+972", regex: /^[0-9]{9}$/ },
-    { name: "Italy", code: "IT", dial: "+39", regex: /^[0-9]{9,10}$/ },
-    { name: "Jamaica", code: "JM", dial: "+1-876", regex: /^[0-9]{10}$/ },
-    { name: "Japan", code: "JP", dial: "+81", regex: /^[0-9]{10}$/ },
-    { name: "Jordan", code: "JO", dial: "+962", regex: /^[0-9]{9}$/ },
-    { name: "Kazakhstan", code: "KZ", dial: "+7", regex: /^[0-9]{10}$/ },
-    { name: "Kenya", code: "KE", dial: "+254", regex: /^[1|7][0-9]{8}$/ },
-    { name: "Kiribati", code: "KI", dial: "+686", regex: /^[0-9]{5}$/ },
-    { name: "Kuwait", code: "KW", dial: "+965", regex: /^[0-9]{8}$/ },
-    { name: "Kyrgyzstan", code: "KG", dial: "+996", regex: /^[0-9]{9}$/ },
-    { name: "Laos", code: "LA", dial: "+856", regex: /^[0-9]{9,10}$/ },
-    { name: "Latvia", code: "LV", dial: "+371", regex: /^[0-9]{8}$/ },
-    { name: "Lebanon", code: "LB", dial: "+961", regex: /^[0-9]{7,8}$/ },
-    { name: "Lesotho", code: "LS", dial: "+266", regex: /^[0-9]{8}$/ },
-    { name: "Liberia", code: "LR", dial: "+231", regex: /^[0-9]{7,8}$/ },
-    { name: "Libya", code: "LY", dial: "+218", regex: /^[0-9]{9,10}$/ },
-    { name: "Liechtenstein", code: "LI", dial: "+423", regex: /^[0-9]{7}$/ },
-    { name: "Lithuania", code: "LT", dial: "+370", regex: /^[0-9]{8}$/ },
-    { name: "Luxembourg", code: "LU", dial: "+352", regex: /^[0-9]{9}$/ },
-    { name: "Madagascar", code: "MG", dial: "+261", regex: /^[0-9]{9}$/ },
-    { name: "Malawi", code: "MW", dial: "+265", regex: /^[0-9]{9}$/ },
-    { name: "Malaysia", code: "MY", dial: "+60", regex: /^[0-9]{9,10}$/ },
-    { name: "Maldives", code: "MV", dial: "+960", regex: /^[0-9]{7}$/ },
-    { name: "Mali", code: "ML", dial: "+223", regex: /^[0-9]{8}$/ },
-    { name: "Malta", code: "MT", dial: "+356", regex: /^[0-9]{8}$/ },
-    { name: "Mauritania", code: "MR", dial: "+222", regex: /^[0-9]{8}$/ },
-    { name: "Mauritius", code: "MU", dial: "+230", regex: /^[0-9]{8}$/ },
-    { name: "Mexico", code: "MX", dial: "+52", regex: /^[0-9]{10}$/ },
-    { name: "Moldova", code: "MD", dial: "+373", regex: /^[0-9]{8}$/ },
-    { name: "Monaco", code: "MC", dial: "+377", regex: /^[0-9]{8,9}$/ },
-    { name: "Mongolia", code: "MN", dial: "+976", regex: /^[0-9]{8}$/ },
-    { name: "Montenegro", code: "ME", dial: "+382", regex: /^[0-9]{8}$/ },
-    { name: "Morocco", code: "MA", dial: "+212", regex: /^[0-9]{9}$/ },
-    { name: "Mozambique", code: "MZ", dial: "+258", regex: /^[0-9]{9}$/ },
-    { name: "Myanmar", code: "MM", dial: "+95", regex: /^[0-9]{8,10}$/ },
-    { name: "Namibia", code: "NA", dial: "+264", regex: /^[0-9]{9}$/ },
-    { name: "Nauru", code: "NR", dial: "+674", regex: /^[0-9]{7}$/ },
-    { name: "Nepal", code: "NP", dial: "+977", regex: /^[0-9]{10}$/ },
-    { name: "Netherlands", code: "NL", dial: "+31", regex: /^[0-9]{9}$/ },
-    { name: "New Zealand", code: "NZ", dial: "+64", regex: /^[0-9]{9,10}$/ },
-    { name: "Nicaragua", code: "NI", dial: "+505", regex: /^[0-9]{8}$/ },
-    { name: "Niger", code: "NE", dial: "+227", regex: /^[0-9]{8}$/ },
-    { name: "Nigeria", code: "NG", dial: "+234", regex: /^[0-9]{10}$/ },
-    { name: "North Korea", code: "KP", dial: "+850", regex: /^[0-9]{8,10}$/ },
-    { name: "North Macedonia", code: "MK", dial: "+389", regex: /^[0-9]{8}$/ },
-    { name: "Norway", code: "NO", dial: "+47", regex: /^[0-9]{8}$/ },
-    { name: "Oman", code: "OM", dial: "+968", regex: /^[0-9]{8}$/ },
-    { name: "Pakistan", code: "PK", dial: "+92", regex: /^[0-9]{10}$/ },
-    { name: "Palau", code: "PW", dial: "+680", regex: /^[0-9]{7}$/ },
-    { name: "Panama", code: "PA", dial: "+507", regex: /^[0-9]{8}$/ },
-    { name: "Papua New Guinea", code: "PG", dial: "+675", regex: /^[0-9]{8}$/ },
-    { name: "Paraguay", code: "PY", dial: "+595", regex: /^[0-9]{9}$/ },
-    { name: "Peru", code: "PE", dial: "+51", regex: /^[0-9]{9}$/ },
-    { name: "Philippines", code: "PH", dial: "+63", regex: /^[0-9]{10}$/ },
-    { name: "Poland", code: "PL", dial: "+48", regex: /^[0-9]{9}$/ },
-    { name: "Portugal", code: "PT", dial: "+351", regex: /^[0-9]{9}$/ },
-    { name: "Qatar", code: "QA", dial: "+974", regex: /^[0-9]{8}$/ },
-    { name: "Romania", code: "RO", dial: "+40", regex: /^[0-9]{9}$/ },
-    { name: "Russia", code: "RU", dial: "+7", regex: /^[0-9]{10}$/ },
-    { name: "Rwanda", code: "RW", dial: "+250", regex: /^[0-9]{9}$/ },
-    { name: "Saint Lucia", code: "LC", dial: "+1-758", regex: /^[0-9]{10}$/ },
-    { name: "Samoa", code: "WS", dial: "+685", regex: /^[0-9]{5,7}$/ },
-    { name: "San Marino", code: "SM", dial: "+378", regex: /^[0-9]{6,10}$/ },
-    { name: "Saudi Arabia", code: "SA", dial: "+966", regex: /^[0-9]{9}$/ },
-    { name: "Senegal", code: "SN", dial: "+221", regex: /^[0-9]{9}$/ },
-    { name: "Serbia", code: "RS", dial: "+381", regex: /^[0-9]{8,9}$/ },
-    { name: "Seychelles", code: "SC", dial: "+248", regex: /^[0-9]{7}$/ },
-    { name: "Sierra Leone", code: "SL", dial: "+232", regex: /^[0-9]{8}$/ },
-    { name: "Singapore", code: "SG", dial: "+65", regex: /^[0-9]{8}$/ },
-    { name: "Slovakia", code: "SK", dial: "+421", regex: /^[0-9]{9}$/ },
-    { name: "Slovenia", code: "SI", dial: "+386", regex: /^[0-9]{8}$/ },
-    { name: "Solomon Islands", code: "SB", dial: "+677", regex: /^[0-9]{7}$/ },
-    { name: "Somalia", code: "SO", dial: "+252", regex: /^[0-9]{8,9}$/ },
-    { name: "South Africa", code: "ZA", dial: "+27", regex: /^[0-9]{9}$/ },
-    { name: "South Korea", code: "KR", dial: "+82", regex: /^[0-9]{9,10}$/ },
-    { name: "South Sudan", code: "SS", dial: "+211", regex: /^[0-9]{9}$/ },
-    { name: "Spain", code: "ES", dial: "+34", regex: /^[0-9]{9}$/ },
-    { name: "Sri Lanka", code: "LK", dial: "+94", regex: /^[0-9]{9}$/ },
-    { name: "Sudan", code: "SD", dial: "+249", regex: /^[0-9]{9}$/ },
-    { name: "Suriname", code: "SR", dial: "+597", regex: /^[0-9]{7}$/ },
-    { name: "Sweden", code: "SE", dial: "+46", regex: /^[0-9]{9,10}$/ },
-    { name: "Switzerland", code: "CH", dial: "+41", regex: /^[0-9]{9}$/ },
-    { name: "Syria", code: "SY", dial: "+963", regex: /^[0-9]{9}$/ },
-    { name: "Taiwan", code: "TW", dial: "+886", regex: /^[0-9]{9}$/ },
-    { name: "Tajikistan", code: "TJ", dial: "+992", regex: /^[0-9]{9}$/ },
-    { name: "Tanzania", code: "TZ", dial: "+255", regex: /^[0-9]{9}$/ },
-    { name: "Thailand", code: "TH", dial: "+66", regex: /^[0-9]{9}$/ },
-    { name: "Timor-Leste", code: "TL", dial: "+670", regex: /^[0-9]{7,8}$/ },
-    { name: "Togo", code: "TG", dial: "+228", regex: /^[0-9]{8}$/ },
-    { name: "Tonga", code: "TO", dial: "+676", regex: /^[0-9]{5,7}$/ },
-    { name: "Trinidad and Tobago", code: "TT", dial: "+1-868", regex: /^[0-9]{10}$/ },
-    { name: "Tunisia", code: "TN", dial: "+216", regex: /^[0-9]{8}$/ },
-    { name: "Turkey", code: "TR", dial: "+90", regex: /^[0-9]{10}$/ },
-    { name: "Turkmenistan", code: "TM", dial: "+993", regex: /^[0-9]{8}$/ },
-    { name: "Tuvalu", code: "TV", dial: "+688", regex: /^[0-9]{5,6}$/ },
-    { name: "Uganda", code: "UG", dial: "+256", regex: /^[0-9]{9}$/ },
-    { name: "Ukraine", code: "UA", dial: "+380", regex: /^[0-9]{9}$/ },
-    { name: "United Arab Emirates", code: "AE", dial: "+971", regex: /^[0-9]{9}$/ },
-    { name: "United Kingdom", code: "GB", dial: "+44", regex: /^[0-9]{10}$/ },
-    { name: "United States", code: "US", dial: "+1", regex: /^[0-9]{10}$/ },
-    { name: "Uruguay", code: "UY", dial: "+598", regex: /^[0-9]{8}$/ },
-    { name: "Uzbekistan", code: "UZ", dial: "+998", regex: /^[0-9]{9}$/ },
-    { name: "Vanuatu", code: "VU", dial: "+678", regex: /^[0-9]{7}$/ },
-    { name: "Vatican City", code: "VA", dial: "+39", regex: /^[0-9]{10}$/ },
-    { name: "Venezuela", code: "VE", dial: "+58", regex: /^[0-9]{10}$/ },
-    { name: "Vietnam", code: "VN", dial: "+84", regex: /^[0-9]{9,10}$/ },
-    { name: "Yemen", code: "YE", dial: "+967", regex: /^[0-9]{9}$/ },
-    { name: "Zambia", code: "ZM", dial: "+260", regex: /^[0-9]{9}$/ },
-    { name: "Zimbabwe", code: "ZW", dial: "+263", regex: /^[0-9]{9}$/ }
+    {code: "KE", name: "Kenya", dial: "+254", pattern: /^[17]\d{8}$/, len: 9, hint: "7XX XXX XXX or 1XX XXX XXX"},
+    {code: "US", name: "USA", dial: "+1", pattern: /^[2-9]\d{9}$/, len: 10, hint: "XXX XXX XXXX"},
+    {code: "GB", name: "UK", dial: "+44", pattern: /^[1-9]\d{9}$/, len: 10, hint: "7XXX XXXXXX"},
+    {code: "NG", name: "Nigeria", dial: "+234", pattern: /^[7-9]\d{9}$/, len: 10, hint: "7XX XXX XXXX"},
+    {code: "ZA", name: "South Africa", dial: "+27", pattern: /^[6-8]\d{8}$/, len: 9, hint: "7X XXX XXXX"},
+    {code: "TZ", name: "Tanzania", dial: "+255", pattern: /^[67]\d{8}$/, len: 9, hint: "7XX XXX XXX"},
+    {code: "UG", name: "Uganda", dial: "+256", pattern: /^[7]\d{8}$/, len: 9, hint: "7XX XXX XXX"},
+    {code: "IN", name: "India", dial: "+91", pattern: /^[6-9]\d{9}$/, len: 10, hint: "9XXXX XXXXX"},
+    {code: "GH", name: "Ghana", dial: "+233", pattern: /^[2-5]\d{8}$/, len: 9, hint: "2X XXX XXXX"},
+    {code: "ET", name: "Ethiopia", dial: "+251", pattern: /^[7-9]\d{8}$/, len: 9, hint: "9XX XXX XXX"},
+    {code: "RW", name: "Rwanda", dial: "+250", pattern: /^[7]\d{8}$/, len: 9, hint: "7XX XXX XXX"},
+    {code: "BD", name: "Bangladesh", dial: "+880", pattern: /^[1-9]\d{9}$/, len: 10, hint: "1XXX XXXXXX"},
+    {code: "PK", name: "Pakistan", dial: "+92", pattern: /^[3]\d{9}$/, len: 10, hint: "3XX XXXXXXX"},
+    {code: "PH", name: "Philippines", dial: "+63", pattern: /^[9]\d{9}$/, len: 10, hint: "9XX XXX XXXX"},
+    {code: "ID", name: "Indonesia", dial: "+62", pattern: /^[8]\d{9,11}$/, len: 10, hint: "8XX XXX XXXX"}
 ];
 
-// ===================== DOM ELEMENTS =====================
-const countrySelect = document.getElementById('countrySelect');
-const countryCode = document.getElementById('countryCode');
-const phoneNumber = document.getElementById('phoneNumber');
-const phoneHint = document.getElementById('phoneHint');
-const emailInput = document.getElementById('email');
-const emailHint = document.getElementById('emailHint');
-const vcfForm = document.getElementById('vcfForm');
-const successOverlay = document.getElementById('successOverlay');
-const redirectCount = document.getElementById('redirectCount');
-const goBackBtn = document.getElementById('goBackBtn');
-const addAnotherBtn = document.getElementById('addAnotherBtn');
-const themeToggle = document.getElementById('themeToggle');
-const themeIcon = document.getElementById('themeIcon');
-const progressRing = document.getElementById('progressRing');
-const verifiedCount = document.getElementById('verifiedCount');
-const verifiedLabel = document.getElementById('verifiedLabel');
-const remainingLabel = document.getElementById('remainingLabel');
-const liveTime = document.getElementById('liveTime');
-const liveDate = document.getElementById('liveDate');
-const batteryPercent = document.getElementById('batteryPercent');
-const batteryIcon = document.getElementById('batteryIcon');
-const chargingStatus = document.getElementById('chargingStatus');
-const countdownTimer = document.getElementById('countdownTimer');
-const downloadVcfBtn = document.getElementById('downloadVcfBtn');
-
-const MAX_MEMBERS = 100;
-const WHATSAPP_GROUP = 'https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1';
-
-// 30 days from now
-const now = new Date();
-const VCF_RELEASE_DATE = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+const WHATSAPP_GROUP = "https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1";
+const ADMIN_PASS = "confronter1";
 
 let selectedCountry = null;
-let verifiedMembers = parseInt(localStorage.getItem('verifiedCount') || '0');
 
-// ===================== INITIALIZATION =====================
 function init() {
     populateCountries();
-    updateStats();
-    startClock();
-    startCountdown();
-    setupTheme();
-    setupBattery();
-    setupEventListeners();
-    checkAdminVcfToggle();
-    setupEmailValidation();
+    updateDateTime();
+    updateBattery();
+    loadStats();
+    checkVCF();
+    setInterval(updateDateTime, 1000);
+    setInterval(loadStats, 5000);
 }
 
-// Check if admin toggled VCF download ON or uploaded VCF
-function checkAdminVcfToggle() {
-    const vcfOut = localStorage.getItem('vcfOut') === 'true';
-    const adminVcf = localStorage.getItem('adminVcfContent');
-    if (vcfOut || adminVcf) {
-        countdownTimer.textContent = 'VCF IS OUT!';
-        downloadVcfBtn.classList.remove('hidden');
-    }
-}
-
-// ===================== EMAIL VALIDATION =====================
-function setupEmailValidation() {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    emailInput.addEventListener('input', () => {
-        const val = emailInput.value.trim();
-        if (val === '') {
-            emailHint.textContent = 'Enter a valid email address';
-            emailHint.className = 'hint';
-            return;
-        }
-        if (emailRegex.test(val)) {
-            emailHint.textContent = 'Valid email address';
-            emailHint.className = 'hint success';
-        } else {
-            emailHint.textContent = 'Invalid email format (e.g. name@email.com)';
-            emailHint.className = 'hint error';
-        }
-    });
-}
-
-// ===================== COUNTRIES =====================
 function populateCountries() {
-    countries.sort((a, b) => a.name.localeCompare(b.name));
+    const sel = document.getElementById('country');
     countries.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.code;
-        opt.textContent = c.name + ' (' + c.dial + ')';
-        countrySelect.appendChild(opt);
+        opt.textContent = `${c.name} (${c.dial})`;
+        sel.appendChild(opt);
     });
 }
 
-countrySelect.addEventListener('change', () => {
-    selectedCountry = countries.find(c => c.code === countrySelect.value);
+function updatePhoneFormat() {
+    const code = document.getElementById('country').value;
+    selectedCountry = countries.find(c => c.code === code);
+    const display = document.getElementById('code-display');
+    const hint = document.getElementById('phone-hint');
+    const phone = document.getElementById('phone');
+    
     if (selectedCountry) {
-        countryCode.textContent = selectedCountry.dial;
-        const digits = selectedCountry.regex.toString().match(/\d+/);
-        phoneHint.textContent = 'Enter ' + selectedCountry.dial + ' followed by your number (' + digits + ' digits)';
-        phoneHint.className = 'hint';
-        phoneNumber.value = '';
-        phoneNumber.focus();
-    }
-});
-
-// ===================== PHONE VALIDATION =====================
-phoneNumber.addEventListener('input', () => {
-    if (!selectedCountry) {
-        phoneHint.textContent = 'Select a country first';
-        phoneHint.className = 'hint error';
-        return;
-    }
-    const val = phoneNumber.value.replace(/\D/g, '');
-    phoneNumber.value = val;
-
-    if (selectedCountry.regex.test(val)) {
-        phoneHint.textContent = 'Valid phone number format';
-        phoneHint.className = 'hint success';
+        display.textContent = selectedCountry.dial.replace('+', '');
+        hint.textContent = selectedCountry.hint;
+        hint.className = '';
+        phone.placeholder = selectedCountry.hint;
+        phone.value = '';
     } else {
-        const expected = selectedCountry.regex.toString().match(/\d+/)[0];
-        if (selectedCountry.code === 'KE') {
-            phoneHint.textContent = 'Kenya number must start with 7 or 1 (e.g. 793906753 or 193906753)';
-        } else {
-            phoneHint.textContent = 'Expected ' + expected + ' digits, got ' + val.length;
-        }
-        phoneHint.className = 'hint error';
+        display.textContent = '---';
+        hint.textContent = 'Select country first';
     }
-});
+}
 
-// ===================== FORM SUBMIT =====================
-vcfForm.addEventListener('submit', (e) => {
+function validatePhone() {
+    if (!selectedCountry) return false;
+    const phone = document.getElementById('phone').value.replace(/\s/g, '');
+    const hint = document.getElementById('phone-hint');
+    
+    if (!phone) {
+        hint.textContent = selectedCountry.hint;
+        hint.className = '';
+        return false;
+    }
+    
+    if (!/^\d+$/.test(phone)) {
+        hint.textContent = "Numbers only";
+        hint.className = "error";
+        return false;
+    }
+    
+    if (phone.length !== selectedCountry.len) {
+        hint.textContent = `Must be ${selectedCountry.len} digits`;
+        hint.className = "error";
+        return false;
+    }
+    
+    if (!selectedCountry.pattern.test(phone)) {
+        hint.textContent = "Invalid format for this country";
+        hint.className = "error";
+        return false;
+    }
+    
+    hint.textContent = "✓ Valid";
+    hint.className = "success";
+    return true;
+}
+
+function handleSubmit(e) {
     e.preventDefault();
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const emailVal = emailInput.value.trim();
-    if (!emailRegex.test(emailVal)) {
-        emailHint.textContent = 'Please enter a valid email address';
-        emailHint.className = 'hint error';
-        emailInput.focus();
+    const email = document.getElementById('email').value.trim();
+    
+    if (!email || !email.includes('@')) {
+        alert('Valid email required');
         return;
     }
-
+    
     if (!selectedCountry) {
-        phoneHint.textContent = 'Please select a country';
-        phoneHint.className = 'hint error';
+        alert('Select country');
         return;
     }
-
-    const rawNum = phoneNumber.value.replace(/\D/g, '');
-    if (!selectedCountry.regex.test(rawNum)) {
-        if (selectedCountry.code === 'KE') {
-            phoneHint.textContent = 'Kenya number must start with 7 or 1 (e.g. 793906753 or 193906753)';
-        } else {
-            phoneHint.textContent = 'Invalid phone number for selected country';
-        }
-        phoneHint.className = 'hint error';
+    
+    if (!validatePhone()) {
+        alert('Fix phone number');
         return;
     }
-
-    const submissions = JSON.parse(localStorage.getItem('vcfSubmissions') || '[]');
-    const fullPhone = selectedCountry.dial + rawNum;
-
-    // Check for duplicate email
-    if (submissions.some(s => s.email === emailVal)) {
-        emailHint.textContent = 'This email is already verified!';
-        emailHint.className = 'hint error';
-        return;
-    }
-
-    if (submissions.some(s => s.phone === fullPhone)) {
-        phoneHint.textContent = 'This number is already verified!';
-        phoneHint.className = 'hint error';
-        return;
-    }
-
-    submissions.push({
-        name: document.getElementById('fullName').value,
-        email: emailVal,
-        country: selectedCountry.name,
-        phone: fullPhone,
-        timestamp: new Date().toISOString()
-    });
-
-    localStorage.setItem('vcfSubmissions', JSON.stringify(submissions));
-    verifiedMembers = submissions.length;
-    localStorage.setItem('verifiedCount', verifiedMembers.toString());
-
-    playSuccessSound();
-    showSuccess();
+    
+    const phone = document.getElementById('phone').value.replace(/\s/g, '');
+    const fullPhone = selectedCountry.dial + phone;
+    
+    // Save to localStorage (simulated backend)
+    const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+    verified.push({email, phone: fullPhone, date: new Date().toISOString()});
+    localStorage.setItem('verified', JSON.stringify(verified));
+    
+    // Play success sound
+    speak("You were verified successfully");
+    
+    // Show success
+    document.getElementById('verifyForm').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+    
+    // Update stats
     updateStats();
-});
-
-function playSuccessSound() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime);
-        oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15);
-        oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3);
-        oscillator.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45);
-
-        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-
-        oscillator.start(audioCtx.currentTime);
-        oscillator.stop(audioCtx.currentTime + 0.8);
-
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance('You were verified successfully');
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            setTimeout(() => speechSynthesis.speak(utterance), 200);
-        }
-    } catch (err) {
-        console.log('Audio not supported');
-    }
-}
-
-function showSuccess() {
-    successOverlay.classList.remove('hidden');
-    setTimeout(() => successOverlay.classList.add('show'), 10);
-
-    let count = 2;
-    redirectCount.textContent = count;
-
-    const timer = setInterval(() => {
-        count--;
-        redirectCount.textContent = count;
-        if (count <= 0) {
-            clearInterval(timer);
-            window.open(WHATSAPP_GROUP, '_blank');
-        }
-    }, 1000);
-
-    successOverlay.dataset.timer = timer;
-}
-
-// ===================== BUTTONS =====================
-goBackBtn.addEventListener('click', () => {
-    if (successOverlay.dataset.timer) clearInterval(parseInt(successOverlay.dataset.timer));
-    successOverlay.classList.remove('show');
-    setTimeout(() => successOverlay.classList.add('hidden'), 400);
-});
-
-addAnotherBtn.addEventListener('click', () => {
-    if (successOverlay.dataset.timer) clearInterval(parseInt(successOverlay.dataset.timer));
-    successOverlay.classList.remove('show');
+    
+    // Redirect in 2 seconds
     setTimeout(() => {
-        successOverlay.classList.add('hidden');
-        vcfForm.reset();
-        countryCode.textContent = '+';
-        phoneHint.textContent = 'Select a country first';
-        phoneHint.className = 'hint';
-        emailHint.textContent = 'Enter a valid email address';
-        emailHint.className = 'hint';
-        selectedCountry = null;
-    }, 400);
-});
+        window.location.href = WHATSAPP_GROUP;
+    }, 2000);
+}
 
-// ===================== STATS =====================
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 0.9;
+        utter.pitch = 1;
+        window.speechSynthesis.speak(utter);
+    }
+}
+
+function goBack() {
+    window.location.reload();
+}
+
+function addAnother() {
+    document.getElementById('verifyForm').style.display = 'block';
+    document.getElementById('success').style.display = 'none';
+    document.getElementById('verifyForm').reset();
+    document.getElementById('code-display').textContent = '---';
+    selectedCountry = null;
+}
+
 function updateStats() {
-    const verified = Math.min(verifiedMembers, MAX_MEMBERS);
-    const remaining = Math.max(0, MAX_MEMBERS - verified);
-    const percent = (verified / MAX_MEMBERS) * 100;
-
-    verifiedCount.textContent = verified;
-    verifiedLabel.textContent = verified;
-    remainingLabel.textContent = remaining;
-
-    const circumference = 2 * Math.PI * 40;
-    const offset = circumference - (percent / 100) * circumference;
-    progressRing.style.strokeDashoffset = offset;
+    const verified = JSON.parse(localStorage.getItem('verified') || '[]');
+    const total = 30;
+    const count = verified.length;
+    const remaining = Math.max(0, total - count);
+    
+    document.getElementById('verified-count').textContent = count;
+    document.getElementById('remaining-count').textContent = remaining;
+    
+    // Save for admin
+    localStorage.setItem('stats', JSON.stringify({count, remaining, total}));
 }
 
-// ===================== CLOCK =====================
-function startClock() {
-    function update() {
-        const now = new Date();
-        liveTime.textContent = now.toLocaleTimeString('en-US', { hour12: true });
-        liveDate.textContent = now.toLocaleDateString('en-US', { 
-            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
-        });
-    }
-    update();
-    setInterval(update, 1000);
+function loadStats() {
+    const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
+    document.getElementById('verified-count').textContent = stats.count;
+    document.getElementById('remaining-count').textContent = stats.remaining;
+    document.getElementById('days-left').textContent = localStorage.getItem('daysLeft') || '30';
 }
 
-// ===================== BATTERY =====================
-function setupBattery() {
-    if ('getBattery' in navigator) {
-        navigator.getBattery().then(battery => {
-            function updateBattery() {
-                const level = Math.round(battery.level * 100);
-                batteryPercent.textContent = level + '%';
-
-                let icon = 'fa-battery-empty';
-                if (level > 80) icon = 'fa-battery-full';
-                else if (level > 60) icon = 'fa-battery-three-quarters';
-                else if (level > 40) icon = 'fa-battery-half';
-                else if (level > 20) icon = 'fa-battery-quarter';
-
-                batteryIcon.className = 'fas ' + icon;
-                batteryIcon.style.color = level < 20 ? 'var(--danger)' : 'var(--accent)';
-
-                chargingStatus.textContent = battery.charging ? 'Charging' : '';
-            }
-            updateBattery();
-            battery.addEventListener('levelchange', updateBattery);
-            battery.addEventListener('chargingchange', updateBattery);
-        });
+function checkVCF() {
+    const vcf = localStorage.getItem('vcfData');
+    const enabled = localStorage.getItem('vcfEnabled') === 'true';
+    const section = document.getElementById('vcf-download');
+    const link = document.getElementById('vcf-link');
+    
+    if (vcf && enabled) {
+        const blob = new Blob([vcf], {type: 'text/vcard'});
+        link.href = URL.createObjectURL(blob);
+        section.style.display = 'block';
     } else {
-        batteryPercent.textContent = 'N/A';
-        batteryIcon.className = 'fas fa-battery-full';
+        section.style.display = 'none';
     }
 }
 
-// ===================== COUNTDOWN (30 DAYS) =====================
-function startCountdown() {
-    function update() {
-        const now = new Date();
-        const diff = VCF_RELEASE_DATE - now;
-        const vcfOut = localStorage.getItem('vcfOut') === 'true';
-        const adminVcf = localStorage.getItem('adminVcfContent');
+function updateDateTime() {
+    const now = new Date();
+    const date = now.toLocaleDateString();
+    const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    document.getElementById('datetime').textContent = `📅 ${date} ⏲️ ${time}`;
+}
 
-        if (vcfOut || adminVcf) {
-            countdownTimer.textContent = 'VCF IS OUT!';
-            downloadVcfBtn.classList.remove('hidden');
-            return;
-        }
-
-        if (diff <= 0) {
-            countdownTimer.textContent = 'VCF IS OUT!';
-            downloadVcfBtn.classList.remove('hidden');
-            return;
-        }
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        countdownTimer.innerHTML = 
-            '<span>' + days + 'd</span> <span>' + hours + 'h</span> <span>' + minutes + 'm</span> <span>' + seconds + 's</span>';
+function updateBattery() {
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(bat => {
+            const pct = Math.round(bat.level * 100);
+            const icon = bat.charging ? '⚡' : '🔋';
+            document.getElementById('battery').textContent = `${icon} ${pct}%`;
+            
+            bat.addEventListener('levelchange', () => {
+                const p = Math.round(bat.level * 100);
+                document.getElementById('battery').textContent = `${bat.charging ? '⚡' : '🔋'} ${p}%`;
+            });
+            bat.addEventListener('chargingchange', () => {
+                const p = Math.round(bat.level * 100);
+                document.getElementById('battery').textContent = `${bat.charging ? '⚡' : '🔋'} ${p}%`;
+            });
+        });
     }
-    update();
-    setInterval(update, 1000);
 }
 
-// Download admin-uploaded VCF or default
-function getVcfContent() {
-    return localStorage.getItem('adminVcfContent') || 
-        'BEGIN:VCARD\nVERSION:3.0\nFN:Confronter Tech Wizard\nORG:Confronter Tech\nTEL;TYPE=CELL:+254793908671\nEMAIL:contact@confronter.tech\nURL:https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803\nEND:VCARD';
+function toggleTheme() {
+    const html = document.documentElement;
+    const icon = document.getElementById('theme-icon');
+    const current = html.getAttribute('data-theme');
+    
+    if (current === 'dark') {
+        html.removeAttribute('data-theme');
+        icon.textContent = '☀️';
+        localStorage.setItem('theme', 'light');
+    } else {
+        html.setAttribute('data-theme', 'dark');
+        icon.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+    }
 }
 
-downloadVcfBtn.addEventListener('click', () => {
-    const vcfContent = getVcfContent();
-    const blob = new Blob([vcfContent], { type: 'text/vcard' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Confronter_Tech_Wizard.vcf';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-});
-
-// ===================== THEME =====================
-function setupTheme() {
-    const saved = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
-    updateThemeIcon(saved);
+// Load saved theme
+if (localStorage.getItem('theme') === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('theme-icon').textContent = '🌙';
 }
 
-themeToggle.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    updateThemeIcon(next);
-});
-
-function updateThemeIcon(theme) {
-    themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-}
-
-// ===================== EVENT LISTENERS =====================
-function setupEventListeners() {
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'verifiedCount') {
-            verifiedMembers = parseInt(e.newValue || '0');
-            updateStats();
-        }
-        if (e.key === 'vcfOut' || e.key === 'adminVcfContent') {
-            const vcfOut = localStorage.getItem('vcfOut') === 'true';
-            const adminVcf = localStorage.getItem('adminVcfContent');
-            if (vcfOut || adminVcf) {
-                countdownTimer.textContent = 'VCF IS OUT!';
-                downloadVcfBtn.classList.remove('hidden');
-            }
-        }
-    });
-}
-
-// ===================== START =====================
-document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('DOMContentLoaded', init);
