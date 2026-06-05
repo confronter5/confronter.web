@@ -47,17 +47,29 @@ const countries = [
 
 const WHATSAPP_GROUP = "https://chat.whatsapp.com/G9qtX0Yuq61JjrklH8k803?s=cl&p=a&ilr=1";
 
-let selectedCountry = null;
+// JSONBin.io configuration - REPLACE THESE WITH YOUR OWN BIN
+// 1. Go to https://jsonbin.io/ and create a free account
+// 2. Create a new bin with initial data: {"verified":[],"stats":{"count":0,"remaining":30,"total":30},"vcfEnabled":false,"vcfData":"","daysLeft":30,"countdownTarget":""}
+// 3. Get your Bin ID and API Key from dashboard
+// 4. Replace the values below:
+const JSONBIN_BIN_ID = "6a22aa73da38895dfe8bbf3a"; // e.g., "64a1b2c3d4e5f6g7h8i9j0k"
+const JSONBIN_API_KEY = "$2a$10$2S361MecS7fTjnwE4bHhGudLjwQ9mnELTL04j27eo4F6vfFgPm4x2"; // e.g., "$2b$10$xxxxxxxxxxxxxxxx"
 
-function init() {
+let selectedCountry = null;
+let sharedData = {verified: [], stats: {count:0, remaining:30, total:30}, vcfEnabled: false, vcfData: "", daysLeft: 30, countdownTarget: ""};
+
+async function init() {
     populateCountries();
     updateDateTime();
     updateBattery();
-    loadStats();
-    checkVCF();
     startCountdown();
     setInterval(updateDateTime, 1000);
-    setInterval(loadStats, 5000);
+    
+    // Try to load from cloud first
+    await loadSharedData();
+    
+    // Refresh every 10 seconds to see new verifications
+    setInterval(loadSharedData, 10000);
 }
 
 function populateCountries() {
@@ -123,56 +135,50 @@ function validatePhone() {
     return true;
 }
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim().toLowerCase();
     const phone = document.getElementById('phone').value.replace(/\s/g, '');
     
-    if (!name) {
-        alert('Name required');
-        return;
-    }
-    
-    if (!email || !email.includes('@')) {
-        alert('Valid email required');
-        return;
-    }
-    
-    if (!selectedCountry) {
-        alert('Select country');
-        return;
-    }
-    
-    if (!validatePhone()) {
-        alert('Fix phone number');
-        return;
-    }
+    if (!name) { alert('Name required'); return; }
+    if (!email || !email.includes('@')) { alert('Valid email required'); return; }
+    if (!selectedCountry) { alert('Select country'); return; }
+    if (!validatePhone()) { alert('Fix phone number'); return; }
     
     const fullPhone = selectedCountry.dial + phone;
     
-    // Check duplicates
-    const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-    const dupEmail = verified.find(u => u.email === email);
-    const dupPhone = verified.find(u => u.phone === fullPhone);
-    const dupName = verified.find(u => u.name && u.name.toLowerCase() === name.toLowerCase());
+    // Reload fresh data to check duplicates
+    await loadSharedData();
     
-    if (dupEmail) {
-        alert('❌ This email is already registered!');
-        return;
-    }
-    if (dupPhone) {
-        alert('❌ This phone number is already registered!');
-        return;
-    }
-    if (dupName) {
-        alert('❌ This name is already registered!');
+    const dupEmail = sharedData.verified.find(u => u.email === email);
+    const dupPhone = sharedData.verified.find(u => u.phone === fullPhone);
+    const dupName = sharedData.verified.find(u => u.name && u.name.toLowerCase() === name.toLowerCase());
+    
+    if (dupEmail) { alert('❌ This email is already registered!'); return; }
+    if (dupPhone) { alert('❌ This phone number is already registered!'); return; }
+    if (dupName) { alert('❌ This name is already registered!'); return; }
+    
+    // Check capacity
+    if (sharedData.verified.length >= 30) {
+        alert('❌ Maximum capacity reached (30 users)!');
         return;
     }
     
-    // Save
-    verified.push({name, email, phone: fullPhone, country: selectedCountry.code, countryName: selectedCountry.name, date: new Date().toISOString()});
-    localStorage.setItem('verified', JSON.stringify(verified));
+    // Add new user
+    sharedData.verified.push({
+        name, email, phone: fullPhone, 
+        country: selectedCountry.code, 
+        countryName: selectedCountry.name, 
+        date: new Date().toISOString()
+    });
+    
+    // Update stats
+    sharedData.stats.count = sharedData.verified.length;
+    sharedData.stats.remaining = Math.max(0, 30 - sharedData.verified.length);
+    
+    // Save to cloud
+    await saveSharedData();
     
     // Play success sound
     speak("You were verified successfully");
@@ -181,8 +187,8 @@ function handleSubmit(e) {
     document.getElementById('verifyForm').style.display = 'none';
     document.getElementById('success').style.display = 'block';
     
-    // Update stats
-    updateStats();
+    // Update display
+    updateDisplay();
     
     // Redirect in 2 seconds
     setTimeout(() => {
@@ -211,35 +217,34 @@ function addAnother() {
     selectedCountry = null;
 }
 
-function updateStats() {
-    const verified = JSON.parse(localStorage.getItem('verified') || '[]');
-    const total = 500;
-    const count = verified.length;
-    const remaining = Math.max(0, total - count);
+function updateDisplay() {
+    document.getElementById('verified-count').textContent = sharedData.stats.count;
+    document.getElementById('remaining-count').textContent = sharedData.stats.remaining;
     
-    document.getElementById('verified-count').textContent = count;
-    document.getElementById('remaining-count').textContent = remaining;
-    
-    localStorage.setItem('stats', JSON.stringify({count, remaining, total}));
-}
-
-function loadStats() {
-    const stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
-    document.getElementById('verified-count').textContent = stats.count;
-    document.getElementById('remaining-count').textContent = stats.remaining;
+    // VCF
+    const section = document.getElementById('vcf-download');
+    const link = document.getElementById('vcf-link');
+    if (sharedData.vcfData && sharedData.vcfEnabled) {
+        const blob = new Blob([sharedData.vcfData], {type: 'text/vcard'});
+        link.href = URL.createObjectURL(blob);
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+    }
 }
 
 function startCountdown() {
     function update() {
-        const target = new Date(localStorage.getItem('countdownTarget') || '');
+        const target = new Date(sharedData.countdownTarget || localStorage.getItem('countdownTarget') || '');
         if (isNaN(target)) {
-            const days = parseInt(localStorage.getItem('daysLeft') || '30');
+            const days = parseInt(sharedData.daysLeft || localStorage.getItem('daysLeft') || '30');
             const now = new Date();
             const t = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+            sharedData.countdownTarget = t.toISOString();
             localStorage.setItem('countdownTarget', t.toISOString());
         }
         
-        const end = new Date(localStorage.getItem('countdownTarget'));
+        const end = new Date(sharedData.countdownTarget || localStorage.getItem('countdownTarget'));
         const diff = end - new Date();
         
         if (diff <= 0) {
@@ -264,18 +269,72 @@ function startCountdown() {
     setInterval(update, 1000);
 }
 
-function checkVCF() {
-    const vcf = localStorage.getItem('vcfData');
-    const enabled = localStorage.getItem('vcfEnabled') === 'true';
-    const section = document.getElementById('vcf-download');
-    const link = document.getElementById('vcf-link');
+// JSONBin.io API functions
+async function loadSharedData() {
+    if (JSONBIN_BIN_ID === "6a22aa73da38895dfe8bbf3a") {
+        // Fallback to localStorage if not configured
+        sharedData.verified = JSON.parse(localStorage.getItem('verified') || '[]');
+        sharedData.stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
+        sharedData.vcfEnabled = localStorage.getItem('vcfEnabled') === 'true';
+        sharedData.vcfData = localStorage.getItem('vcfData') || '';
+        sharedData.daysLeft = localStorage.getItem('daysLeft') || '30';
+        sharedData.countdownTarget = localStorage.getItem('countdownTarget') || '';
+        updateDisplay();
+        return;
+    }
     
-    if (vcf && enabled) {
-        const blob = new Blob([vcf], {type: 'text/vcard'});
-        link.href = URL.createObjectURL(blob);
-        section.style.display = 'block';
-    } else {
-        section.style.display = 'none';
+    try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+            headers: { 'X-Master-Key': JSONBIN_API_KEY }
+        });
+        if (res.ok) {
+            const result = await res.json();
+            sharedData = result.record;
+            // Also update localStorage as backup
+            localStorage.setItem('verified', JSON.stringify(sharedData.verified));
+            localStorage.setItem('stats', JSON.stringify(sharedData.stats));
+            localStorage.setItem('vcfEnabled', sharedData.vcfEnabled);
+            localStorage.setItem('vcfData', sharedData.vcfData);
+            localStorage.setItem('daysLeft', sharedData.daysLeft);
+            localStorage.setItem('countdownTarget', sharedData.countdownTarget);
+            updateDisplay();
+        }
+    } catch (e) {
+        console.error('Cloud load failed, using local:', e);
+        // Fallback
+        sharedData.verified = JSON.parse(localStorage.getItem('verified') || '[]');
+        sharedData.stats = JSON.parse(localStorage.getItem('stats') || '{"count":0,"remaining":30,"total":30}');
+        updateDisplay();
+    }
+}
+
+async function saveSharedData() {
+    if (JSONBIN_BIN_ID === "YOUR_BIN_ID_HERE") {
+        // Fallback to localStorage
+        localStorage.setItem('verified', JSON.stringify(sharedData.verified));
+        localStorage.setItem('stats', JSON.stringify(sharedData.stats));
+        localStorage.setItem('vcfEnabled', sharedData.vcfEnabled);
+        localStorage.setItem('vcfData', sharedData.vcfData);
+        localStorage.setItem('daysLeft', sharedData.daysLeft);
+        localStorage.setItem('countdownTarget', sharedData.countdownTarget);
+        updateDisplay();
+        return;
+    }
+    
+    try {
+        await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': JSONBIN_API_KEY
+            },
+            body: JSON.stringify(sharedData)
+        });
+        updateDisplay();
+    } catch (e) {
+        console.error('Cloud save failed, saving local:', e);
+        localStorage.setItem('verified', JSON.stringify(sharedData.verified));
+        localStorage.setItem('stats', JSON.stringify(sharedData.stats));
     }
 }
 
