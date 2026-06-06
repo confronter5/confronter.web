@@ -1,0 +1,16 @@
+{
+  "name": "confronter-tech-wizard",
+  "version": "1.0.0",
+  "description": "Confronter Tech Wizard VCF Active Viewers - Verification System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["vcf", "verification", "whatsapp", "contacts"],
+  "author": "Confronter Tech Wizard",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
