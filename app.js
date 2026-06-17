@@ -231,6 +231,131 @@ function initMobileSidebar() {
   });
 }
 
+/* ======= PAYHERO PAYMENT MODAL ======= */
+function openPayHeroModal() {
+  const modal = document.getElementById('payheroModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    resetPayHeroForm();
+  }
+}
+
+function closePayHeroModal() {
+  const modal = document.getElementById('payheroModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+function resetPayHeroForm() {
+  const form = document.getElementById('payheroForm');
+  const status = document.getElementById('payheroStatus');
+  const success = document.getElementById('payheroSuccess');
+  const error = document.getElementById('payheroError');
+  const submitBtn = document.getElementById('payheroSubmitBtn');
+
+  if (form) form.style.display = 'block';
+  if (status) status.style.display = 'none';
+  if (success) success.style.display = 'none';
+  if (error) error.style.display = 'none';
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send STK Push';
+  }
+}
+
+async function handlePayHeroSubmit(event) {
+  event.preventDefault();
+
+  const name = document.getElementById('payheroName').value.trim();
+  const phone = document.getElementById('payheroPhone').value.trim();
+  const amount = document.getElementById('payheroAmount').value.trim();
+  const service = document.getElementById('payheroService').value;
+  const submitBtn = document.getElementById('payheroSubmitBtn');
+  const form = document.getElementById('payheroForm');
+  const status = document.getElementById('payheroStatus');
+  const success = document.getElementById('payheroSuccess');
+  const error = document.getElementById('payheroError');
+  const statusText = document.getElementById('payheroStatusText');
+  const errorText = document.getElementById('payheroErrorText');
+  const refDisplay = document.getElementById('payheroRef');
+
+  // Validate phone
+  const phoneRegex = /^(0[17][0-9]{8}|254[17][0-9]{8}|\+254[17][0-9]{8})$/;
+  if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+    errorText.textContent = 'Please enter a valid Kenyan phone number (e.g., 0712345678)';
+    form.style.display = 'none';
+    error.style.display = 'block';
+    return;
+  }
+
+  // Validate amount
+  if (parseInt(amount) < 1) {
+    errorText.textContent = 'Amount must be at least 1 KES';
+    form.style.display = 'none';
+    error.style.display = 'block';
+    return;
+  }
+
+  // Show loading
+  form.style.display = 'none';
+  status.style.display = 'block';
+  statusText.textContent = 'Connecting to PayHero...';
+  submitBtn.disabled = true;
+
+  try {
+    const apiUrl = window.location.origin + '/api/payhero/initiate';
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: parseInt(amount),
+        phone: phone.replace(/\s/g, ''),
+        customerName: name,
+        service: service
+      })
+    });
+
+    const result = await response.json();
+
+    status.style.display = 'none';
+
+    if (result.success) {
+      success.style.display = 'block';
+      if (refDisplay) {
+        refDisplay.textContent = 'Ref: ' + (result.external_reference || result.reference || 'N/A');
+      }
+    } else {
+      errorText.textContent = result.message || 'Failed to initiate payment. Please check your PayHero configuration.';
+      error.style.display = 'block';
+    }
+  } catch (err) {
+    status.style.display = 'none';
+    errorText.textContent = 'Network error: ' + err.message;
+    error.style.display = 'block';
+  }
+}
+
+// Close modal on backdrop click
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('payheroModal');
+  if (modal && e.target === modal) {
+    closePayHeroModal();
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closePayHeroModal();
+  }
+});
+
 /* ======= PAYMENTS CLOCK & GREETING ======= */
 function updatePaymentsClock() {
   const now = new Date();
