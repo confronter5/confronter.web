@@ -4,8 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-// ====== Data Storage (file persistence) ======
-const DATA_FILE = path.join(__dirname, 'data.json');
+// ====== Data Storage ======
+// In Vercel, use /tmp for writable storage (file system is read-only except /tmp)
+const DATA_FILE = path.join('/tmp', 'data.json');
 
 function loadData() {
   try {
@@ -45,7 +46,7 @@ function getPayHeroChannelId() {
   return process.env.PAYHERO_CHANNEL_ID || '';
 }
 
-// ====== HTTP Request Helper (Node.js native, no fetch) ======
+// ====== HTTP Request Helper ======
 function makeRequest(options, postData) {
   return new Promise((resolve, reject) => {
     const req = https.request(options, (res) => {
@@ -79,7 +80,6 @@ async function payHeroStkPush(amount, phoneNumber, externalReference, customerNa
     return { success: false, message: 'PayHero channel ID not configured. Set PAYHERO_CHANNEL_ID env var.' };
   }
 
-  // Format phone number to 254XXXXXXXXX
   let formattedPhone = phoneNumber.replace(/\D/g, '');
   if (formattedPhone.startsWith('0')) {
     formattedPhone = '254' + formattedPhone.substring(1);
@@ -180,6 +180,24 @@ function parseBody(req, callback) {
   });
 }
 
+// ====== SERVE STATIC FILE ======
+function serveStaticFile(res, filePath, contentType) {
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('File not found: ' + filePath);
+      } else {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Server error: ' + err.message);
+      }
+    } else {
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(content);
+    }
+  });
+}
+
 // ====== Request Handler ======
 function handleRequest(req, res) {
   setCors(res);
@@ -193,16 +211,16 @@ function handleRequest(req, res) {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
 
+  console.log('Request:', req.method, pathname);
+
   // ====== API Routes ======
 
-  // GET /api/members
   if (pathname === '/api/members' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(data.members));
     return;
   }
 
-  // POST /api/members
   if (pathname === '/api/members' && req.method === 'POST') {
     parseBody(req, (body) => {
       const member = {
@@ -223,7 +241,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/members/:id
   if (pathname.startsWith('/api/members/') && req.method === 'PUT' && pathname.split('/').length === 4) {
     const id = pathname.split('/')[3];
     parseBody(req, (body) => {
@@ -242,7 +259,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/members/bulk
   if (pathname === '/api/members/bulk' && req.method === 'PUT') {
     parseBody(req, (body) => {
       const ids = body.ids || [];
@@ -257,7 +273,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // GET /api/stats
   if (pathname === '/api/stats' && req.method === 'GET') {
     const verified = data.members.filter(m => m.status === 'verified').length;
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -271,7 +286,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/stats
   if (pathname === '/api/stats' && req.method === 'PUT') {
     parseBody(req, (body) => {
       if (body.target !== undefined) data.target = parseInt(body.target) || 30;
@@ -283,7 +297,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // DELETE /api/members
   if (pathname === '/api/members' && req.method === 'DELETE') {
     parseBody(req, (body) => {
       if (body.password === 'confronter1') {
@@ -299,7 +312,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // GET /api/vcf
   if (pathname === '/api/vcf' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
@@ -310,7 +322,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/vcf
   if (pathname === '/api/vcf' && req.method === 'PUT') {
     parseBody(req, (body) => {
       if (body.enabled !== undefined) data.vcfEnabled = body.enabled;
@@ -323,7 +334,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // DELETE /api/vcf
   if (pathname === '/api/vcf' && req.method === 'DELETE') {
     parseBody(req, (body) => {
       if (body.password === 'confronter1') {
@@ -341,9 +351,8 @@ function handleRequest(req, res) {
     return;
   }
 
-  // ====== PAYHERO PAYMENT ROUTES ======
+  // ====== PAYHERO ROUTES ======
 
-  // POST /api/payhero/initiate - Initiate STK Push
   if (pathname === '/api/payhero/initiate' && req.method === 'POST') {
     parseBody(req, async (body) => {
       try {
@@ -390,7 +399,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // GET /api/payhero/status/:reference
   if (pathname.startsWith('/api/payhero/status/') && req.method === 'GET') {
     const reference = pathname.split('/')[4];
     payHeroTransactionStatus(reference).then(result => {
@@ -403,7 +411,6 @@ function handleRequest(req, res) {
     return;
   }
 
-  // POST /api/payhero/callback - PayHero webhook
   if (pathname === '/api/payhero/callback' && req.method === 'POST') {
     parseBody(req, (body) => {
       try {
@@ -434,43 +441,39 @@ function handleRequest(req, res) {
       } catch (err) {
         console.error('Callback Error:', err);
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, message: 'Callback processed with errors' }));
+        res.end(JSON.stringify({ success: true, message: 'Callback processed' }));
       }
     });
     return;
   }
 
-  // GET /api/payhero/payments
   if (pathname === '/api/payhero/payments' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(data.payments || []));
     return;
   }
 
-  // ====== Static File Serving ======
-  let filePath = pathname === '/' ? '/index.html' : pathname;
-  filePath = path.join(__dirname, filePath);
+  // ====== STATIC FILES ======
+  // In Vercel, files are in the same directory as the server file
+  let filePath;
+  if (pathname === '/') {
+    filePath = path.join(__dirname, 'index.html');
+  } else {
+    filePath = path.join(__dirname, pathname);
+  }
 
   const ext = path.extname(filePath).toLowerCase();
   const contentType = mimeTypes[ext] || 'application/octet-stream';
 
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('File not found');
-      } else {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Server error');
-      }
-    } else {
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content);
-    }
-  });
+  // Check if file exists, if not try without leading slash
+  if (!fs.existsSync(filePath)) {
+    filePath = path.join(__dirname, pathname.substring(1));
+  }
+
+  serveStaticFile(res, filePath, contentType);
 }
 
-// ====== Local Server (for development) ======
+// ====== Local Server ======
 if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 3000;
   const server = http.createServer(handleRequest);
@@ -479,5 +482,5 @@ if (!process.env.VERCEL) {
   });
 }
 
-// ====== Export for Vercel (serverless) ======
+// ====== Export for Vercel ======
 module.exports = handleRequest;
