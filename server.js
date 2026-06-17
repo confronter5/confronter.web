@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -19,7 +20,7 @@ function loadData() {
     vcfEnabled: false,
     vcfName: null,
     vcfData: null,
-    payments: []  // Store payment records
+    payments: []
   };
 }
 
@@ -32,11 +33,7 @@ function saveData(data) {
 let data = loadData();
 
 // ====== PAYHERO CONFIG ======
-// IMPORTANT: Set these as Vercel Environment Variables!
-// PAYHERO_API_USERNAME = your_api_username
-// PAYHERO_API_PASSWORD = your_api_password
-// PAYHERO_CHANNEL_ID = your_channel_id (e.g., 133)
-const PAYHERO_BASE_URL = 'https://backend.payhero.co.ke/api/v2';
+const PAYHERO_BASE_URL = 'backend.payhero.co.ke';
 
 function getPayHeroAuth() {
   const username = process.env.PAYHERO_API_USERNAME || '';
@@ -46,6 +43,99 @@ function getPayHeroAuth() {
 
 function getPayHeroChannelId() {
   return process.env.PAYHERO_CHANNEL_ID || '';
+}
+
+// ====== HTTP Request Helper (Node.js native, no fetch) ======
+function makeRequest(options, postData) {
+  return new Promise((resolve, reject) => {
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          resolve({ statusCode: res.statusCode, body: json });
+        } catch (e) {
+          resolve({ statusCode: res.statusCode, body: data });
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      reject(err);
+    });
+
+    if (postData) {
+      req.write(postData);
+    }
+    req.end();
+  });
+}
+
+// ====== PAYHERO API HELPERS ======
+async function payHeroStkPush(amount, phoneNumber, externalReference, customerName, callbackUrl) {
+  const channelId = getPayHeroChannelId();
+  if (!channelId) {
+    return { success: false, message: 'PayHero channel ID not configured. Set PAYHERO_CHANNEL_ID env var.' };
+  }
+
+  // Format phone number to 254XXXXXXXXX
+  let formattedPhone = phoneNumber.replace(/\D/g, '');
+  if (formattedPhone.startsWith('0')) {
+    formattedPhone = '254' + formattedPhone.substring(1);
+  } else if (formattedPhone.startsWith('+')) {
+    formattedPhone = formattedPhone.substring(1);
+  }
+
+  const payload = {
+    amount: parseInt(amount),
+    phone_number: formattedPhone,
+    channel_id: parseInt(channelId),
+    provider: 'm-pesa',
+    external_reference: externalReference,
+    customer_name: customerName || 'Customer',
+    callback_url: callbackUrl || ''
+  };
+
+  const postData = JSON.stringify(payload);
+
+  const options = {
+    hostname: PAYHERO_BASE_URL,
+    path: '/api/v2/payments',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': getPayHeroAuth(),
+      'Content-Length': Buffer.byteLength(postData)
+    }
+  };
+
+  try {
+    const result = await makeRequest(options, postData);
+    return { success: result.statusCode >= 200 && result.statusCode < 300, ...result.body };
+  } catch (error) {
+    console.error('PayHero STK Push Error:', error);
+    return { success: false, message: 'Failed to connect to PayHero: ' + error.message };
+  }
+}
+
+async function payHeroTransactionStatus(reference) {
+  const options = {
+    hostname: PAYHERO_BASE_URL,
+    path: '/api/v2/transaction-status/' + encodeURIComponent(reference),
+    method: 'GET',
+    headers: {
+      'Authorization': getPayHeroAuth()
+    }
+  };
+
+  try {
+    const result = await makeRequest(options, null);
+    return result.body;
+  } catch (error) {
+    console.error('PayHero Status Error:', error);
+    return { success: false, message: error.message };
+  }
 }
 
 // ====== MIME Types ======
@@ -90,63 +180,7 @@ function parseBody(req, callback) {
   });
 }
 
-// ====== PAYHERO API HELPERS ======
-async function payHeroStkPush(amount, phoneNumber, externalReference, customerName, callbackUrl) {
-  const channelId = getPayHeroChannelId();
-  if (!channelId) {
-    return { success: false, message: 'PayHero channel ID not configured' };
-  }
-
-  // Format phone number to 254XXXXXXXXX
-  let formattedPhone = phoneNumber.replace(/\D/g, '');
-  if (formattedPhone.startsWith('0')) {
-    formattedPhone = '254' + formattedPhone.substring(1);
-  } else if (formattedPhone.startsWith('+')) {
-    formattedPhone = formattedPhone.substring(1);
-  }
-
-  const payload = {
-    amount: parseInt(amount),
-    phone_number: formattedPhone,
-    channel_id: parseInt(channelId),
-    provider: 'm-pesa',
-    external_reference: externalReference,
-    customer_name: customerName || 'Customer',
-    callback_url: callbackUrl || ''
-  };
-
-  try {
-    const response = await fetch(PAYHERO_BASE_URL + '/payments', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': getPayHeroAuth()
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-    return { success: response.ok, ...result };
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-}
-
-async function payHeroTransactionStatus(reference) {
-  try {
-    const response = await fetch(PAYHERO_BASE_URL + '/transaction-status/' + reference, {
-      method: 'GET',
-      headers: {
-        'Authorization': getPayHeroAuth()
-      }
-    });
-    return await response.json();
-  } catch (error) {
-    return { success: false, message: error.message };
-  }
-}
-
-// ====== Request Handler (works for both local & Vercel) ======
+// ====== Request Handler ======
 function handleRequest(req, res) {
   setCors(res);
 
@@ -161,14 +195,14 @@ function handleRequest(req, res) {
 
   // ====== API Routes ======
 
-  // GET /api/members - Get all members
+  // GET /api/members
   if (pathname === '/api/members' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(data.members));
     return;
   }
 
-  // POST /api/members - Add new member
+  // POST /api/members
   if (pathname === '/api/members' && req.method === 'POST') {
     parseBody(req, (body) => {
       const member = {
@@ -189,8 +223,8 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/members/:id - Update member status
-  if (pathname.startsWith('/api/members/') && req.method === 'PUT') {
+  // PUT /api/members/:id
+  if (pathname.startsWith('/api/members/') && req.method === 'PUT' && pathname.split('/').length === 4) {
     const id = pathname.split('/')[3];
     parseBody(req, (body) => {
       const member = data.members.find(m => m.id === id);
@@ -208,7 +242,7 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/members/bulk - Bulk update status
+  // PUT /api/members/bulk
   if (pathname === '/api/members/bulk' && req.method === 'PUT') {
     parseBody(req, (body) => {
       const ids = body.ids || [];
@@ -223,7 +257,7 @@ function handleRequest(req, res) {
     return;
   }
 
-  // GET /api/stats - Get stats
+  // GET /api/stats
   if (pathname === '/api/stats' && req.method === 'GET') {
     const verified = data.members.filter(m => m.status === 'verified').length;
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -237,7 +271,7 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/stats - Update target and endDate
+  // PUT /api/stats
   if (pathname === '/api/stats' && req.method === 'PUT') {
     parseBody(req, (body) => {
       if (body.target !== undefined) data.target = parseInt(body.target) || 30;
@@ -249,7 +283,7 @@ function handleRequest(req, res) {
     return;
   }
 
-  // DELETE /api/members - Reset all (admin only)
+  // DELETE /api/members
   if (pathname === '/api/members' && req.method === 'DELETE') {
     parseBody(req, (body) => {
       if (body.password === 'confronter1') {
@@ -265,7 +299,7 @@ function handleRequest(req, res) {
     return;
   }
 
-  // GET /api/vcf - Get VCF file info
+  // GET /api/vcf
   if (pathname === '/api/vcf' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
@@ -276,7 +310,7 @@ function handleRequest(req, res) {
     return;
   }
 
-  // PUT /api/vcf - Update VCF settings
+  // PUT /api/vcf
   if (pathname === '/api/vcf' && req.method === 'PUT') {
     parseBody(req, (body) => {
       if (body.enabled !== undefined) data.vcfEnabled = body.enabled;
@@ -289,7 +323,7 @@ function handleRequest(req, res) {
     return;
   }
 
-  // DELETE /api/vcf - Remove VCF
+  // DELETE /api/vcf
   if (pathname === '/api/vcf' && req.method === 'DELETE') {
     parseBody(req, (body) => {
       if (body.password === 'confronter1') {
@@ -312,87 +346,101 @@ function handleRequest(req, res) {
   // POST /api/payhero/initiate - Initiate STK Push
   if (pathname === '/api/payhero/initiate' && req.method === 'POST') {
     parseBody(req, async (body) => {
-      const { amount, phone, customerName, service } = body;
+      try {
+        const { amount, phone, customerName, service } = body;
 
-      if (!amount || !phone) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: false, message: 'Amount and phone are required' }));
-        return;
+        if (!amount || !phone) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, message: 'Amount and phone are required' }));
+          return;
+        }
+
+        const externalReference = 'CNF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+        const host = req.headers.host || 'localhost';
+        const protocol = host.includes('localhost') ? 'http' : 'https';
+        const callbackUrl = protocol + '://' + host + '/api/payhero/callback';
+
+        const result = await payHeroStkPush(amount, phone, externalReference, customerName || 'Customer', callbackUrl);
+
+        if (result.success) {
+          const paymentRecord = {
+            id: externalReference,
+            amount: parseInt(amount),
+            phone: phone,
+            customerName: customerName || 'Customer',
+            service: service || 'General',
+            status: 'pending',
+            checkoutId: result.checkout_request_id || result.CheckoutRequestID || null,
+            merchantRequestId: result.merchant_request_id || result.MerchantRequestID || null,
+            date: new Date().toISOString(),
+            payheroResponse: result
+          };
+          data.payments.push(paymentRecord);
+          saveData(data);
+        }
+
+        res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        console.error('PayHero Initiate Error:', err);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, message: 'Server error: ' + err.message }));
       }
-
-      const externalReference = 'CNF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
-      const callbackUrl = (req.headers.host ? 'https://' + req.headers.host : '') + '/api/payhero/callback';
-
-      const result = await payHeroStkPush(amount, phone, externalReference, customerName || 'Customer', callbackUrl);
-
-      if (result.success) {
-        // Save payment record
-        const paymentRecord = {
-          id: externalReference,
-          amount: parseInt(amount),
-          phone: phone,
-          customerName: customerName || 'Customer',
-          service: service || 'General',
-          status: 'pending',
-          checkoutId: result.checkout_request_id || result.CheckoutRequestID || null,
-          merchantRequestId: result.merchant_request_id || result.MerchantRequestID || null,
-          date: new Date().toISOString(),
-          payheroResponse: result
-        };
-        data.payments.push(paymentRecord);
-        saveData(data);
-      }
-
-      res.writeHead(result.success ? 200 : 400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
     });
     return;
   }
 
-  // GET /api/payhero/status/:reference - Check transaction status
+  // GET /api/payhero/status/:reference
   if (pathname.startsWith('/api/payhero/status/') && req.method === 'GET') {
     const reference = pathname.split('/')[4];
     payHeroTransactionStatus(reference).then(result => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
+    }).catch(err => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: err.message }));
     });
     return;
   }
 
-  // POST /api/payhero/callback - PayHero webhook callback
+  // POST /api/payhero/callback - PayHero webhook
   if (pathname === '/api/payhero/callback' && req.method === 'POST') {
     parseBody(req, (body) => {
-      console.log('PayHero Callback:', JSON.stringify(body));
+      try {
+        console.log('PayHero Callback:', JSON.stringify(body));
 
-      const checkoutId = body.CheckoutRequestID || body.checkout_request_id;
-      const merchantRequestId = body.MerchantRequestID || body.merchant_request_id;
-      const resultCode = body.ResultCode || body.result_code;
-      const resultDesc = body.ResultDesc || body.result_desc;
-      const transactionId = body.TransactionID || body.transaction_id;
-      const amount = body.TransactionAmount || body.amount;
+        const checkoutId = body.CheckoutRequestID || body.checkout_request_id;
+        const merchantRequestId = body.MerchantRequestID || body.merchant_request_id;
+        const resultCode = body.ResultCode !== undefined ? body.ResultCode : body.result_code;
+        const resultDesc = body.ResultDesc || body.result_desc;
+        const transactionId = body.TransactionID || body.transaction_id;
 
-      // Find and update payment record
-      const payment = data.payments.find(p =>
-        p.checkoutId === checkoutId || p.merchantRequestId === merchantRequestId
-      );
+        const payment = data.payments.find(p =>
+          p.checkoutId === checkoutId || p.merchantRequestId === merchantRequestId
+        );
 
-      if (payment) {
-        payment.status = resultCode === 0 ? 'completed' : 'failed';
-        payment.resultCode = resultCode;
-        payment.resultDesc = resultDesc;
-        payment.transactionId = transactionId;
-        payment.callbackData = body;
-        payment.updatedAt = new Date().toISOString();
-        saveData(data);
+        if (payment) {
+          payment.status = resultCode === 0 || resultCode === '0' ? 'completed' : 'failed';
+          payment.resultCode = resultCode;
+          payment.resultDesc = resultDesc;
+          payment.transactionId = transactionId;
+          payment.callbackData = body;
+          payment.updatedAt = new Date().toISOString();
+          saveData(data);
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: 'Callback received' }));
+      } catch (err) {
+        console.error('Callback Error:', err);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, message: 'Callback processed with errors' }));
       }
-
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, message: 'Callback received' }));
     });
     return;
   }
 
-  // GET /api/payhero/payments - Get all payment records (admin)
+  // GET /api/payhero/payments
   if (pathname === '/api/payhero/payments' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(data.payments || []));
