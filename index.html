@@ -117,9 +117,9 @@
     <span>Premium Downloaders</span>
   </a>
 
-  <a href="https://confronter.top/payments" class="nav-item">
+  <a href="#services" class="nav-item" onclick="openPayHeroModal()">
     <i class="fas fa-credit-card"></i>
-    <span>Payments</span>
+    <span>Pay with M-Pesa</span>
   </a>
 
   <a href="https://t.me/+gJJbcOWV0F1lNjQ0" target="_blank" class="nav-item">
@@ -308,11 +308,11 @@
     <div class="card">
       <div class="card-number">12</div>
       <div class="card-icon"><i class="fas fa-credit-card"></i></div>
-      <h3>Payments</h3>
-      <p>Easy & secure payments instantly at zero cost. Fast, reliable, and built for you.</p>
-      <a href="https://confronter.top/payments" class="cyber-btn">
-        <i class="fas fa-bolt"></i> Pay now Here
-      </a>
+      <h3>Pay with M-Pesa</h3>
+      <p>Pay instantly via M-Pesa STK Push. Enter amount & phone, get prompt on your device.</p>
+      <button class="cyber-btn" onclick="openPayHeroModal()">
+        <i class="fas fa-mobile-alt"></i> Pay Now
+      </button>
     </div>
 
     <!-- 13 -->
@@ -383,6 +383,93 @@
   </footer>
 </div>
 
+<!-- ======= PAYHERO PAYMENT MODAL ======= -->
+<div id="payheroModal" class="payhero-modal">
+  <div class="payhero-modal-content">
+    <div class="payhero-modal-header">
+      <h3><i class="fas fa-mobile-alt"></i> Pay with M-Pesa</h3>
+      <button class="payhero-close" onclick="closePayHeroModal()">&times;</button>
+    </div>
+
+    <div class="payhero-modal-body">
+      <div class="payhero-icon">
+        <i class="fas fa-hand-holding-usd"></i>
+      </div>
+      <p class="payhero-desc">Enter your details below. An STK push will be sent to your M-Pesa registered number.</p>
+
+      <form id="payheroForm" onsubmit="handlePayHeroSubmit(event)">
+        <div class="payhero-form-group">
+          <label for="payheroName"><i class="fas fa-user"></i> Your Name</label>
+          <input type="text" id="payheroName" placeholder="John Doe" required>
+        </div>
+
+        <div class="payhero-form-group">
+          <label for="payheroPhone"><i class="fas fa-phone"></i> M-Pesa Number</label>
+          <input type="tel" id="payheroPhone" placeholder="0712345678 or 254712345678" required>
+          <small class="payhero-hint">Format: 07XX XXX XXX or 2547XX XXX XXX</small>
+        </div>
+
+        <div class="payhero-form-group">
+          <label for="payheroAmount"><i class="fas fa-coins"></i> Amount (KES)</label>
+          <input type="number" id="payheroAmount" placeholder="100" min="1" required>
+        </div>
+
+        <div class="payhero-form-group">
+          <label for="payheroService"><i class="fas fa-tag"></i> Service</label>
+          <select id="payheroService" required>
+            <option value="General">General Payment</option>
+            <option value="Social Media Gains">Social Media Gains</option>
+            <option value="Foreign Numbers">Foreign Numbers</option>
+            <option value="WhatsApp Bot">WhatsApp Bot</option>
+            <option value="Web Development">Web Development</option>
+            <option value="Account Recovery">Account Recovery</option>
+            <option value="Developer Training">Developer Training</option>
+            <option value="Premium Streaming">Premium Streaming</option>
+            <option value="VPN/Proxies">VPN/Proxies</option>
+            <option value="Billing Classes">Billing Classes</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <button type="submit" class="cyber-btn payhero-submit" id="payheroSubmitBtn">
+          <i class="fas fa-paper-plane"></i> Send STK Push
+        </button>
+      </form>
+
+      <!-- Status Messages -->
+      <div id="payheroStatus" class="payhero-status" style="display:none;">
+        <div class="payhero-status-icon">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <p id="payheroStatusText">Initiating payment...</p>
+      </div>
+
+      <div id="payheroSuccess" class="payhero-success" style="display:none;">
+        <div class="payhero-success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h4>STK Push Sent!</h4>
+        <p>Check your phone and enter your M-Pesa PIN to complete the payment.</p>
+        <p class="payhero-ref" id="payheroRef"></p>
+        <button class="cyber-btn" onclick="closePayHeroModal()" style="margin-top:15px;">
+          <i class="fas fa-check"></i> Done
+        </button>
+      </div>
+
+      <div id="payheroError" class="payhero-error" style="display:none;">
+        <div class="payhero-error-icon">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <h4>Payment Failed</h4>
+        <p id="payheroErrorText">Something went wrong. Please try again.</p>
+        <button class="cyber-btn" onclick="resetPayHeroForm()" style="margin-top:15px;">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="app.js"></script>
 </body>
-  </html>
+</html>
