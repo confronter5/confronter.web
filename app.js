@@ -336,8 +336,13 @@ async function handlePayHeroSubmit(event) {
     }
   } catch (err) {
     status.style.display = 'none';
-    errorText.textContent = 'Network error: ' + err.message;
+    let msg = 'Network error: ' + err.message;
+    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+      msg = 'Cannot connect to server. Please check your internet or try again later.';
+    }
+    errorText.textContent = msg;
     error.style.display = 'block';
+    console.error('PayHero Error:', err);
   }
 }
 
